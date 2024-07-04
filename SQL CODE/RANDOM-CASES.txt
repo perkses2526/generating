@@ -1,0 +1,84 @@
+use ects;
+
+-- random 50 case for NCR, 75 for other rabs
+select concat(p.first_name, ' ', p.middle_name, ' ' , p.last_name, ' ', p.extension_name), c.case_type_code, pp.contact_info, ppp.contact_info, date_format(c.filed_date, "%m/%d/%Y") as date_filed
+from cases as c 
+left join dockets as d on c.docket_id = d.docket_id
+left join case_parties as b on c.case_id = b.case_id
+left join parties as  p on b.party_id = p.party_id
+left join party_contacts as pp on p.party_id = pp.party_id
+left join party_contacts as ppp on p.party_id = ppp.party_id
+where c.case_type_code = 'CASE'
+and d.org_code = 'RABXIII'
+and c.process_by is not null
+and b.case_party_type like 'P%'
+-- and pp.contact_type_id = 3
+ and pp.contact_info like '09%'
+-- and ppp.contact_type_id = 2
+-- and ppp.contact_info REGEXP '^[0-9]+$'
+-- and not ppp.contact_info like '09%'
+-- and not ppp.contact_info like '639%'
+and c.filed_date between '2024-01-01' AND '2024-12-31'
+order by RAND() LIMIT 75;
+
+-- random 75 RFAs other rabs
+select concat(p.first_name, ' ', p.middle_name, ' ' , p.last_name, ' ', p.extension_name), c.case_type_code, pp.contact_info, ppp.contact_info, date_format(c.filed_date, "%m/%d/%Y") as date_filed
+from cases as c 
+left join dockets as d on c.docket_id = d.docket_id
+left join case_parties as b on c.case_id = b.case_id
+left join parties as  p on b.party_id = p.party_id
+left join party_contacts as pp on p.party_id = pp.party_id
+left join party_contacts as ppp on p.party_id = ppp.party_id
+where c.case_type_code = 'RFA'
+and d.org_code = 'RABXIII'
+and c.process_by is not null
+and b.case_party_type like 'P%'
+ and pp.contact_type_id = 3
+-- and pp.contact_info like '09%'
+ and ppp.contact_type_id = 2
+-- and ppp.contact_info REGEXP '^[0-9]+$'
+-- and not ppp.contact_info like '09%'
+-- and not ppp.contact_info like '639%'
+order by RAND() LIMIT 75;
+
+-- random 50 RFAs NCR online
+select concat(p.first_name, ' ', p.middle_name, ' ' , p.last_name, ' ', p.extension_name), c.case_type_code, pp.contact_info, ppp.contact_info, date_format(c.filed_date, "%m/%d/%Y") as date_filed
+from cases as c 
+left join dockets as d on c.docket_id = d.docket_id
+left join case_parties as b on c.case_id = b.case_id
+left join parties as  p on b.party_id = p.party_id
+left join party_contacts as pp on p.party_id = pp.party_id
+left join party_contacts as ppp on p.party_id = ppp.party_id
+where c.case_type_code = 'RFA'
+and d.org_code = 'NCR'
+and c.process_by is not null
+and b.case_party_type like 'P%'
+ and pp.contact_type_id = 3
+and pp.contact_info like '09%'
+ and ppp.contact_type_id = 2
+ and ppp.contact_info REGEXP '^[0-9]+$'
+ and not ppp.contact_info like '09%'
+ and not ppp.contact_info like '639%'
+ and c.created_by = 1003
+order by RAND() LIMIT 50;
+
+-- random 50 RFAs NCR walkin
+select concat(p.first_name, ' ', p.middle_name, ' ' , p.last_name, ' ', p.extension_name), c.case_type_code, pp.contact_info, ppp.contact_info, date_format(c.filed_date, "%m/%d/%Y") as date_filed
+from cases as c 
+left join dockets as d on c.docket_id = d.docket_id
+left join case_parties as b on c.case_id = b.case_id
+left join parties as  p on b.party_id = p.party_id
+left join party_contacts as pp on p.party_id = pp.party_id
+left join party_contacts as ppp on p.party_id = ppp.party_id
+where c.case_type_code = 'RFA'
+and d.org_code = 'NCR'
+and c.process_by is not null
+and b.case_party_type like 'P%'
+ and pp.contact_type_id = 3
+and pp.contact_info like '09%'
+ and ppp.contact_type_id = 2
+ and ppp.contact_info REGEXP '^[0-9]+$'
+ and not ppp.contact_info like '09%'
+ and not ppp.contact_info like '639%'
+ and not c.created_by = 1003
+order by RAND() LIMIT 50;

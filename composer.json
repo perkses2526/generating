@@ -1,0 +1,19 @@
+{
+    "name": "dict/generating",
+    "description": "Sample",
+    "type": "project",
+    "require": {
+        "phpoffice/phpspreadsheet": "^2.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Dict\\Generating\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "RJ"
+        }
+    ],
+    "minimum-stability": "stable"
+}

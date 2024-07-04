@@ -1,0 +1,199 @@
+use ects;
+
+-- EVERY FIRST DAY OF THE MONTH
+-- Arbiter Reports 2023
+-- get all arbiter cases (count)
+select concat(d.fname, ' ', d.mname, ' ' , d.lname) as LA, count(d.username)
+from cases as a
+left join dockets as c on a.docket_id = c.docket_id
+left join ects_core.users as d on a.process_by = d.user_id
+where a.process_by is not null
+and a.case_type_code = 'CASE'
+-- replace RAB, include their Satellite if there are any --
+-- and  (c.org_code = 'CAR' or c.org_code = 'CAR')
+-- and  (c.org_code = 'CAUXII' or c.org_code = 'CAUXII')
+-- and  (c.org_code = 'NCR' or c.org_code = 'NCR')
+-- and  (c.org_code = 'RABI' or c.org_code = 'RABI')
+-- and  (c.org_code = 'SRABI' or c.org_code = 'SRABI')
+-- and  (c.org_code = 'RABII' or c.org_code = 'RABII')
+-- and  (c.org_code = 'RABIII' or c.org_code = 'RABIII')
+-- and  (c.org_code = 'RABIII-SO' or c.org_code = 'RABIII-SO')
+-- and  (c.org_code = 'RABIV' or c.org_code = 'RABIV-BA' or c.org_code = 'SRABIV')
+-- and  (c.org_code = 'RABIV' or c.org_code = 'RABIV')
+-- and  (c.org_code = 'SRABIV' or c.org_code = 'SRABIV')
+-- and  (c.org_code = 'RABV' or c.org_code = 'RABV')
+-- and  (c.org_code = 'SRABV' or c.org_code = 'SRABV')
+-- and  (c.org_code = 'RABVI' or c.org_code = 'SRABVI' or c.org_code = 'SRABVIA')
+ and  (c.org_code = 'RABVI' or c.org_code = 'RABVI')
+-- and  (c.org_code = 'SRABVI' or c.org_code = 'SRABVI')
+-- and  (c.org_code = 'RABVII' or c.org_code = 'RABVII')
+-- and  (c.org_code = 'SRABVII' or c.org_code = 'SRABVII')
+-- and  (c.org_code = 'RABVIII' or c.org_code = 'RABVIII')
+-- and  (c.org_code = 'RABIX' or c.org_code = 'SRABIX')
+-- and  (c.org_code = 'RABIX' or c.org_code = 'RABIX')
+-- and  (c.org_code = 'SRABIX' or c.org_code = 'SRABIX')
+-- and  (c.org_code = 'RABX' or c.org_code = 'RABX-BUK' or c.org_code = 'SRABX')
+-- and  (c.org_code = 'RABX' or c.org_code = 'RABX')
+-- and  (c.org_code = 'RABX-BUK' or c.org_code = 'RABX-BUK')
+-- and  (c.org_code = 'SRABX' or c.org_code = 'SRABX')
+-- and  (c.org_code = 'RABXI' or c.org_code = 'RABXI-TC' or c.org_code = 'RABXI-DC')
+-- and  (c.org_code = 'RABXI' or c.org_code = 'RABXI')
+-- and  (c.org_code = 'RABXI-TC' or c.org_code = 'RABXI-TC')
+-- and  (c.org_code = 'RABXI-DC' or c.org_code = 'RABXI-DC')
+-- and  (c.org_code = 'RABXII' or c.org_code = 'RABXII-KD' or c.org_code = 'SRABXII' or c.org_code = 'SRABXIIC')
+-- and  (c.org_code = 'RABXII' or c.org_code = 'RABXII')
+-- and  (c.org_code = 'RABXII-KD' or c.org_code = 'RABXII-KD')
+-- and  (c.org_code = 'SRABXII' or c.org_code = 'SRABXII')
+-- and  (c.org_code = 'RABXIII' or c.org_code = 'RABXIII')
+ -- replace RAB, include their Satellite if there are any --
+and a.filed_date between '2019-05-01' AND '2024-12-31'
+ and not d.user_id = 769
+group by d.username
+order by 1, count(d.username) desc;
+
+-- get all arbiter pendings (count) -- EVERY FIRST DAY OF THE MONTH
+select concat(d.fname, ' ', d.mname, ' ' , d.lname) as LA, count(d.username)
+from cases as a
+left join dockets as c on a.docket_id = c.docket_id
+left join ects_core.users as d on a.process_by = d.user_id
+left join (select bb.* from docket_disposition as bb inner join (select docket_id, min(disposition_id) as MaxDate from docket_disposition group by docket_id ) xm on bb.docket_id = xm.docket_id and bb.disposition_id = xm.MaxDate) as b on b.docket_id = a.docket_id
+where a.process_by is not null
+and a.case_type_code = 'CASE'
+-- replace RAB, include their Satellite if there are any --
+-- and  (c.org_code = 'CAR' or c.org_code = 'CAR')
+-- and  (c.org_code = 'CAUXII' or c.org_code = 'CAUXII')
+-- and  (c.org_code = 'NCR' or c.org_code = 'NCR')
+-- and  (c.org_code = 'RABI' or c.org_code = 'RABI')
+-- and  (c.org_code = 'SRABI' or c.org_code = 'SRABI')
+-- and  (c.org_code = 'RABII' or c.org_code = 'RABII')
+-- and  (c.org_code = 'RABIII' or c.org_code = 'RABIII')
+-- and  (c.org_code = 'RABIII-SO' or c.org_code = 'RABIII-SO')
+-- and  (c.org_code = 'RABIV' or c.org_code = 'RABIV-BA' or c.org_code = 'SRABIV')
+-- and  (c.org_code = 'RABIV' or c.org_code = 'RABIV')
+-- and  (c.org_code = 'SRABIV' or c.org_code = 'SRABIV')
+-- and  (c.org_code = 'RABV' or c.org_code = 'RABV')
+-- and  (c.org_code = 'SRABV' or c.org_code = 'SRABV')
+-- and  (c.org_code = 'RABVI' or c.org_code = 'SRABVI' or c.org_code = 'SRABVIA')
+ and  (c.org_code = 'RABVI' or c.org_code = 'RABVI')
+-- and  (c.org_code = 'SRABVI' or c.org_code = 'SRABVI')
+-- and  (c.org_code = 'RABVII' or c.org_code = 'RABVII')
+-- and  (c.org_code = 'SRABVII' or c.org_code = 'SRABVII')
+-- and  (c.org_code = 'RABVIII' or c.org_code = 'RABVIII')
+-- and  (c.org_code = 'RABIX' or c.org_code = 'SRABIX')
+-- and  (c.org_code = 'RABIX' or c.org_code = 'RABIX')
+-- and  (c.org_code = 'SRABIX' or c.org_code = 'SRABIX')
+-- and  (c.org_code = 'RABX' or c.org_code = 'RABX-BUK' or c.org_code = 'SRABX')
+-- and  (c.org_code = 'RABX' or c.org_code = 'RABX')
+-- and  (c.org_code = 'RABX-BUK' or c.org_code = 'RABX-BUK')
+-- and  (c.org_code = 'SRABX' or c.org_code = 'SRABX')
+-- and  (c.org_code = 'RABXI' or c.org_code = 'RABXI-TC' or c.org_code = 'RABXI-DC')
+-- and  (c.org_code = 'RABXI' or c.org_code = 'RABXI')
+-- and  (c.org_code = 'RABXI-TC' or c.org_code = 'RABXI-TC')
+-- and  (c.org_code = 'RABXI-DC' or c.org_code = 'RABXI-DC')
+-- and  (c.org_code = 'RABXII' or c.org_code = 'RABXII-KD' or c.org_code = 'SRABXII' or c.org_code = 'SRABXIIC')
+-- and  (c.org_code = 'RABXII' or c.org_code = 'RABXII')
+-- and  (c.org_code = 'RABXII-KD' or c.org_code = 'RABXII-KD')
+-- and  (c.org_code = 'SRABXII' or c.org_code = 'SRABXII')
+-- and  (c.org_code = 'RABXIII' or c.org_code = 'RABXIII')
+ -- replace RAB, include their Satellite if there are any --
+and a.filed_date between '2019-05-01' AND '2024-12-31'
+ and b.date_disposed is null
+ and not d.user_id = 769
+group by d.username
+order by 1, count(d.username) desc;
+
+-- get all arbiter cases (list)
+select a.docket_number, a.case_title, a.filed_date, concat(d.fname, ' ', d.mname, ' ' , d.lname) as LA
+from cases as a
+left join dockets as c on a.docket_id = c.docket_id
+left join ects_core.users as d on a.process_by = d.user_id
+where a.process_by is not null
+and a.case_type_code = 'CASE'
+and c.org_code = 'CAR'
+-- and a.filed_date between '2019-05-01' AND '2024-12-31'
+ and a.filed_date between '2024-02-01' AND '2024-12-31'
+-- and not d.user_id = 769
+and d.user_id = 704
+order by 3 asc;
+
+-- ECTS STATUS
+-- get all arbiter pendings (list)
+select a.docket_number, a.case_title, a.filed_date, concat(d.fname, ' ', d.mname, ' ' , d.lname) as LA,d.user_id
+from cases as a
+left join dockets as c on a.docket_id = c.docket_id
+left join ects_core.users as d on a.process_by = d.user_id
+left join (select bb.* from docket_disposition as bb inner join (select docket_id, min(disposition_id) as MaxDate from docket_disposition group by docket_id ) xm on bb.docket_id = xm.docket_id and bb.disposition_id = xm.MaxDate) as b on b.docket_id = a.docket_id
+where a.process_by is not null
+and a.case_type_code = 'CASE'
+ and c.org_code = 'SRABX'
+and a.filed_date between '2019-05-01' AND '2024-12-31'
+and b.date_disposed is null
+and not d.user_id = 769
+order by 3 asc; -- limit 7326;
+
+-- Conmed performance
+-- conmed performance from 07-15-2020 (All RABs)
+select c.org_code, c.docket_number, a.case_title, a.filed_date, f.available_date, b.date_disposed, '' as nothing, d.username, a.created_by, b.remarks, concat(d.fname, ' ', d.mname,'. ', d.lname)
+from cases as a
+left join dockets as c on a.docket_id = c.docket_id
+left join ects_core.users as d on a.process_by = d.user_id
+left join (select ee.* from docket_tasks as ee inner join (select docket_id, max(docket_task_id) as MaxDate from docket_tasks where activity_name = 'First conciliation-mediation conference' group by docket_id ) xm on ee.docket_id = xm.docket_id and ee.docket_task_id = xm.MaxDate) as e on a.docket_id = e.docket_id
+left join param_availability_schedule as f on e.availability_schedule_id = f.availability_schedule_id
+left join (select bb.* from docket_disposition as bb inner join (select docket_id, min(disposition_id) as MaxDate,remarks from docket_disposition group by docket_id ) xm on bb.docket_id = xm.docket_id and bb.disposition_id = xm.MaxDate) as b on b.docket_id = a.docket_id
+left join 
+where a.process_by is not null
+and a.case_type_code = 'RFA'
+and ((b.date_disposed BETWEEN '2020-07-15' AND '2023-12-31' and a.filed_date between '2018-01-01' AND '2023-12-31') or (b.date_disposed is null and a.filed_date between '2020-07-15' AND '2023-12-31'))
+order by a.filed_date, a.process_by, b.date_disposed desc;
+
+-- conmed performance monthly (All RABs)
+select c.org_code, c.docket_number, a.case_title, a.filed_date, f.available_date, b.date_disposed, '' as nothing, d.username, a.created_by, b.remarks, concat(d.fname, ' ', d.mname,'. ', d.lname)
+from cases as a
+left join dockets as c on a.docket_id = c.docket_id
+left join ects_core.users as d on a.process_by = d.user_id
+left join (select ee.* from docket_tasks as ee inner join (select docket_id, max(docket_task_id) as MaxDate from docket_tasks where activity_name = 'First conciliation-mediation conference' group by docket_id ) xm on ee.docket_id = xm.docket_id and ee.docket_task_id = xm.MaxDate) as e on a.docket_id = e.docket_id
+left join param_availability_schedule as f on e.availability_schedule_id = f.availability_schedule_id
+left join (select bb.* from docket_disposition as bb inner join (select docket_id, min(disposition_id) as MaxDate,remarks from docket_disposition group by docket_id ) xm on bb.docket_id = xm.docket_id and bb.disposition_id = xm.MaxDate) as b on b.docket_id = a.docket_id
+where a.process_by is not null
+and a.case_type_code = 'RFA'
+and (b.created_date between '2020-01-01 00:00:00' AND '2023-12-31 23:59:59' or b.created_date is null)
+and ((b.date_disposed BETWEEN '2023-10-01' AND '2023-12-31' and a.filed_date between '2018-01-01' AND '2023-10-31') or (b.date_disposed is null and a.filed_date between '2023-10-01' AND '2023-12-31'))
+order by a.filed_date, a.process_by, b.date_disposed desc;
+
+-- SEnA NCR Raffling Monitor
+-- Get count of raffled
+select concat(d.fname, ' ', d.mname, ' ' , d.lname) as LA, count(d.username)
+from cases as a
+left join dockets as c on a.docket_id = c.docket_id
+left join ects_core.users as d on a.process_by = d.user_id
+where a.process_by is not null
+and a.case_type_code = 'RFA'
+and c.org_code = 'NCR'
+and a.filed_date between '2023-12-01' AND '2023-12-31'
+group by d.username
+order by LA asc;
+
+-- get breakdown
+select a.docket_number, a.case_title, concat(d.fname, ' ', d.mname, ' ' , d.lname) as Conmed , a.raffled_date
+from cases as a
+left join dockets as c on a.docket_id = c.docket_id
+left join ects_core.users as d on a.process_by = d.user_id
+where a.process_by is not null
+and a.case_type_code = 'RFA'
+and c.org_code = 'NCR'
+and a.filed_date between '2023-12-01' AND '2023-12-31';
+
+-- SQIP
+-- SQIP gender
+select x.docket_number, 
+if(g.total is null, '0', g.total) as male_count,
+if(f.total is null, '0', f.total) as female_count
+from cases as x 
+left join (select aaa.case_id, COUNT(*) AS Total from case_parties as aaa left join parties as bbb on aaa.party_id = bbb.party_id where bbb.sex_flag = 'M' group by aaa.case_id) as g on g.case_id = x.case_id 
+left join (select aaa.case_id, COUNT(*) AS Total from case_parties as aaa left join parties as bbb on aaa.party_id = bbb.party_id where bbb.sex_flag = 'F' group by aaa.case_id) as f on f.case_id = x.case_id
+where x.created_by = 1003 and x.created_date between '2023-09-01 00:00:00' and '2023-12-31 23:59:59';
+
+-- SQIP erroneous
+select x.docket_number, x.case_title, x.raffled_date
+from cases as x 
+where x.created_by = 1003 and x.created_date between '2023-09-01 00:00:00' and '2023-12-31 23:59:59';

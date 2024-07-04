@@ -1,0 +1,3567 @@
+use ects;
+
+-- MAAM LENY CONMED 1st DAY OF THE MONTH
+select a.docket_number, a.case_title, a.filed_date, b.date_disposed, e.disposition_type, concat(d.fname, ' ', d.mname, ' ' , d.lname) as LA, c.org_code, b.created_date, h.actioni,  
+if(g.total is null, '0', g.total) as male_count,
+if(f.total is null, '0', f.total) as female_count
+from cases as a
+left join dockets as c on a.docket_id = c.docket_id
+left join ects_core.users as d on a.process_by = d.user_id
+left join (select aaa.case_id, COUNT(*) AS Total from case_parties as aaa left join parties as bbb on aaa.party_id = bbb.party_id where bbb.sex_flag = 'M' group by aaa.case_id) as g on g.case_id = a.case_id 
+left join (select aaa.case_id, COUNT(*) AS Total from case_parties as aaa left join parties as bbb on aaa.party_id = bbb.party_id where bbb.sex_flag = 'F' group by aaa.case_id) as f on f.case_id = a.case_id
+left join (select bb.* from docket_disposition as bb inner join (select docket_id, min(disposition_id) as MaxDate from docket_disposition group by docket_id ) xm on bb.docket_id = xm.docket_id and bb.disposition_id = xm.MaxDate) as b on b.docket_id = a.docket_id
+left join param_disposition_types as e on b.disposition_type_id = e.disposition_type_id
+left join (SELECT ccc.case_id, GROUP_CONCAT(DISTINCT ccc.poopi SEPARATOR '|') as actioni FROM (select aaa.case_id, if(bbb.others_flag = 'Y',concat(bbb.action_cause_short_name, ' - ', aaa.action_cause_others),bbb.action_cause_short_name) as poopi from case_action_causes as aaa left join param_action_causes as bbb on aaa.action_cause_id = bbb.action_cause_id) as ccc GROUP BY ccc.case_id) as h on h.case_id = a.case_id
+where a.process_by is not null
+and a.case_type_code = 'CASE' 
+and a.filed_date between '2019-05-01' AND '2019-12-31'
+and (h.actioni like '%%')
+order by 3 asc;
+
+use ects;
+
+-- Conmed performance
+-- conmed performance from 07-15-2020 (All RABs)
+select c.org_code, c.docket_number, a.case_title, a.filed_date, f.available_date, b.date_disposed, '' as nothing, d.username, a.created_by, b.remarks, concat(d.fname, ' ', d.mname,'. ', d.lname), g.disposition_type, h.actioni
+from cases as a
+left join dockets as c on a.docket_id = c.docket_id
+left join ects_core.users as d on a.process_by = d.user_id
+left join (select ee.* from docket_tasks as ee inner join (select docket_id, max(docket_task_id) as MaxDate from docket_tasks where activity_name = 'First conciliation-mediation conference' group by docket_id ) xm on ee.docket_id = xm.docket_id and ee.docket_task_id = xm.MaxDate) as e on a.docket_id = e.docket_id
+left join param_availability_schedule as f on e.availability_schedule_id = f.availability_schedule_id
+left join (select bb.* from docket_disposition as bb inner join (select docket_id, min(disposition_id) as MaxDate,remarks from docket_disposition group by docket_id ) xm on bb.docket_id = xm.docket_id and bb.disposition_id = xm.MaxDate) as b on b.docket_id = a.docket_id
+left join param_disposition_types as g on g.disposition_type_id = b.disposition_type_id
+left join (SELECT ccc.case_id, GROUP_CONCAT(DISTINCT ccc.poopi SEPARATOR '|') as actioni FROM (select aaa.case_id, if(bbb.others_flag = 'Y',concat(bbb.action_cause_short_name, ' - ', aaa.action_cause_others),bbb.action_cause_short_name) as poopi from case_action_causes as aaa left join param_action_causes as bbb on aaa.action_cause_id = bbb.action_cause_id) as ccc GROUP BY ccc.case_id) as h on h.case_id = a.case_id
+where a.process_by is not null
+and a.case_type_code = 'RFA'
+and ((b.date_disposed BETWEEN '2020-07-15' AND '2023-12-31' and a.filed_date between '2018-01-01' AND '2023-12-31') or (b.date_disposed is null and a.filed_date between '2020-07-15' AND '2023-12-31'))
+order by a.filed_date, a.process_by, b.date_disposed desc;
+
+use ects;
+
+-- Conmed performance
+-- conmed performance from 07-15-2020 (All RABs)
+select c.org_code, c.docket_number, a.case_title, a.filed_date, f.available_date, b.date_disposed, '' as nothing, d.username, a.created_by, b.remarks, concat(d.fname, ' ', d.mname,'. ', d.lname), g.disposition_type -- , h.actioni
+from cases as a
+left join dockets as c on a.docket_id = c.docket_id
+left join ects_core.users as d on a.process_by = d.user_id
+left join (select ee.* from docket_tasks as ee inner join (select docket_id, max(docket_task_id) as MaxDate from docket_tasks where activity_name = 'First conciliation-mediation conference' group by docket_id ) xm on ee.docket_id = xm.docket_id and ee.docket_task_id = xm.MaxDate) as e on a.docket_id = e.docket_id
+left join param_availability_schedule as f on e.availability_schedule_id = f.availability_schedule_id
+left join (select bb.* from docket_disposition as bb inner join (select docket_id, min(disposition_id) as MaxDate,remarks from docket_disposition group by docket_id ) xm on bb.docket_id = xm.docket_id and bb.disposition_id = xm.MaxDate) as b on b.docket_id = a.docket_id
+left join param_disposition_types as g on g.disposition_type_id = b.disposition_type_id
+left join (SELECT ccc.case_id, GROUP_CONCAT(DISTINCT ccc.poopi SEPARATOR '|') as actioni FROM (select aaa.case_id, if(bbb.others_flag = 'Y',concat(bbb.action_cause_short_name, ' - ', aaa.action_cause_others),bbb.action_cause_short_name) as poopi from case_action_causes as aaa left join param_action_causes as bbb on aaa.action_cause_id = bbb.action_cause_id) as ccc GROUP BY ccc.case_id) as h on h.case_id = a.case_id
+where a.process_by is not null
+and a.case_type_code = 'RFA'
+-- and ((b.date_disposed BETWEEN '2023-01-01' AND '2024-12-31' and a.filed_date between '2023-01-01' AND '2024-12-31') or (b.date_disposed is null and a.filed_date between '2023-01-01' AND '2024-12-31'))
+-- and ((b.date_disposed BETWEEN '2018-01-01' AND '2023-12-31' and a.filed_date between '2018-01-01' AND '2023-12-31') or (b.date_disposed is null and a.filed_date between '2018-01-01' AND '2023-12-31'))
+ and ((b.date_disposed BETWEEN '2020-07-15' AND '2024-12-31' and a.filed_date between '2018-01-01' AND '2024-12-31') or (b.date_disposed is null and a.filed_date between '2020-07-15' AND '2024-12-31'))
+-- and ((b.date_disposed BETWEEN '2020-07-15' AND '2024-12-31' and a.filed_date between '2018-01-01' AND '2024-12-31') or (b.date_disposed is null and a.filed_date between '2020-07-15' AND '2024-12-31'))
+-- and d.user_id in (667)
+order by a.filed_date, a.process_by, b.date_disposed desc;
+
+-- MAAM LENY CONMED 1st DAY OF THE MONTH
+select a.docket_number, a.case_title, a.filed_date, b.date_disposed, e.disposition_type, concat(d.fname, ' ', d.mname, ' ' , d.lname) as LA, c.org_code, b.created_date, Replace(Replace(h.actioni,',',''),'"','') as action, Replace(Replace(b.remarks,',',''),'"','') as remarks, Replace(Replace(b.reason,',',''),'"','') as reason
+from cases as a
+left join dockets as c on a.docket_id = c.docket_id
+left join ects_core.users as d on a.process_by = d.user_id
+left join (select bb.* from docket_disposition as bb inner join (select docket_id, min(disposition_id) as MaxDate from docket_disposition group by docket_id ) xm on bb.docket_id = xm.docket_id and bb.disposition_id = xm.MaxDate) as b on b.docket_id = a.docket_id
+left join param_disposition_types as e on b.disposition_type_id = e.disposition_type_id
+left join (SELECT ccc.case_id, GROUP_CONCAT(DISTINCT ccc.poopi SEPARATOR '|') as actioni FROM (select aaa.case_id, if(bbb.others_flag = 'Y',concat(bbb.action_cause_short_name, ' - ', aaa.action_cause_others),bbb.action_cause_short_name) as poopi from case_action_causes as aaa left join param_action_causes as bbb on aaa.action_cause_id = bbb.action_cause_id) as ccc GROUP BY ccc.case_id) as h on h.case_id = a.case_id
+where a.process_by is not null
+and a.case_type_code = 'RFA'  -- 'RFA'
+-- and c.org_code = 'NCR'
+-- and a.filed_date between '2019-05-01' AND '2024-12-31'
+ and a.filed_date between '2023-01-01' AND '2023-12-31'
+-- and a.filed_date between '2024-01-01' AND '2024-01-31'
+-- and (b.created_date between '2019-05-01' AND '2023-12-31' or b.date_disposed is null)
+-- and (b.created_date between '2023-01-01' AND '2024-12-31' or b.date_disposed is null)
+ and b.date_disposed is null
+-- and a.case_title like '%Safeguard DNA%'
+-- and d.user_id in (1224,227,214,632,139,1027,209,159,256,773,1018,648,1224,320,657,231,1221,279,659,1205,1193,110,662)
+-- and d.user_id in (110)
+ and not d.user_id = 769
+order by 3 asc;
+
+use ects;
+
+-- MAAM LENY CONMED 1st DAY OF THE MONTH
+select a.docket_number, a.case_title, a.filed_date, b.date_disposed, e.disposition_type, concat(d.fname, ' ', d.mname, ' ' , d.lname) as LA, c.org_code, b.created_date, h.actioni,  
+if(g.total is null, '0', g.total) as male_count,
+if(f.total is null, '0', f.total) as female_count
+from cases as a
+left join dockets as c on a.docket_id = c.docket_id
+left join ects_core.users as d on a.process_by = d.user_id
+left join (select aaa.case_id, COUNT(*) AS Total from case_parties as aaa left join parties as bbb on aaa.party_id = bbb.party_id where bbb.sex_flag = 'M' group by aaa.case_id) as g on g.case_id = a.case_id 
+left join (select aaa.case_id, COUNT(*) AS Total, bbb.age from case_parties as aaa left join parties as bbb on aaa.party_id = bbb.party_id where bbb.sex_flag = 'F' group by aaa.case_id) as f on f.case_id = a.case_id
+left join (select bb.* from docket_disposition as bb inner join (select docket_id, min(disposition_id) as MaxDate from docket_disposition group by docket_id ) xm on bb.docket_id = xm.docket_id and bb.disposition_id = xm.MaxDate) as b on b.docket_id = a.docket_id
+left join param_disposition_types as e on b.disposition_type_id = e.disposition_type_id
+left join (SELECT ccc.case_id, GROUP_CONCAT(DISTINCT ccc.poopi SEPARATOR '|') as actioni FROM (select aaa.case_id, if(bbb.others_flag = 'Y',concat(bbb.action_cause_short_name, ' - ', aaa.action_cause_others),bbb.action_cause_short_name) as poopi from case_action_causes as aaa left join param_action_causes as bbb on aaa.action_cause_id = bbb.action_cause_id) as ccc GROUP BY ccc.case_id) as h on h.case_id = a.case_id
+where a.process_by is not null
+and a.case_type_code = 'CASE'  -- 'RFA'
+-- and a.filed_date between '2019-05-01' AND '2024-12-31'
+-- and a.filed_date between '2022-12-01' AND '2023-12-31'
+-- and a.filed_date between '2024-01-01' AND '2024-12-31'
+-- and a.filed_date between '2020-07-15' AND '2023-12-31'
+and a.filed_date between '2019-05-01' AND '2024-12-31'
+-- COMMENT OUT BOTH FOR ALL
+ and b.date_disposed is not null -- (disposed)
+-- and b.date_disposed is null -- (Pending)
+-- MALE
+and f.total is not null 
+and f.age >= 45
+-- and g.total is not null
+-- and h.actioni like '%Maternity%'
+-- and (h.actioni like '%Harass%' or h.actioni like '%Harras%')
+-- and (h.actioni like '%Discrim%')
+-- and (h.actioni like '%Paternity%')
+-- and (h.actioni like '%Marri%' or h.actioni like '%Marry%')
+-- and (h.actioni like '%Against women%')
+-- and (h.actioni like '%Maltreatment%')
+-- and (h.actioni like '% Rape%')
+-- and (h.actioni like '%Lasciviousness%')
+-- and (h.actioni like '%trafficking%')
+-- and (h.actioni like '%distort%')
+order by 3 asc;
+
+
+use ects;
+
+-- EVERY FIRST DAY OF THE MONTH
+-- Arbiter Reports 2023
+-- get all arbiter cases (count)
+select concat(d.fname, ' ', d.mname, ' ' , d.lname) as LA, count(d.username)
+from cases as a
+left join dockets as c on a.docket_id = c.docket_id
+left join ects_core.users as d on a.process_by = d.user_id
+where a.process_by is not null
+and a.case_type_code = 'CASE'
+-- replace RAB, include their Satellite if there are any --
+-- and  (c.org_code = 'CAR' or c.org_code = 'CAR')
+-- and  (c.org_code = 'CAUXII' or c.org_code = 'CAUXII')
+-- and  (c.org_code = 'NCR' or c.org_code = 'NCR')
+-- and  (c.org_code = 'RABI' or c.org_code = 'RABI')
+-- and  (c.org_code = 'SRABI' or c.org_code = 'SRABI')
+-- and  (c.org_code = 'RABII' or c.org_code = 'RABII')
+-- and  (c.org_code = 'RABIII' or c.org_code = 'RABIII')
+-- and  (c.org_code = 'RABIII-SO' or c.org_code = 'RABIII-SO')
+-- and  (c.org_code = 'RABIV' or c.org_code = 'RABIV-BA' or c.org_code = 'SRABIV')
+-- and  (c.org_code = 'RABIV' or c.org_code = 'RABIV')
+-- and  (c.org_code = 'SRABIV' or c.org_code = 'SRABIV')
+-- and  (c.org_code = 'RABV' or c.org_code = 'RABV')
+-- and  (c.org_code = 'SRABV' or c.org_code = 'SRABV')
+-- and  (c.org_code = 'RABVI' or c.org_code = 'SRABVI' or c.org_code = 'SRABVIA')
+ and  (c.org_code = 'RABVI' or c.org_code = 'RABVI')
+-- and  (c.org_code = 'SRABVI' or c.org_code = 'SRABVI')
+-- and  (c.org_code = 'RABVII' or c.org_code = 'RABVII')
+-- and  (c.org_code = 'SRABVII' or c.org_code = 'SRABVII')
+-- and  (c.org_code = 'RABVIII' or c.org_code = 'RABVIII')
+-- and  (c.org_code = 'RABIX' or c.org_code = 'SRABIX')
+-- and  (c.org_code = 'RABIX' or c.org_code = 'RABIX')
+-- and  (c.org_code = 'SRABIX' or c.org_code = 'SRABIX')
+-- and  (c.org_code = 'RABX' or c.org_code = 'RABX-BUK' or c.org_code = 'SRABX')
+-- and  (c.org_code = 'RABX' or c.org_code = 'RABX')
+-- and  (c.org_code = 'RABX-BUK' or c.org_code = 'RABX-BUK')
+-- and  (c.org_code = 'SRABX' or c.org_code = 'SRABX')
+-- and  (c.org_code = 'RABXI' or c.org_code = 'RABXI-TC' or c.org_code = 'RABXI-DC')
+-- and  (c.org_code = 'RABXI' or c.org_code = 'RABXI')
+-- and  (c.org_code = 'RABXI-TC' or c.org_code = 'RABXI-TC')
+-- and  (c.org_code = 'RABXI-DC' or c.org_code = 'RABXI-DC')
+-- and  (c.org_code = 'RABXII' or c.org_code = 'RABXII-KD' or c.org_code = 'SRABXII' or c.org_code = 'SRABXIIC')
+-- and  (c.org_code = 'RABXII' or c.org_code = 'RABXII')
+-- and  (c.org_code = 'RABXII-KD' or c.org_code = 'RABXII-KD')
+-- and  (c.org_code = 'SRABXII' or c.org_code = 'SRABXII')
+-- and  (c.org_code = 'RABXIII' or c.org_code = 'RABXIII')
+ -- replace RAB, include their Satellite if there are any --
+and a.filed_date between '2019-05-01' AND '2024-12-31'
+ and not d.user_id = 769
+group by d.username
+order by 1, count(d.username) desc;
+
+-- get all arbiter pendings (count) -- EVERY FIRST DAY OF THE MONTH
+select concat(d.fname, ' ', d.mname, ' ' , d.lname) as LA, count(d.username)
+from cases as a
+left join dockets as c on a.docket_id = c.docket_id
+left join ects_core.users as d on a.process_by = d.user_id
+left join (select bb.* from docket_disposition as bb inner join (select docket_id, min(disposition_id) as MaxDate from docket_disposition group by docket_id ) xm on bb.docket_id = xm.docket_id and bb.disposition_id = xm.MaxDate) as b on b.docket_id = a.docket_id
+where a.process_by is not null
+and a.case_type_code = 'CASE'
+-- replace RAB, include their Satellite if there are any --
+-- and  (c.org_code = 'CAR' or c.org_code = 'CAR')
+-- and  (c.org_code = 'CAUXII' or c.org_code = 'CAUXII')
+-- and  (c.org_code = 'NCR' or c.org_code = 'NCR')
+-- and  (c.org_code = 'RABI' or c.org_code = 'RABI')
+-- and  (c.org_code = 'SRABI' or c.org_code = 'SRABI')
+-- and  (c.org_code = 'RABII' or c.org_code = 'RABII')
+-- and  (c.org_code = 'RABIII' or c.org_code = 'RABIII')
+-- and  (c.org_code = 'RABIII-SO' or c.org_code = 'RABIII-SO')
+-- and  (c.org_code = 'RABIV' or c.org_code = 'RABIV-BA' or c.org_code = 'SRABIV')
+-- and  (c.org_code = 'RABIV' or c.org_code = 'RABIV')
+-- and  (c.org_code = 'SRABIV' or c.org_code = 'SRABIV')
+-- and  (c.org_code = 'RABV' or c.org_code = 'RABV')
+-- and  (c.org_code = 'SRABV' or c.org_code = 'SRABV')
+-- and  (c.org_code = 'RABVI' or c.org_code = 'SRABVI' or c.org_code = 'SRABVIA')
+ and  (c.org_code = 'RABVI' or c.org_code = 'RABVI')
+-- and  (c.org_code = 'SRABVI' or c.org_code = 'SRABVI')
+-- and  (c.org_code = 'RABVII' or c.org_code = 'RABVII')
+-- and  (c.org_code = 'SRABVII' or c.org_code = 'SRABVII')
+-- and  (c.org_code = 'RABVIII' or c.org_code = 'RABVIII')
+-- and  (c.org_code = 'RABIX' or c.org_code = 'SRABIX')
+-- and  (c.org_code = 'RABIX' or c.org_code = 'RABIX')
+-- and  (c.org_code = 'SRABIX' or c.org_code = 'SRABIX')
+-- and  (c.org_code = 'RABX' or c.org_code = 'RABX-BUK' or c.org_code = 'SRABX')
+-- and  (c.org_code = 'RABX' or c.org_code = 'RABX')
+-- and  (c.org_code = 'RABX-BUK' or c.org_code = 'RABX-BUK')
+-- and  (c.org_code = 'SRABX' or c.org_code = 'SRABX')
+-- and  (c.org_code = 'RABXI' or c.org_code = 'RABXI-TC' or c.org_code = 'RABXI-DC')
+-- and  (c.org_code = 'RABXI' or c.org_code = 'RABXI')
+-- and  (c.org_code = 'RABXI-TC' or c.org_code = 'RABXI-TC')
+-- and  (c.org_code = 'RABXI-DC' or c.org_code = 'RABXI-DC')
+-- and  (c.org_code = 'RABXII' or c.org_code = 'RABXII-KD' or c.org_code = 'SRABXII' or c.org_code = 'SRABXIIC')
+-- and  (c.org_code = 'RABXII' or c.org_code = 'RABXII')
+-- and  (c.org_code = 'RABXII-KD' or c.org_code = 'RABXII-KD')
+-- and  (c.org_code = 'SRABXII' or c.org_code = 'SRABXII')
+-- and  (c.org_code = 'RABXIII' or c.org_code = 'RABXIII')
+ -- replace RAB, include their Satellite if there are any --
+ and a.filed_date between '2019-05-01' AND '2024-12-31'
+ and b.date_disposed is null
+ and not d.user_id = 769
+group by d.username
+order by 1, count(d.username) desc;
+
+-- get all arbiter cases (list)
+select a.docket_number, a.case_title, a.filed_date, concat(d.fname, ' ', d.mname, ' ' , d.lname) as LA
+from cases as a
+left join dockets as c on a.docket_id = c.docket_id
+left join ects_core.users as d on a.process_by = d.user_id
+where a.process_by is not null
+and a.case_type_code = 'CASE'
+and c.org_code = 'CAR'
+-- and a.filed_date between '2019-05-01' AND '2024-12-31'
+ and a.filed_date between '2024-02-01' AND '2024-12-31'
+-- and not d.user_id = 769
+and d.user_id = 704
+order by 3 asc;
+
+-- ECTS STATUS
+-- get all arbiter pendings (list)
+select a.docket_number, a.case_title, a.filed_date, concat(d.fname, ' ', d.mname, ' ' , d.lname) as LA,d.user_id
+from cases as a
+left join dockets as c on a.docket_id = c.docket_id
+left join ects_core.users as d on a.process_by = d.user_id
+left join (select bb.* from docket_disposition as bb inner join (select docket_id, min(disposition_id) as MaxDate from docket_disposition group by docket_id ) xm on bb.docket_id = xm.docket_id and bb.disposition_id = xm.MaxDate) as b on b.docket_id = a.docket_id
+where a.process_by is not null
+and a.case_type_code = 'CASE'
+ and c.org_code = 'SRABX'
+and a.filed_date between '2019-05-01' AND '2024-12-31'
+and b.date_disposed is null
+and not d.user_id = 769
+order by 3 asc; -- limit 7326;
+
+-- Conmed performance
+-- conmed performance from 07-15-2020 (All RABs)
+select c.org_code, c.docket_number, a.case_title, a.filed_date, f.available_date, b.date_disposed, '' as nothing, d.username, a.created_by, b.remarks, concat(d.fname, ' ', d.mname,'. ', d.lname)
+from cases as a
+left join dockets as c on a.docket_id = c.docket_id
+left join ects_core.users as d on a.process_by = d.user_id
+left join (select ee.* from docket_tasks as ee inner join (select docket_id, max(docket_task_id) as MaxDate from docket_tasks where activity_name = 'First conciliation-mediation conference' group by docket_id ) xm on ee.docket_id = xm.docket_id and ee.docket_task_id = xm.MaxDate) as e on a.docket_id = e.docket_id
+left join param_availability_schedule as f on e.availability_schedule_id = f.availability_schedule_id
+left join (select bb.* from docket_disposition as bb inner join (select docket_id, min(disposition_id) as MaxDate,remarks from docket_disposition group by docket_id ) xm on bb.docket_id = xm.docket_id and bb.disposition_id = xm.MaxDate) as b on b.docket_id = a.docket_id
+left join 
+where a.process_by is not null
+and a.case_type_code = 'RFA'
+and ((b.date_disposed BETWEEN '2020-07-15' AND '2023-12-31' and a.filed_date between '2018-01-01' AND '2023-12-31') or (b.date_disposed is null and a.filed_date between '2020-07-15' AND '2023-12-31'))
+order by a.filed_date, a.process_by, b.date_disposed desc;
+
+-- conmed performance monthly (All RABs)
+select c.org_code, c.docket_number, a.case_title, a.filed_date, f.available_date, b.date_disposed, '' as nothing, d.username, a.created_by, b.remarks, concat(d.fname, ' ', d.mname,'. ', d.lname)
+from cases as a
+left join dockets as c on a.docket_id = c.docket_id
+left join ects_core.users as d on a.process_by = d.user_id
+left join (select ee.* from docket_tasks as ee inner join (select docket_id, max(docket_task_id) as MaxDate from docket_tasks where activity_name = 'First conciliation-mediation conference' group by docket_id ) xm on ee.docket_id = xm.docket_id and ee.docket_task_id = xm.MaxDate) as e on a.docket_id = e.docket_id
+left join param_availability_schedule as f on e.availability_schedule_id = f.availability_schedule_id
+left join (select bb.* from docket_disposition as bb inner join (select docket_id, min(disposition_id) as MaxDate,remarks from docket_disposition group by docket_id ) xm on bb.docket_id = xm.docket_id and bb.disposition_id = xm.MaxDate) as b on b.docket_id = a.docket_id
+where a.process_by is not null
+and a.case_type_code = 'RFA'
+and (b.created_date between '2020-01-01 00:00:00' AND '2023-12-31 23:59:59' or b.created_date is null)
+and ((b.date_disposed BETWEEN '2023-10-01' AND '2023-12-31' and a.filed_date between '2018-01-01' AND '2023-10-31') or (b.date_disposed is null and a.filed_date between '2023-10-01' AND '2023-12-31'))
+order by a.filed_date, a.process_by, b.date_disposed desc;
+
+-- SEnA NCR Raffling Monitor
+-- Get count of raffled
+select concat(d.fname, ' ', d.mname, ' ' , d.lname) as LA, count(d.username)
+from cases as a
+left join dockets as c on a.docket_id = c.docket_id
+left join ects_core.users as d on a.process_by = d.user_id
+where a.process_by is not null
+and a.case_type_code = 'RFA'
+and c.org_code = 'NCR'
+and a.filed_date between '2023-12-01' AND '2023-12-31'
+group by d.username
+order by LA asc;
+
+-- get breakdown
+select a.docket_number, a.case_title, concat(d.fname, ' ', d.mname, ' ' , d.lname) as Conmed , a.raffled_date
+from cases as a
+left join dockets as c on a.docket_id = c.docket_id
+left join ects_core.users as d on a.process_by = d.user_id
+where a.process_by is not null
+and a.case_type_code = 'RFA'
+and c.org_code = 'NCR'
+and a.filed_date between '2023-12-01' AND '2023-12-31';
+
+-- SQIP
+-- SQIP gender
+select x.docket_number, 
+if(g.total is null, '0', g.total) as male_count,
+if(f.total is null, '0', f.total) as female_count
+from cases as x 
+left join (select aaa.case_id, COUNT(*) AS Total from case_parties as aaa left join parties as bbb on aaa.party_id = bbb.party_id where bbb.sex_flag = 'M' group by aaa.case_id) as g on g.case_id = x.case_id 
+left join (select aaa.case_id, COUNT(*) AS Total from case_parties as aaa left join parties as bbb on aaa.party_id = bbb.party_id where bbb.sex_flag = 'F' group by aaa.case_id) as f on f.case_id = x.case_id
+where x.created_by = 1003 and x.created_date between '2023-09-01 00:00:00' and '2023-12-31 23:59:59';
+
+-- SQIP erroneous
+select x.docket_number, x.case_title, x.raffled_date
+from cases as x 
+where x.created_by = 1003 and x.created_date between '2023-09-01 00:00:00' and '2023-12-31 23:59:59';
+
+
+use ects;
+
+-- MAAM LENY CONMED 1st DAY OF THE MONTH
+select a.docket_number, a.case_title, a.filed_date, b.date_disposed, e.disposition_type, concat(d.fname, ' ', d.mname, ' ' , d.lname) as LA, c.org_code, b.created_date, h.actioni,  
+if(g.total is null, '0', g.total) as male_count,
+if(f.total is null, '0', f.total) as female_count
+from cases as a
+left join dockets as c on a.docket_id = c.docket_id
+left join ects_core.users as d on a.process_by = d.user_id
+left join (select aaa.case_id, COUNT(*) AS Total from case_parties as aaa left join parties as bbb on aaa.party_id = bbb.party_id where bbb.sex_flag = 'M' group by aaa.case_id) as g on g.case_id = a.case_id 
+left join (select aaa.case_id, COUNT(*) AS Total from case_parties as aaa left join parties as bbb on aaa.party_id = bbb.party_id where bbb.sex_flag = 'F' group by aaa.case_id) as f on f.case_id = a.case_id
+left join (select bb.* from docket_disposition as bb inner join (select docket_id, min(disposition_id) as MaxDate from docket_disposition group by docket_id ) xm on bb.docket_id = xm.docket_id and bb.disposition_id = xm.MaxDate) as b on b.docket_id = a.docket_id
+left join param_disposition_types as e on b.disposition_type_id = e.disposition_type_id
+left join (SELECT ccc.case_id, GROUP_CONCAT(DISTINCT ccc.poopi SEPARATOR '|') as actioni FROM (select aaa.case_id, if(bbb.others_flag = 'Y',concat(bbb.action_cause_short_name, ' - ', aaa.action_cause_others),bbb.action_cause_short_name) as poopi from case_action_causes as aaa left join param_action_causes as bbb on aaa.action_cause_id = bbb.action_cause_id) as ccc GROUP BY ccc.case_id) as h on h.case_id = a.case_id
+where a.process_by is not null
+and a.case_type_code = 'CASE'  -- 'RFA'
+-- and a.filed_date between '2019-05-01' AND '2024-12-31'
+-- and a.filed_date between '2022-12-01' AND '2023-12-31'
+-- and a.filed_date between '2024-01-01' AND '2024-12-31'
+and a.filed_date between '2020-07-15' AND '2023-12-31'
+-- COMMENT OUT BOTH FOR ALL
+-- and b.date_disposed is not null -- (disposed)
+ and b.date_disposed is null -- (Pending)
+-- FEMALE
+ and f.total is not null
+-- and h.actioni like '%Maternity%'
+ and (h.actioni like '%Harass%' or h.actioni like '%Harras%')
+-- and (h.actioni like '%Discrim%')
+-- and (h.actioni like '%Paternity%')
+-- and (h.actioni like '%Marri%' or h.actioni like '%Marry%')
+-- and (h.actioni like '%Against women%')
+-- and (h.actioni like '%Maltreatment%')
+-- and (h.actioni like '% Rape%')
+-- and (h.actioni like '%Lasciviousness%')
+-- and (h.actioni like '%trafficking%')
+order by 3 asc;
+
+use ects;
+
+-- MAAM LENY CONMED 1st DAY OF THE MONTH
+select a.docket_number, a.case_title, a.filed_date, b.date_disposed, e.disposition_type, concat(d.fname, ' ', d.mname, ' ' , d.lname) as LA, c.org_code, b.created_date, h.actioni,  
+if(g.total is null, '0', g.total) as male_count,
+if(f.total is null, '0', f.total) as female_count
+from cases as a
+left join dockets as c on a.docket_id = c.docket_id
+left join ects_core.users as d on a.process_by = d.user_id
+left join (select aaa.case_id, COUNT(*) AS Total from case_parties as aaa left join parties as bbb on aaa.party_id = bbb.party_id where bbb.sex_flag = 'M' group by aaa.case_id) as g on g.case_id = a.case_id 
+left join (select aaa.case_id, COUNT(*) AS Total from case_parties as aaa left join parties as bbb on aaa.party_id = bbb.party_id where bbb.sex_flag = 'F' group by aaa.case_id) as f on f.case_id = a.case_id
+left join (select bb.* from docket_disposition as bb inner join (select docket_id, min(disposition_id) as MaxDate from docket_disposition group by docket_id ) xm on bb.docket_id = xm.docket_id and bb.disposition_id = xm.MaxDate) as b on b.docket_id = a.docket_id
+left join param_disposition_types as e on b.disposition_type_id = e.disposition_type_id
+left join (SELECT ccc.case_id, GROUP_CONCAT(DISTINCT ccc.poopi SEPARATOR '|') as actioni FROM (select aaa.case_id, if(bbb.others_flag = 'Y',concat(bbb.action_cause_short_name, ' - ', aaa.action_cause_others),bbb.action_cause_short_name) as poopi from case_action_causes as aaa left join param_action_causes as bbb on aaa.action_cause_id = bbb.action_cause_id) as ccc GROUP BY ccc.case_id) as h on h.case_id = a.case_id
+where a.process_by is not null
+and a.case_type_code = 'CASE'  -- 'RFA'
+-- and a.filed_date between '2019-05-01' AND '2024-12-31'
+-- and a.filed_date between '2022-12-01' AND '2023-12-31'
+-- and a.filed_date between '2024-01-01' AND '2024-12-31'
+-- and a.filed_date between '2020-07-15' AND '2023-12-31'
+and a.filed_date between '2019-05-01' AND '2019-12-31'
+-- COMMENT OUT BOTH FOR ALL
+-- and b.date_disposed is not null -- (disposed)
+-- and b.date_disposed is null -- (Pending)
+-- MALE
+-- and g.total is not null
+-- and h.actioni like '%Maternity%'
+-- and (h.actioni like '%Harass%' or h.actioni like '%Harras%')
+-- and (h.actioni like '%Discrim%')
+-- and (h.actioni like '%Paternity%')
+-- and (h.actioni like '%Marri%' or h.actioni like '%Marry%')
+-- and (h.actioni like '%Against women%')
+-- and (h.actioni like '%Maltreatment%')
+-- and (h.actioni like '% Rape%')
+-- and (h.actioni like '%Lasciviousness%')
+-- and (h.actioni like '%trafficking%')
+and (h.actioni like '%distort%')
+order by 3 asc;
+
+
+use ects;
+
+-- Conmed performance
+-- conmed performance from 07-15-2020 (All RABs)
+select c.org_code, c.docket_number, a.case_title, a.filed_date, f.available_date, b.date_disposed, '' as nothing, d.username, a.created_by, b.remarks, concat(d.fname, ' ', d.mname,'. ', d.lname), g.disposition_type -- , h.actioni
+from cases as a
+left join dockets as c on a.docket_id = c.docket_id
+left join ects_core.users as d on a.process_by = d.user_id
+left join (select ee.* from docket_tasks as ee inner join (select docket_id, max(docket_task_id) as MaxDate from docket_tasks where activity_name = 'First conciliation-mediation conference' group by docket_id ) xm on ee.docket_id = xm.docket_id and ee.docket_task_id = xm.MaxDate) as e on a.docket_id = e.docket_id
+left join param_availability_schedule as f on e.availability_schedule_id = f.availability_schedule_id
+left join (select bb.* from docket_disposition as bb inner join (select docket_id, min(disposition_id) as MaxDate,remarks from docket_disposition group by docket_id ) xm on bb.docket_id = xm.docket_id and bb.disposition_id = xm.MaxDate) as b on b.docket_id = a.docket_id
+left join param_disposition_types as g on g.disposition_type_id = b.disposition_type_id
+left join (SELECT ccc.case_id, GROUP_CONCAT(DISTINCT ccc.poopi SEPARATOR '|') as actioni FROM (select aaa.case_id, if(bbb.others_flag = 'Y',concat(bbb.action_cause_short_name, ' - ', aaa.action_cause_others),bbb.action_cause_short_name) as poopi from case_action_causes as aaa left join param_action_causes as bbb on aaa.action_cause_id = bbb.action_cause_id) as ccc GROUP BY ccc.case_id) as h on h.case_id = a.case_id
+where a.process_by is not null
+and a.case_type_code = 'RFA'
+-- and ((b.date_disposed BETWEEN '2023-01-01' AND '2024-12-31' and a.filed_date between '2023-01-01' AND '2024-12-31') or (b.date_disposed is null and a.filed_date between '2023-01-01' AND '2024-12-31'))
+-- and ((b.date_disposed BETWEEN '2018-01-01' AND '2023-12-31' and a.filed_date between '2018-01-01' AND '2023-12-31') or (b.date_disposed is null and a.filed_date between '2018-01-01' AND '2023-12-31'))
+ and ((b.date_disposed BETWEEN '2020-07-15' AND '2024-12-31' and a.filed_date between '2018-01-01' AND '2024-12-31') or (b.date_disposed is null and a.filed_date between '2020-07-15' AND '2024-12-31'))
+-- and ((b.date_disposed BETWEEN '2020-07-15' AND '2024-12-31' and a.filed_date between '2018-01-01' AND '2024-12-31') or (b.date_disposed is null and a.filed_date between '2020-07-15' AND '2024-12-31'))
+-- and d.user_id in (667)
+order by a.filed_date, a.process_by, b.date_disposed desc;
+
+-- MAAM LENY CONMED 1st DAY OF THE MONTH
+select a.docket_number, a.case_title, a.filed_date, b.date_disposed, e.disposition_type, concat(d.fname, ' ', d.mname, ' ' , d.lname) as LA, c.org_code, b.created_date, Replace(Replace(h.actioni,',',''),'"','') as action, Replace(Replace(b.remarks,',',''),'"','') as remarks, Replace(Replace(b.reason,',',''),'"','') as reason
+from cases as a
+left join dockets as c on a.docket_id = c.docket_id
+left join ects_core.users as d on a.process_by = d.user_id
+left join (select bb.* from docket_disposition as bb inner join (select docket_id, min(disposition_id) as MaxDate from docket_disposition group by docket_id ) xm on bb.docket_id = xm.docket_id and bb.disposition_id = xm.MaxDate) as b on b.docket_id = a.docket_id
+left join param_disposition_types as e on b.disposition_type_id = e.disposition_type_id
+left join (SELECT ccc.case_id, GROUP_CONCAT(DISTINCT ccc.poopi SEPARATOR '|') as actioni FROM (select aaa.case_id, if(bbb.others_flag = 'Y',concat(bbb.action_cause_short_name, ' - ', aaa.action_cause_others),bbb.action_cause_short_name) as poopi from case_action_causes as aaa left join param_action_causes as bbb on aaa.action_cause_id = bbb.action_cause_id) as ccc GROUP BY ccc.case_id) as h on h.case_id = a.case_id
+where a.process_by is not null
+and a.case_type_code = 'RFA'  -- 'RFA'
+-- and c.org_code = 'NCR'
+-- and a.filed_date between '2019-05-01' AND '2024-12-31'
+ and a.filed_date between '2023-01-01' AND '2023-12-31'
+-- and a.filed_date between '2024-01-01' AND '2024-01-31'
+-- and (b.created_date between '2019-05-01' AND '2023-12-31' or b.date_disposed is null)
+-- and (b.created_date between '2023-01-01' AND '2024-12-31' or b.date_disposed is null)
+ and b.date_disposed is null
+-- and a.case_title like '%Safeguard DNA%'
+-- and d.user_id in (1224,227,214,632,139,1027,209,159,256,773,1018,648,1224,320,657,231,1221,279,659,1205,1193,110,662)
+-- and d.user_id in (110)
+ and not d.user_id = 769
+order by 3 asc;
+
+use nlrccms;
+
+select * from contacts;
+select * from contentfiles;
+select * from transparency;
+select * from issuances;
+
+select * from vacancies;
+select * from footerotherlinks;
+select * from qualifications;
+
+
+-- SLIDER IMAGES & OTHER IMAGES CONTENT
+select * from contentimage;
+
+-- NAVIGATION LINKS
+select * from navigationlinks;
+
+-- FOR CONTACT KEY OFFICIALS
+select * from divisions;
+select * from contactkeyofficials;
+
+-- NEWS AND EVENTS
+select * from events;
+
+-- LEVY SALES IN CASE THERE IS ERROR
+select * from auctionsales;
+
+-- INVITATION TO BID
+select * from bidsinvitation;
+
+use ects_core;
+
+select * from users where username like '%RF.PABLO%';
+
+
+
+
+
+
+
+
+
+
+use ects;
+
+-- random 50 case for NCR, 75 for other rabs
+select concat(p.first_name, ' ', p.middle_name, ' ' , p.last_name, ' ', p.extension_name), c.case_type_code, pp.contact_info, ppp.contact_info, date_format(c.filed_date, "%m/%d/%Y") as date_filed
+from cases as c 
+left join dockets as d on c.docket_id = d.docket_id
+left join case_parties as b on c.case_id = b.case_id
+left join parties as  p on b.party_id = p.party_id
+left join party_contacts as pp on p.party_id = pp.party_id
+left join party_contacts as ppp on p.party_id = ppp.party_id
+where c.case_type_code = 'CASE'
+and d.org_code = 'RABXIII'
+and c.process_by is not null
+and b.case_party_type like 'P%'
+-- and pp.contact_type_id = 3
+ and pp.contact_info like '09%'
+-- and ppp.contact_type_id = 2
+-- and ppp.contact_info REGEXP '^[0-9]+$'
+-- and not ppp.contact_info like '09%'
+-- and not ppp.contact_info like '639%'
+and c.filed_date between '2024-01-01' AND '2024-12-31'
+order by RAND() LIMIT 75;
+
+-- random 75 RFAs other rabs
+select concat(p.first_name, ' ', p.middle_name, ' ' , p.last_name, ' ', p.extension_name), c.case_type_code, pp.contact_info, ppp.contact_info, date_format(c.filed_date, "%m/%d/%Y") as date_filed
+from cases as c 
+left join dockets as d on c.docket_id = d.docket_id
+left join case_parties as b on c.case_id = b.case_id
+left join parties as  p on b.party_id = p.party_id
+left join party_contacts as pp on p.party_id = pp.party_id
+left join party_contacts as ppp on p.party_id = ppp.party_id
+where c.case_type_code = 'RFA'
+and d.org_code = 'RABXIII'
+and c.process_by is not null
+and b.case_party_type like 'P%'
+ and pp.contact_type_id = 3
+-- and pp.contact_info like '09%'
+ and ppp.contact_type_id = 2
+-- and ppp.contact_info REGEXP '^[0-9]+$'
+-- and not ppp.contact_info like '09%'
+-- and not ppp.contact_info like '639%'
+order by RAND() LIMIT 75;
+
+-- random 50 RFAs NCR online
+select concat(p.first_name, ' ', p.middle_name, ' ' , p.last_name, ' ', p.extension_name), c.case_type_code, pp.contact_info, ppp.contact_info, date_format(c.filed_date, "%m/%d/%Y") as date_filed
+from cases as c 
+left join dockets as d on c.docket_id = d.docket_id
+left join case_parties as b on c.case_id = b.case_id
+left join parties as  p on b.party_id = p.party_id
+left join party_contacts as pp on p.party_id = pp.party_id
+left join party_contacts as ppp on p.party_id = ppp.party_id
+where c.case_type_code = 'RFA'
+and d.org_code = 'NCR'
+and c.process_by is not null
+and b.case_party_type like 'P%'
+ and pp.contact_type_id = 3
+and pp.contact_info like '09%'
+ and ppp.contact_type_id = 2
+ and ppp.contact_info REGEXP '^[0-9]+$'
+ and not ppp.contact_info like '09%'
+ and not ppp.contact_info like '639%'
+ and c.created_by = 1003
+order by RAND() LIMIT 50;
+
+-- random 50 RFAs NCR walkin
+select concat(p.first_name, ' ', p.middle_name, ' ' , p.last_name, ' ', p.extension_name), c.case_type_code, pp.contact_info, ppp.contact_info, date_format(c.filed_date, "%m/%d/%Y") as date_filed
+from cases as c 
+left join dockets as d on c.docket_id = d.docket_id
+left join case_parties as b on c.case_id = b.case_id
+left join parties as  p on b.party_id = p.party_id
+left join party_contacts as pp on p.party_id = pp.party_id
+left join party_contacts as ppp on p.party_id = ppp.party_id
+where c.case_type_code = 'RFA'
+and d.org_code = 'NCR'
+and c.process_by is not null
+and b.case_party_type like 'P%'
+ and pp.contact_type_id = 3
+and pp.contact_info like '09%'
+ and ppp.contact_type_id = 2
+ and ppp.contact_info REGEXP '^[0-9]+$'
+ and not ppp.contact_info like '09%'
+ and not ppp.contact_info like '639%'
+ and not c.created_by = 1003
+order by RAND() LIMIT 50;
+
+
+use nlrccms;
+
+select * from contacts;
+select * from contentfiles;
+select * from transparency;
+select * from issuances;
+
+select * from vacancies;
+select * from footerotherlinks;
+select * from qualifications;
+
+
+-- SLIDER IMAGES & OTHER IMAGES CONTENT
+select * from contentimage;
+
+-- NAVIGATION LINKS
+select * from navigationlinks;
+
+-- FOR CONTACT KEY OFFICIALS
+select * from divisions;
+select * from contactkeyofficials;
+
+-- NEWS AND EVENTS
+select * from events;
+
+-- LEVY SALES IN CASE THERE IS ERROR
+select * from auctionsales;
+
+-- INVITATION TO BID
+select * from bidsinvitation;
+
+use ects_core;
+
+
+
+
+
+
+
+
+
+
+
+-- EVERY FIRST DAY OF THE MONTH
+-- Arbiter Reports 2023
+-- get all arbiter cases (count)
+select concat(d.fname, ' ', d.mname, ' ' , d.lname) as LA, count(d.username)
+from cases as a
+left join dockets as c on a.docket_id = c.docket_id
+left join ects_core.users as d on a.process_by = d.user_id
+where a.process_by is not null
+and a.case_type_code = 'CASE'
+-- replace RAB, include their Satellite if there are any --
+-- and  (c.org_code = 'CAR' or c.org_code = 'CAR')
+-- and  (c.org_code = 'CAUXII' or c.org_code = 'CAUXII')
+-- and  (c.org_code = 'NCR' or c.org_code = 'NCR')
+-- and  (c.org_code = 'RABI' or c.org_code = 'RABI')
+-- and  (c.org_code = 'SRABI' or c.org_code = 'SRABI')
+-- and  (c.org_code = 'RABII' or c.org_code = 'RABII')
+-- and  (c.org_code = 'RABIII' or c.org_code = 'RABIII')
+-- and  (c.org_code = 'RABIII-SO' or c.org_code = 'RABIII-SO')
+-- and  (c.org_code = 'RABIV' or c.org_code = 'RABIV-BA' or c.org_code = 'SRABIV')
+-- and  (c.org_code = 'RABIV' or c.org_code = 'RABIV')
+-- and  (c.org_code = 'SRABIV' or c.org_code = 'SRABIV')
+-- and  (c.org_code = 'RABV' or c.org_code = 'RABV')
+-- and  (c.org_code = 'SRABV' or c.org_code = 'SRABV')
+-- and  (c.org_code = 'RABVI' or c.org_code = 'SRABVI' or c.org_code = 'SRABVIA')
+-- and  (c.org_code = 'RABVI' or c.org_code = 'RABVI')
+-- and  (c.org_code = 'SRABVI' or c.org_code = 'SRABVI')
+-- and  (c.org_code = 'RABVII' or c.org_code = 'RABVII')
+-- and  (c.org_code = 'SRABVII' or c.org_code = 'SRABVII')
+-- and  (c.org_code = 'RABVIII' or c.org_code = 'RABVIII')
+-- and  (c.org_code = 'RABIX' or c.org_code = 'SRABIX')
+-- and  (c.org_code = 'RABIX' or c.org_code = 'RABIX')
+ and  (c.org_code = 'SRABIX' or c.org_code = 'SRABIX')
+-- and  (c.org_code = 'RABX' or c.org_code = 'RABX-BUK' or c.org_code = 'SRABX')
+-- and  (c.org_code = 'RABX' or c.org_code = 'RABX')
+-- and  (c.org_code = 'RABX-BUK' or c.org_code = 'RABX-BUK')
+-- and  (c.org_code = 'SRABX' or c.org_code = 'SRABX')
+-- and  (c.org_code = 'RABXI' or c.org_code = 'RABXI-TC' or c.org_code = 'RABXI-DC')
+-- and  (c.org_code = 'RABXI' or c.org_code = 'RABXI')
+-- and  (c.org_code = 'RABXI-TC' or c.org_code = 'RABXI-TC')
+-- and  (c.org_code = 'RABXI-DC' or c.org_code = 'RABXI-DC')
+-- and  (c.org_code = 'RABXII' or c.org_code = 'RABXII-KD' or c.org_code = 'SRABXII' or c.org_code = 'SRABXIIC')
+-- and  (c.org_code = 'RABXII' or c.org_code = 'RABXII')
+-- and  (c.org_code = 'RABXII-KD' or c.org_code = 'RABXII-KD')
+-- and  (c.org_code = 'SRABXII' or c.org_code = 'SRABXII')
+-- and  (c.org_code = 'RABXIII' or c.org_code = 'RABXIII')
+ -- replace RAB, include their Satellite if there are any --
+and a.filed_date between '2019-05-01' AND '2024-12-31'
+ and not d.user_id = 769
+group by d.username
+order by 1, count(d.username) desc;
+
+-- get all arbiter pendings (count) -- EVERY FIRST DAY OF THE MONTH
+select concat(d.fname, ' ', d.mname, ' ' , d.lname) as LA, count(d.username)
+from cases as a
+left join dockets as c on a.docket_id = c.docket_id
+left join ects_core.users as d on a.process_by = d.user_id
+left join (select bb.* from docket_disposition as bb inner join (select docket_id, min(disposition_id) as MaxDate from docket_disposition group by docket_id ) xm on bb.docket_id = xm.docket_id and bb.disposition_id = xm.MaxDate) as b on b.docket_id = a.docket_id
+where a.process_by is not null
+and a.case_type_code = 'CASE'
+-- replace RAB, include their Satellite if there are any --
+-- and  (c.org_code = 'CAR' or c.org_code = 'CAR')
+-- and  (c.org_code = 'CAUXII' or c.org_code = 'CAUXII')
+ and  (c.org_code = 'NCR' or c.org_code = 'NCR')
+-- and  (c.org_code = 'RABI' or c.org_code = 'RABI')
+-- and  (c.org_code = 'SRABI' or c.org_code = 'SRABI')
+-- and  (c.org_code = 'RABII' or c.org_code = 'RABII')
+-- and  (c.org_code = 'RABIII' or c.org_code = 'RABIII')
+-- and  (c.org_code = 'RABIII-SO' or c.org_code = 'RABIII-SO')
+-- and  (c.org_code = 'RABIV' or c.org_code = 'RABIV-BA' or c.org_code = 'SRABIV')
+-- and  (c.org_code = 'RABIV' or c.org_code = 'RABIV')
+-- and  (c.org_code = 'SRABIV' or c.org_code = 'SRABIV')
+-- and  (c.org_code = 'RABV' or c.org_code = 'RABV')
+-- and  (c.org_code = 'SRABV' or c.org_code = 'SRABV')
+-- and  (c.org_code = 'RABVI' or c.org_code = 'SRABVI' or c.org_code = 'SRABVIA')
+-- and  (c.org_code = 'RABVI' or c.org_code = 'RABVI')
+-- and  (c.org_code = 'SRABVI' or c.org_code = 'SRABVI')
+-- and  (c.org_code = 'RABVII' or c.org_code = 'RABVII')
+-- and  (c.org_code = 'SRABVII' or c.org_code = 'SRABVII')
+-- and  (c.org_code = 'RABVIII' or c.org_code = 'RABVIII')
+-- and  (c.org_code = 'RABIX' or c.org_code = 'SRABIX')
+-- and  (c.org_code = 'RABIX' or c.org_code = 'RABIX')
+-- and  (c.org_code = 'SRABIX' or c.org_code = 'SRABIX')
+-- and  (c.org_code = 'RABX' or c.org_code = 'RABX-BUK' or c.org_code = 'SRABX')
+-- and  (c.org_code = 'RABX' or c.org_code = 'RABX')
+-- and  (c.org_code = 'RABX-BUK' or c.org_code = 'RABX-BUK')
+-- and  (c.org_code = 'SRABX' or c.org_code = 'SRABX')
+-- and  (c.org_code = 'RABXI' or c.org_code = 'RABXI-TC' or c.org_code = 'RABXI-DC')
+-- and  (c.org_code = 'RABXI' or c.org_code = 'RABXI')
+-- and  (c.org_code = 'RABXI-TC' or c.org_code = 'RABXI-TC')
+-- and  (c.org_code = 'RABXI-DC' or c.org_code = 'RABXI-DC')
+-- and  (c.org_code = 'RABXII' or c.org_code = 'RABXII-KD' or c.org_code = 'SRABXII' or c.org_code = 'SRABXIIC')
+-- and  (c.org_code = 'RABXII' or c.org_code = 'RABXII')
+-- and  (c.org_code = 'RABXII-KD' or c.org_code = 'RABXII-KD')
+-- and  (c.org_code = 'SRABXII' or c.org_code = 'SRABXII')
+-- and  (c.org_code = 'RABXIII' or c.org_code = 'RABXIII')
+ -- replace RAB, include their Satellite if there are any --
+and a.filed_date between '2019-05-01' AND '2024-12-31'
+ and b.date_disposed is null
+ and not d.user_id = 769
+group by d.username
+order by 1, count(d.username) desc;
+
+-- get all arbiter cases (list)
+select a.docket_number, a.case_title, a.filed_date, concat(d.fname, ' ', d.mname, ' ' , d.lname) as LA
+from cases as a
+left join dockets as c on a.docket_id = c.docket_id
+left join ects_core.users as d on a.process_by = d.user_id
+where a.process_by is not null
+and a.case_type_code = 'CASE'
+and c.org_code = 'CAR'
+-- and a.filed_date between '2019-05-01' AND '2024-12-31'
+ and a.filed_date between '2024-02-01' AND '2024-12-31'
+-- and not d.user_id = 769
+and d.user_id = 704
+order by 3 asc;
+
+
+-- Maam Leny
+select a.docket_number AS `Docket title`, a.case_title AS `Case title`, a.filed_date as `Filed date`, b.date_disposed as `Date disposed`, e.disposition_type as `Disposition type`, concat(d.fname, ' ', d.mname, ' ' , d.lname) as Conmed, c.org_code as `Organizational code`, b.created_date as `Created date`, b.remarks as `Remarks`, b.reason as `Reason`, z.comments as `Comments`
+from cases as a
+left join dockets as c on a.docket_id = c.docket_id
+left join ects_core.users as d on a.process_by = d.user_id
+left join (select bb.* from docket_disposition as bb inner join (select docket_id, min(disposition_id) as MaxDate from docket_disposition group by docket_id ) xm on bb.docket_id = xm.docket_id and bb.disposition_id = xm.MaxDate) as b on b.docket_id = a.docket_id
+left join param_disposition_types as e on b.disposition_type_id = e.disposition_type_id
+left join (select zz.* from docket_comments as zz inner join (select docket_id, max(docket_comment_id) as MaxDate from docket_comments group by docket_id ) zm on zz.docket_id = zm.docket_id and zz.docket_comment_id = zm.MaxDate) as z on c.docket_id = z.docket_id
+where a.process_by is not null
+and a.case_type_code = 'RFA' -- 'CASE'
+-- and not c.docket_status_id = 4
+-- and b.date_disposed between '2024-02-01' AND '2024-02-29'
+-- and e.disposition_type like '%settled%'
+-- and c.org_code = 'NCR'
+-- and a.filed_date between '2019-05-01' AND '2024-12-31'
+ and a.filed_date between '2023-01-01' AND '2024-12-31'
+-- and (b.created_date between '2019-05-01' AND '2023-12-31' or b.date_disposed is null)
+-- and (b.created_date between '2023-01-01' AND '2024-12-31' or b.date_disposed is null)
+-- and b.date_disposed is null
+-- and a.case_title like '%Safeguard DNA%'
+-- and d.user_id in (1224,227,214,632,139,1027,209,159,256,773,1018,648,1224,320,657,231,1221,279,659,1205,1193,110,662)
+-- and d.user_id in (110)
+and not d.user_id = 769
+order by 3 asc;
+
+
+USE ects; 
+
+SELECT 
+    distinct d.docket_number AS `Docket No.`,
+	c.case_title AS `Case title`,
+    CONCAT(la.lname, ', ', la.fname, ' ', LEFT(la.mname, 1), '.') AS `Labor Arbiter`,
+    d.org_code AS `Organization code`,
+    date_format(c.filed_date, '%Y-%m-%d') as `Filed Date`
+FROM cases c 
+JOIN dockets d ON d.docket_id = c.docket_id
+JOIN case_parties cp ON cp.case_id = c.case_id
+JOIN parties p ON p.party_id = cp.party_id and cp.case_party_type LIKE 'C%'
+LEFT JOIN ects_core.users la ON la.user_id = c.process_by
+WHERE c.case_type_code = 'CASE' AND c.filed_date BETWEEN '2024-04-01' AND '2024-05-07' AND d.org_code != 'NCR' 
+AND (SELECT COUNT(*) FROM case_parties WHERE case_id = c.case_id AND case_party_type LIKE 'P%') > 1 
+AND d.docket_number is not null 
+order by d.org_code, p.company_name, `Labor Arbiter`ASC;
+
+
+
+    /*  
+        " . ($start_date !== ""  && $end_date !== "" ? ' and c.filed_date between ' : '') . "    
+    where concat(d.docket_number, c.case_title, c.filed_date, arb.fname,arb.mname,arb.lname) like '%$search%' 
+    $sql = "select a.docket_number, a.case_title, a.filed_date, b.date_disposed, e.disposition_type, concat(d.fname, ' ', d.mname, ' ' , d.lname) as LA, c.org_code, b.created_date, h.actioni,  
+
+    if(g.total is null, '0', g.total) as male_count,
+    if(f.total is null, '0', f.total) as female_count
+    from cases as a
+    left join dockets as c on a.docket_id = c.docket_id
+    left join ects_core.users as d on a.process_by = d.user_id
+    left join (select aaa.case_id, COUNT(*) AS Total from case_parties as aaa left join parties as bbb on aaa.party_id = bbb.party_id where bbb.sex_flag = 'M' group by aaa.case_id) as g on g.case_id = a.case_id 
+    left join (select aaa.case_id, COUNT(*) AS Total from case_parties as aaa left join parties as bbb on aaa.party_id = bbb.party_id where bbb.sex_flag = 'F' group by aaa.case_id) as f on f.case_id = a.case_id
+    left join (select bb.* from docket_disposition as bb inner join (select docket_id, min(disposition_id) as MaxDate from docket_disposition group by docket_id ) xm on bb.docket_id = xm.docket_id and bb.disposition_id = xm.MaxDate) as b on b.docket_id = a.docket_id
+    left join param_disposition_types as e on b.disposition_type_id = e.disposition_type_id
+    left join (SELECT ccc.case_id, GROUP_CONCAT(DISTINCT ccc.poopi SEPARATOR '|') as actioni FROM (select aaa.case_id, if(bbb.others_flag = 'Y',concat(bbb.action_cause_short_name, ' - ', aaa.action_cause_others),bbb.action_cause_short_name) as poopi from case_action_causes as aaa left join param_action_causes as bbb on aaa.action_cause_id = bbb.action_cause_id) as ccc GROUP BY ccc.case_id) as h on h.case_id = a.case_id
+    where a.process_by is not null
+    and a.case_type_code = 'CASE'  -- 'RFA'
+    -- and a.filed_date between '2019-05-01' AND '2024-12-31'
+    -- and a.filed_date between '2022-12-01' AND '2023-12-31'
+    -- and a.filed_date between '2024-01-01' AND '2024-12-31'
+    -- and a.filed_date between '2020-07-15' AND '2023-12-31'
+    and a.filed_date between '2019-05-01' AND '2019-12-31'
+    -- COMMENT OUT BOTH FOR ALL
+    -- and b.date_disposed is not null -- (disposed)
+    -- and b.date_disposed is null -- (Pending)
+    -- MALE
+    -- and g.total is not null
+    -- and h.actioni like '%Maternity%'
+    -- and (h.actioni like '%Harass%' or h.actioni like '%Harras%')
+    -- and (h.actioni like '%Discrim%')
+    -- and (h.actioni like '%Paternity%')
+    -- and (h.actioni like '%Marri%' or h.actioni like '%Marry%')
+    -- and (h.actioni like '%Against women%')
+    -- and (h.actioni like '%Maltreatment%')
+    -- and (h.actioni like '% Rape%')
+    -- and (h.actioni like '%Lasciviousness%')
+    -- and (h.actioni like '%trafficking%')
+    and (h.actioni like '%distort%')
+    order by 3 asc;"; */
+
+
+--  WHEN d.docket_number = 'NCR-07-00236-19' THEN 1
+--     WHEN d.docket_number = 'NCR-07-00365-19' THEN 2
+--     WHEN d.docket_number = 'NCR-07-00724-19' THEN 3
+--     WHEN d.docket_number = 'NCR-07-00696-19' THEN 4
+--     WHEN d.docket_number = 'NCR-07-00874-19' THEN 5
+--     WHEN d.docket_number = 'NCR-07-01009-19' THEN 6
+--     WHEN d.docket_number = 'NCR-08-01367-19' THEN 7
+--     WHEN d.docket_number = 'NCR-08-01240-19' THEN 8
+--     WHEN d.docket_number = 'NCR-08-01026-19' THEN 9
+--     WHEN d.docket_number = 'NCR-08-00950-19' THEN 10
+--     WHEN d.docket_number = 'NCR-08-00719-19' THEN 11
+--     WHEN d.docket_number = 'NCR-08-00555-19' THEN 12
+--     WHEN d.docket_number = 'NCR-08-00022-19' THEN 13
+--     WHEN d.docket_number = 'NCR-09-01115-19' THEN 14
+--     WHEN d.docket_number = 'NCR-09-01081-19' THEN 15
+--     WHEN d.docket_number = 'NCR-09-00848-19' THEN 16
+--     WHEN d.docket_number = 'NCR-09-00759-19' THEN 17
+--     WHEN d.docket_number = 'NCR-09-00515-19' THEN 18
+--     WHEN d.docket_number = 'NCR-09-00175-19' THEN 19
+--     WHEN d.docket_number = 'NCR-09-00046-19' THEN 20
+--     WHEN d.docket_number = 'NCR-09-00018-19' THEN 21
+--     WHEN d.docket_number = 'NCR-09-00975-19' THEN 22
+--     WHEN d.docket_number = 'NCR-10-01244-19' THEN 23
+--     WHEN d.docket_number = 'NCR-10-00933-19' THEN 24
+--     WHEN d.docket_number = 'NCR-10-00869-19' THEN 25
+--     WHEN d.docket_number = 'NCR-10-00753-19' THEN 26
+--     WHEN d.docket_number = 'NCR-10-00682-19' THEN 27
+--     WHEN d.docket_number = 'NCR-10-00629-19' THEN 28
+--     WHEN d.docket_number = 'NCR-10-00439-19' THEN 29
+--     WHEN d.docket_number = 'NCR-10-00128-19' THEN 30
+--     WHEN d.docket_number = 'NCR-11-01594-19' THEN 31
+--     WHEN d.docket_number = 'NCR-11-01532-19' THEN 32
+--     WHEN d.docket_number = 'NCR-11-01415-19' THEN 33
+--     WHEN d.docket_number = 'NCR-11-01317-19' THEN 34
+--     WHEN d.docket_number = 'NCR-11-01256-19' THEN 35
+--     WHEN d.docket_number = 'NCR-11-01137-19' THEN 36
+--     WHEN d.docket_number = 'NCR-11-00762-19' THEN 37
+--     WHEN d.docket_number = 'NCR-11-00650-19' THEN 38
+--     WHEN d.docket_number = 'NCR-11-00481-19' THEN 39
+--     WHEN d.docket_number = 'NCR-11-00455-19' THEN 40
+--     WHEN d.docket_number = 'NCR-11-00383-19' THEN 41
+--     WHEN d.docket_number = 'NCR-11-00250-19' THEN 42
+--     WHEN d.docket_number = 'NCR-11-00219-19' THEN 43
+--     WHEN d.docket_number = 'NCR-11-01350-19' THEN 44
+--     WHEN d.docket_number = 'NCR-12-01213-19' THEN 45
+--     WHEN d.docket_number = 'NCR-12-01075-19' THEN 46
+--     WHEN d.docket_number = 'NCR-12-00995-19' THEN 47
+--     WHEN d.docket_number = 'NCR-12-00851-19' THEN 48
+--     WHEN d.docket_number = 'NCR-12-00770-19' THEN 49
+--     WHEN d.docket_number = 'NCR-12-00719-19' THEN 50
+--     WHEN d.docket_number = 'NCR-12-00693-19' THEN 51
+--     WHEN d.docket_number = 'NCR-12-00378-19' THEN 52
+--     WHEN d.docket_number = 'NCR-12-00319-19' THEN 53
+--     WHEN d.docket_number = 'NCR-12-00222-19' THEN 54
+--     WHEN d.docket_number = 'NCR-12-00135-19' THEN 55
+--     WHEN d.docket_number = 'NCR-12-00025-19' THEN 56
+--     WHEN d.docket_number = 'NCR-12-00011-19' THEN 57
+--     WHEN d.docket_number = 'NCR-01-01925-20' THEN 58
+--     WHEN d.docket_number = 'NCR-01-01693-20' THEN 59
+--     WHEN d.docket_number = 'NCR-01-01249-20' THEN 60
+--     WHEN d.docket_number = 'NCR-01-00315-20' THEN 61
+--     WHEN d.docket_number = 'NCR-02-01554-20' THEN 62
+--     WHEN d.docket_number = 'NCR-03-00286-20' THEN 63
+--     WHEN d.docket_number = 'NCR-07-00286-20' THEN 64
+--     WHEN d.docket_number = 'NCR-07-00163-20' THEN 65
+--     WHEN d.docket_number = 'NCR-08-00126-20' THEN 66
+--     ELSE NULL
+-- END;
+
+
+--    WHEN d.docket_number = 'NCR-09-00241-19' THEN 1
+--     WHEN d.docket_number = 'NCR-07-00546-19' THEN 2
+--     WHEN d.docket_number = 'NCR-09-01405-19' THEN 3
+--     WHEN d.docket_number = 'NCR-09-01182-19' THEN 4
+--     WHEN d.docket_number = 'NCR-09-00920-19' THEN 5
+--     WHEN d.docket_number = 'NCR-09-00982-19' THEN 6
+--     WHEN d.docket_number = 'NCR-09-00213-19' THEN 7
+--     WHEN d.docket_number = 'NCR-07-00288-19' THEN 8
+--     WHEN d.docket_number = 'NCR-07-00411-19' THEN 9
+--     WHEN d.docket_number = 'NCR-07-00450-19' THEN 10
+--     WHEN d.docket_number = 'NCR-07-00969-19' THEN 11
+--     WHEN d.docket_number = 'NCR-07-01165-19' THEN 12
+--     WHEN d.docket_number = 'NCR-07-01356-19' THEN 13
+--     WHEN d.docket_number = 'NCR-08-01413-19' THEN 14
+--     WHEN d.docket_number = 'NCR-08-01380-19' THEN 15
+--     WHEN d.docket_number = 'NCR-08-01270-19' THEN 16
+--     WHEN d.docket_number = 'NCR-08-01067-19' THEN 17
+--     WHEN d.docket_number = 'NCR-08-01024-19' THEN 18
+--     WHEN d.docket_number = 'NCR-08-00969-19' THEN 19
+--     WHEN d.docket_number = 'NCR-08-00957-19' THEN 20
+--     WHEN d.docket_number = 'NCR-08-00745-19' THEN 21
+--     WHEN d.docket_number = 'NCR-08-00565-19' THEN 22
+--     WHEN d.docket_number = 'NCR-08-00529-19' THEN 23
+--     WHEN d.docket_number = 'NCR-08-00207-19' THEN 24
+--     WHEN d.docket_number = 'NCR-09-01799-19' THEN 25
+--     WHEN d.docket_number = 'NCR-09-01516-19' THEN 26
+--     WHEN d.docket_number = 'NCR-09-01397-19' THEN 27
+--     WHEN d.docket_number = 'NCR-09-01049-19' THEN 28
+--     WHEN d.docket_number = 'NCR-09-00861-19' THEN 29
+--     WHEN d.docket_number = 'NCR-09-00412-19' THEN 30
+--     WHEN d.docket_number = 'NCR-09-00143-19' THEN 31
+--     WHEN d.docket_number = 'NCR-10-01719-19' THEN 32
+--     WHEN d.docket_number = 'NCR-10-01598-19' THEN 33
+--     WHEN d.docket_number = 'NCR-10-01465-19' THEN 34
+--     WHEN d.docket_number = 'NCR-10-01298-19' THEN 35
+--     WHEN d.docket_number = 'NCR-10-01200-19' THEN 36
+--     WHEN d.docket_number = 'NCR-10-01123-19' THEN 37
+--     WHEN d.docket_number = 'NCR-10-01062-19' THEN 38
+--     WHEN d.docket_number = 'NCR-10-00948-19' THEN 39
+--     WHEN d.docket_number = 'NCR-10-00931-19' THEN 40
+--     WHEN d.docket_number = 'NCR-10-00857-19' THEN 41
+--     WHEN d.docket_number = 'NCR-10-00831-19' THEN 42
+--     WHEN d.docket_number = 'NCR-10-00688-19' THEN 43
+--     WHEN d.docket_number = 'NCR-10-00572-19' THEN 44
+--     WHEN d.docket_number = 'NCR-10-00516-19' THEN 45
+--     WHEN d.docket_number = 'NCR-10-00346-19' THEN 46
+--     WHEN d.docket_number = 'NCR-10-00239-19' THEN 47
+--     WHEN d.docket_number = 'NCR-10-00182-19' THEN 48
+--     WHEN d.docket_number = 'NCR-11-01518-19' THEN 49
+--     WHEN d.docket_number = 'NCR-11-01503-19' THEN 50
+--     WHEN d.docket_number = 'NCR-11-01247-19' THEN 51
+--     WHEN d.docket_number = 'NCR-11-01166-19' THEN 52
+--     WHEN d.docket_number = 'NCR-11-00978-19' THEN 53
+--     WHEN d.docket_number = 'NCR-11-00893-19' THEN 54
+--     WHEN d.docket_number = 'NCR-11-00637-19' THEN 55
+--     WHEN d.docket_number = 'NCR-11-00611-19' THEN 56
+--     WHEN d.docket_number = 'NCR-11-00494-19' THEN 57
+--     WHEN d.docket_number = 'NCR-11-00400-19' THEN 58
+--     WHEN d.docket_number = 'NCR-11-00393-19' THEN 59
+--     WHEN d.docket_number = 'NCR-11-00353-19' THEN 60
+--     WHEN d.docket_number = 'NCR-11-00308-19' THEN 61
+--     WHEN d.docket_number = 'NCR-11-00210-19' THEN 62
+--     WHEN d.docket_number = 'NCR-11-00105-19' THEN 63
+--     WHEN d.docket_number = 'NCR-01-00747-20' THEN 64
+--     WHEN d.docket_number = 'NCR-11-00115-20' THEN 65
+--     WHEN d.docket_number = 'NCR-09-01613-19' THEN 66
+--     WHEN d.docket_number = 'NCR-09-01283-19' THEN 67
+--     WHEN d.docket_number = 'NCR-10-01790-19' THEN 68
+--     WHEN d.docket_number = 'NCR-10-01672-19' THEN 69
+--     WHEN d.docket_number = 'NCR-10-01407-19' THEN 70
+--     WHEN d.docket_number = 'NCR-11-01089-19' THEN 71
+--     WHEN d.docket_number = 'NCR-11-00854-19' THEN 72
+--     WHEN d.docket_number = 'NCR-11-00779-19' THEN 73
+--     WHEN d.docket_number = 'NCR-01-01760-20' THEN 74
+--     WHEN d.docket_number = 'NCR-01-01669-20' THEN 75
+--     WHEN d.docket_number = 'NCR-01-01483-20' THEN 76
+--     WHEN d.docket_number = 'NCR-01-01431-20' THEN 77
+--     WHEN d.docket_number = 'NCR-01-01182-20' THEN 78
+--     WHEN d.docket_number = 'NCR-01-01084-20' THEN 79
+--     WHEN d.docket_number = 'NCR-01-00830-20' THEN 80
+--     WHEN d.docket_number = 'NCR-01-00488-20' THEN 81
+--     WHEN d.docket_number = 'NCR-01-00430-20' THEN 82
+--     WHEN d.docket_number = 'NCR-01-00357-20' THEN 83
+--     WHEN d.docket_number = 'NCR-01-00147-20' THEN 84
+--     WHEN d.docket_number = 'NCR-01-00127-20' THEN 85
+--     WHEN d.docket_number = 'NCR-01-00054-20' THEN 86
+--     WHEN d.docket_number = 'NCR-12-00964-19' THEN 87
+--     WHEN d.docket_number = 'NCR-12-00887-19' THEN 88
+--     WHEN d.docket_number = 'NCR-12-00458-19' THEN 89
+--     WHEN d.docket_number = 'NCR-12-00154-19' THEN 90
+--     WHEN d.docket_number = 'NCR-12-00131-19' THEN 91
+--     WHEN d.docket_number = 'NCR-11-01412-19' THEN 92
+--     WHEN d.docket_number = 'NCR-03-00679-20' THEN 93
+--     WHEN d.docket_number = 'NCR-03-00502-20' THEN 94
+--     WHEN d.docket_number = 'NCR-03-00372-20' THEN 95
+--     WHEN d.docket_number = 'NCR-03-00342-20' THEN 96
+--     WHEN d.docket_number = 'NCR-03-00234-20' THEN 97
+--     WHEN d.docket_number = 'NCR-03-00191-20' THEN 98
+--     WHEN d.docket_number = 'NCR-03-00172-20' THEN 99
+--     WHEN d.docket_number = 'NCR-03-00089-20' THEN 100
+--     WHEN d.docket_number = 'NCR-02-02045-20' THEN 101
+--     WHEN d.docket_number = 'NCR-02-01939-20' THEN 102
+--     WHEN d.docket_number = 'NCR-02-01850-20' THEN 103
+--     WHEN d.docket_number = 'NCR-02-01773-20' THEN 104
+--     WHEN d.docket_number = 'NCR-02-01600-20' THEN 105
+--     WHEN d.docket_number = 'NCR-02-01567-20' THEN 106
+--     WHEN d.docket_number = 'NCR-02-01558-20' THEN 107
+--     WHEN d.docket_number = 'NCR-02-01453-20' THEN 108
+--     WHEN d.docket_number = 'NCR-02-01394-20' THEN 109
+--     WHEN d.docket_number = 'NCR-02-01283-20' THEN 110
+--     WHEN d.docket_number = 'NCR-02-01152-20' THEN 111
+--     WHEN d.docket_number = 'NCR-02-01014-20' THEN 112
+--     WHEN d.docket_number = 'NCR-02-00919-20' THEN 113
+--     WHEN d.docket_number = 'NCR-02-00838-20' THEN 114
+--     WHEN d.docket_number = 'NCR-02-00752-20' THEN 115
+--     WHEN d.docket_number = 'NCR-02-00687-20' THEN 116
+--     WHEN d.docket_number = 'NCR-02-00646-20' THEN 117
+--     WHEN d.docket_number = 'NCR-02-00627-20' THEN 118
+--     WHEN d.docket_number = 'NCR-02-00548-20' THEN 119
+--     WHEN d.docket_number = 'NCR-02-00513-20' THEN 120
+--     WHEN d.docket_number = 'NCR-02-00444-20' THEN 121
+--     WHEN d.docket_number = 'NCR-02-00339-20' THEN 122
+--     WHEN d.docket_number = 'NCR-07-00224-20' THEN 123
+--     WHEN d.docket_number = 'NCR-07-00134-20' THEN 124
+--     WHEN d.docket_number = 'NCR-07-00069-20' THEN 125
+--     WHEN d.docket_number = 'NCR-08-00055-20' THEN 126
+--     WHEN d.docket_number = 'NCR-09-00055-20' THEN 127
+--     WHEN d.docket_number = 'NCR-09-00148-20' THEN 128
+--     WHEN d.docket_number = 'NCR-09-00223-20' THEN 129
+--     WHEN d.docket_number = 'NCR-12-00261-20' THEN 130
+--     WHEN d.docket_number = 'NCR-12-00337-20' THEN 131
+--     WHEN d.docket_number = 'NCR-12-00563-20' THEN 132
+--     WHEN d.docket_number = 'NCR-12-00639-20' THEN 133
+--     WHEN d.docket_number = 'NCR-12-00712-20' THEN 134
+--     WHEN d.docket_number = 'NCR-12-00750-20' THEN 135
+--     WHEN d.docket_number = 'NCR-12-00786-20' THEN 136
+--     WHEN d.docket_number = 'NCR-05-01115-21' THEN 137
+--     WHEN d.docket_number = 'NCR-12-00563-20' THEN 138
+--     ELSE NULL
+-- END;
+
+
+
+
+
+
+-- 'NCR-12-00710-21',
+-- 'NCR-12-00802-21',
+-- 'NCR-12-00944-21',
+-- 'NCR-01-00381-22',
+-- 'NCR-01-00017-22',
+-- 'NCR-07-00451-22',
+-- 'NCR-01-00130-22',
+-- 'NCR-07-00852-21',
+-- 'NCR-06-00487-22',
+-- 'NCR-07-00451-22'
+
+
+'NCR-10-01352-19','NCR-11-00680-19','NCR-10-01950-19','NCR-08-01502-19','NCR-10-01532-19','NCR-09-00657-19','NCR-03-00013-20','NCR-03-00051-20','NCR-08-01005-19','NCR-09-01302-19','NCR-01-01883-20','NCR-01-01515-20','NCR-09-01106-19','NCR-02-00173-20','NCR-02-00651-20','NCR-09-00297-20','NCR-02-00436-21','NCR-02-01953-20','NCR-11-00271-20','NCR-01-00027-20','NCR-09-00441-20','NCR-03-00576-20','NCR-05-00511-21','NCR-06-01067-21','NCR-10-00570-20','NCR-07-00061-20','NCR-09-00437-21','NCR-02-00156-20','NCR-10-00177-20','NCR-03-00231-21','NCR-03-00623-21','NCR-03-01071-21','NCR-04-00311-21','NCR-05-00033-21','NCR-05-00178-21','NCR-05-01177-21','NCR-06-00229-21','NCR-06-00467-21','NCR-07-00771-21','NCR-06-00406-21','NCR-08-00384-21','NCR-10-00301-21','NCR-11-00913-21','NCR-12-00397-21','NCR-07-00052-21','NCR-09-00262-21','NCR-01-00300-22','NCR-10-00959-21','NCR-11-00840-21','NCR-11-00209-21','NCR-03-01352-21','NCR-04-00207-21','NCR-04-00618-21','NCR-05-00267-21','NCR-05-00532-21','NCR-05-00735-21','NCR-05-01064-21','NCR-05-00780-21','NCR-06-00189-21','NCR-06-00339-21','NCR-06-00605-21','NCR-06-00664-21','NCR-06-00853-21','NCR-06-00914-21','NCR-05-01093-21','NCR-05-00677-21','NCR-06-01170-21','NCR-07-00053-21','NCR-07-00122-21','NCR-07-00377-21','NCR-07-00518-21','NCR-07-00530-21','NCR-07-00652-21','NCR-07-00718-21','NCR-07-00852-21','NCR-07-00803-21','NCR-07-00895-21','NCR-08-00055-21','NCR-08-00271-21','NCR-08-00476-21','NCR-09-00363-21','NCR-09-00526-21','NCR-09-00733-21','NCR-09-00785-21','NCR-10-00333-21','NCR-10-00385-21','NCR-10-00568-21','NCR-10-00755-21','NCR-10-00979-21','NCR-10-00984-21','NCR-11-00151-21','NCR-11-00163-21','NCR-11-00315-21','NCR-11-00389-21','NCR-11-00449-21','NCR-11-00591-21','NCR-11-00735-21','NCR-12-00049-21','NCR-12-00106-21','NCR-12-00199-21','NCR-12-00507-21','NCR-12-00571-21','NCR-12-00621-21','NCR-12-00797-21','NCR-12-00845-21','NCR-12-00629-21','NCR-01-00078-22','NCR-01-00534-22','NCR-02-00047-22','NCR-02-00505-22','NCR-02-00529-22','NCR-02-00659-22','NCR-02-00685-22','NCR-02-00749-22','NCR-02-00901-22','NCR-09-00588-21','NCR-10-00472-21','NCR-10-00535-21','NCR-03-00042-22','NCR-03-00080-22','NCR-03-00307-22','NCR-03-00379-22','NCR-03-00479-22','NCR-03-00685-22','NCR-03-00756-22','NCR-03-00820-22','NCR-03-01079-22','NCR-03-01286-22','NCR-03-01335-22','NCR-02-00959-22','NCR-12-00290-21','NCR-03-00647-22','NCR-04-00156-22','NCR-04-00276-22','NCR-04-00459-22','NCR-04-00616-22','NCR-04-00803-22','NCR-04-00863-22','NCR-04-00864-22','NCR-08-00412-21','NCR-04-00214-22','NCR-12-00307-21','NCR-12-00922-21','NCR-05-00070-22','NCR-05-00126-22','NCR-05-00228-22','NCR-05-00484-22','NCR-05-00684-22','NCR-05-00735-22','NCR-05-00864-22','NCR-06-00053-22','NCR-06-00121-22','NCR-06-00284-22','NCR-06-00342-22','NCR-06-00638-22','NCR-05-00923-22','NCR-07-00335-22','NCR-07-00728-22','NCR-06-00650-22','NCR-06-01021-22','NCR-11-00636-21','NCR-12-00710-21','NCR-12-00802-21','NCR-12-00944-21','NCR-01-00381-22','NCR-01-00017-22','NCR-07-00451-22','NCR-05-00927-22','NCR-06-00487-22'
+
+
+
+select * from param_docket_sequences where org_code = 'SRABX' and year = 2023;
+select * from docket_reassignment where docket_id = 198219;
+select * from cases where docket_number like 'NLRC-NCR-02-00343-24%' order by 1 desc; 
+    select * from cases where case_id = 285338;
+select * from case_action_causes where case_id = '285338'; -- 213475
+select * from case_grievances where case_id = '285338';
+select * from case_parties where case_id = '285338';
+select * from case_referrals where case_id = '285338';
+select * from case_reliefs where case_id = '285338';
+select * from dockets where docket_id = 245416;
+select * from docket_orgs where docket_id = 285326;
+select * from docket_tasks where docket_id = 285326; -- 213467
+select * from docket_task_predecessors where docket_task_id in (1439009,1439010,1439011,1439012);
+select * from docket_disposition where date_submitted = '2022-09-19' and date_disposed = '2019-09-30';
+select * from docket_relationships where docket_id = 285326;
+select * from docket_disposition order by 1 desc limit 100; -- where docket_id = 221974;
+select * from docket_disposition where disposition_id = 285326 Limit 1;
+select * from docket_disposition where docket_id = 278456;
+select * from docket_decision where docket_id = 285326;
+select * from docket_task_documents where case_id = 245425;
+select * from case_referrals order by 1 desc; -- where case_id = ;
+
+
+
+
+use ects;
+
+SELECT 
+    d.docket_number AS `Docket No.`,
+    c.case_title AS `Case title`,
+    c.filed_date AS `Filed date`,
+    sc.available_date AS `First conciliation mediation`,
+    dt.actual_end_date,
+    dp.created_date
+FROM 
+    cases c
+LEFT JOIN 
+    dockets d ON d.docket_id = c.docket_id
+LEFT JOIN docket_tasks dt on dt.docket_id = d.docket_id
+LEFT JOIN 
+    docket_disposition dp ON dp.docket_id = d.docket_id
+LEFT JOIN 
+    param_availability_schedule sc ON sc.availability_schedule_id = dt.availability_schedule_id
+WHERE 
+    c.case_type_code = 'RFA'
+GROUP BY 
+    d.docket_number;
+
+
+-- SELECT c.docket_number, c.case_title, c.filed_date, dst.docket_status_name, dd.* FROM cases c 
+-- left join dockets d on d.docket_id = c.docket_id
+-- left join docket_disposition dd on dd.docket_id = d.docket_id
+-- left join param_docket_status dst on dst.docket_status_id = d.docket_status_id
+-- left join ects_core.users u on c.process_by = u.user_id
+-- WHERE c.process_by = '702' and dd.date_disposed is null;
+
+-- select * from docket_reassignment where docket_id = 198219;
+-- SELECT count(*) FROM dockets d
+-- left join cases c on c.docket_id = d.docket_id
+-- ; 
+
+
+-- ck.id, ck.officialNo as `Official name`, ck.name as `Officials name`, ck.position as `Position`, d.name as `Division`, ck.contactNo as `Contact no.`, s.name as `Status` 
+select * from nlrccms.contactkeyofficials ck
+left join divisions d on d.id = ck.division
+left join status s on s.id = ck.status
+where concat(officialNo,ck.name,ck.position,d.name,ck.contactNo, s.name) like '%%' limit 0, 50
+-- select * from divisions;
+-- select * from contactkeyofficials;
+
+
+select a.user_id, a.username, a.fname, a.mname, a.lname, d.actioni, a.org_code, a.created_date from ects_core.users as a 
+left join (SELECT ccc.user_id, GROUP_CONCAT(DISTINCT ccc.role_code SEPARATOR ' | ') as actioni FROM (select user_id, role_code from ects_core.user_roles) as ccc GROUP BY ccc.user_id) as d on a.user_id = d.user_id
+where d.actioni like '%ARBIT%' order by a.org_code asc;
+
+
+    'NCR-04-00613-23','NCR-04-00531-23','NCR-04-00500-23','NCR-04-00455-23','NCR-04-00366-23','NCR-04-00286-23','NCR-04-00186-23','NCR-04-00137-23','NCR-04-00126-23','NCR-04-00049-23','NCR-03-01301-23','NCR-03-01259-23','NCR-03-01222-23','NCR-03-01155-23','NCR-03-01096-23','NCR-03-00999-23','NCR-03-00944-23','NCR-03-00863-23','NCR-03-00842-23','NCR-03-00799-23','NCR-03-00726-23','NCR-03-00708-23','NCR-03-00583-23','NCR-03-00553-23','NCR-03-00457-23','NCR-03-00368-23','NCR-03-00348-23','NCR-03-00199-23','NCR-03-00097-23','NCR-03-00016-23','NCR-02-01129-23','NCR-02-01056-23','NCR-02-00986-23','NCR-02-00890-23','NCR-02-00826-23','NCR-02-00766-23','NCR-02-00723-23','NCR-02-00617-23','NCR-02-00559-23','NCR-02-00554-23','NCR-02-00487-23','NCR-02-00348-23','NCR-02-00208-23','NCR-02-00174-23','NCR-02-00138-23','NCR-02-00039-23','NCR-01-01114-23','NCR-01-01024-23','NCR-01-00996-23','NCR-01-00948-23','NCR-01-00930-23','NCR-01-00761-23','NCR-01-00698-23','NCR-01-00680-23','NCR-01-00525-23','NCR-01-00443-23','NCR-01-00290-23','NCR-01-00179-23','NCR-01-00131-23','NCR-01-00027-23','NCR-12-00736-22','NCR-12-00683-22','NCR-12-00539-22','NCR-12-00465-22','NCR-12-00218-22','NCR-12-00203-22','NCR-11-00993-22','NCR-11-00789-22','NCR-11-00719-22','NCR-11-00507-22','NCR-11-00431-22','NCR-11-00308-22','NCR-10-00974-22','NCR-10-00898-22','NCR-10-00737-22','NCR-10-00733-22','NCR-10-00713-22','NCR-10-00580-22','NCR-10-00446-22','NCR-10-00248-22','NCR-09-01047-22','NCR-09-00717-22','NCR-09-00427-22','NCR-09-00081-22','NCR-08-00942-22','NCR-08-00347-22','NCR-08-00229-22','NCR-07-00955-22','NCR-07-00088-22','NCR-07-00031-22'
+
+
+101607,104418,102764,95128,101957,96621,117100,117180,94203,97856,113129,112535,97491,113614,128461,141328,116909,133673,109007,129217,118238,150572,154448,131879,123203,161702,113589,130483,144162,145302,149064,149604,152065,152577,152901,157098,152783,159696,163774,167903,169171,155026,161068,171721,165541,167748,166283,146440,147827,148900,149835,150610,151013,151697,151101,152515,155491,153155,153261,153702,153871,151782,150887,154735,155029,155460,156143,156468,156486,156765,156997,157241,157157,157343,157811,158417,160091,161404,161970,162707,162921,163852,163977,164424,164803,165573,165586,166109,166133,166535,166692,166839,167168,167524,168309,168416,168597,169421,169535,169624,169938,170021,169636,170590,172277,172492,173700,173756,174067,174129,174334,174708,162101,164176,164312,175143,175248,175852,176018,176291,176848,177016,177213,177852,178365,178468,174866,168934,176759,179156,179439,179900,180400,180947,181099,181101,159861,179297,169008,170187,181764,181981,182178,182910,183554,183714,184263,185708,185907,186530,186726,187712,184424,190593,191797,187739,189025,167258,169774,169949,170244,171922,170401,190971,184437,187215
+
+
+    'NCR-01-00017-22','NCR-01-01883-20','NCR-02-00156-20','NCR-02-01953-20','NCR-03-00623-21','NCR-03-01071-21','NCR-05-00033-21','NCR-05-00927-22','NCR-05-01177-21','NCR-06-00467-21','NCR-06-01067-21','NCR-07-00052-21','NCR-07-00771-21','NCR-08-00384-21','NCR-09-00262-21','NCR-09-00297-20','NCR-09-01106-19','NCR-10-00177-20','NCR-10-00301-21','NCR-10-00959-21','NCR-10-01352-19','NCR-10-01532-19','NCR-10-01950-19','NCR-11-00209-21','NCR-11-00271-20','NCR-12-00290-21','NCR-12-00397-21'
+
+
+'NCR-01-01883-20','NCR-02-00156-20','NCR-02-01953-20','NCR-03-00623-21','NCR-03-01071-21','NCR-05-00033-21','NCR-05-00927-22','NCR-05-01177-21','NCR-06-00467-21','NCR-06-01067-21','NCR-07-00052-21','NCR-07-00771-21','NCR-08-00384-21','NCR-09-00262-21','NCR-09-00297-20','NCR-09-01106-19','NCR-10-00177-20','NCR-10-00301-21','NCR-10-00959-21','NCR-10-01352-19','NCR-10-01532-19','NCR-10-01950-19','NCR-11-00209-21','NCR-11-00271-20','NCR-12-00290-21','NCR-12-00397-21','NCR-12-00397-21'
+
+
+//mysqldump --host=159.138.22.107 -u nlrc -p --routines --verbose ects > ects.sql
+//mysqldump --host=159.138.22.107 -u nlrc -p --routines --verbose ects > ects.sql
+
+
+
+'NCR-04-00613-23','NCR-08-00005-19','NCR-08-00132-19','NCR-08-00856-19','NCR-08-01462-19','NCR-09-00484-19','NCR-09-00714-19','NCR-10-00311-19','NCR-10-00484-19','NCR-10-00554-19','NCR-10-00564-19','NCR-10-01792-19','NCR-10-01956-19','NCR-11-01088-19','NCR-01-01384-20','NCR-01-01604-20','NCR-01-01782-20','NCR-02-00153-20','NCR-02-00851-20','NCR-02-01547-20','NCR-03-00238-20','NCR-03-00427-20','NCR-07-00152-20','NCR-07-00252-20','NCR-09-00163-20','NCR-09-00464-20','NCR-10-00198-20','NCR-11-00485-20','NCR-11-00749-20','NCR-01-00508-21','NCR-02-00411-21','NCR-02-00511-21','NCR-02-00608-21','NCR-03-00390-21','NCR-03-01253-21','NCR-05-00413-21','NCR-06-00229-21','NCR-08-00046-21','NCR-08-00481-21','NCR-02-00714-22','NCR-04-00875-22','NCR-06-00257-22','NCR-08-00975-22','NCR-10-00213-22','NCR-10-00800-22','NCR-11-00090-22','NCR-11-00652-22','NCR-11-00827-22','NCR-02-00196-23','NCR-02-00664-23','NCR-03-00073-23','NCR-03-00425-23','NCR-04-00593-23','NCR-05-00698-23','NCR-06-00825-23','NCR-07-00406-23','NCR-08-00259-23','NCR-08-00603-23','NCR-08-00635-23','NCR-08-00689-23','NCR-08-00754-23','NCR-08-00867-23','NCR-08-00904-23','NCR-08-00954-23','NCR-08-00975-23','NCR-08-01045-23','NCR-09-01115-23','NCR-09-01183-23','NCR-10-00256-23','NCR-11-00238-23','NCR-11-00274-23','NCR-11-00439-23','NCR-11-00508-23','NCR-11-00657-23','NCR-12-00643-23'
+
+234002,92110,92406,93817,95063,96242,96741,99476,99857,99997,100020,102458,102781,105265,112299,112685,112979,113585,114855,116162,117570,117955,123892,124401,127703,129266,130532,134144,134708,139091,141290,141466,141624,143714,146082,150330,152577,157797,160160,174212,181183,186434,196054,200490,202521,203461,205646,206268,218225,219924,222363,223927,233946,238096,243588,246447,249948,251232,251328,251538,251808,252299,252457,252599,252672,253104,258033,258249,259279,264238,264403,265223,265556,266180,270405
+
+
+
+'NLRC-NCR-02-00653-24','NLRC-NCR-02-00951-24','NLRC-NCR-02-00997-24','NLRC-NCR-03-00432-24','NLRC-NCR-03-00569-24','NLRC-NCR-03-00922-24','NLRC-NCR-04-00046-24','NLRC-NCR-04-00095-24','NLRC-NCR-04-00096-24','NLRC-NCR-04-00113-24','NLRC-NCR-04-00116-24','NLRC-NCR-04-00120-24','NLRC-NCR-04-00122-24','NLRC-NCR-04-00123-24','NLRC-NCR-04-00133-24','NLRC-NCR-04-00147-24','NLRC-NCR-04-00149-24','NLRC-NCR-04-00189-24','NLRC-NCR-04-00198-24','NLRC-NCR-04-00201-24','NLRC-NCR-04-00206-24','NLRC-NCR-04-00229-24','NLRC-NCR-04-00230-24','NLRC-NCR-04-00232-24','NLRC-NCR-04-00236-24','NLRC-NCR-04-00238-24','NLRC-NCR-04-00240-24','NLRC-NCR-04-00243-24','NLRC-NCR-04-00251-24','NLRC-NCR-04-00259-24','NLRC-NCR-04-00262-24','NLRC-NCR-04-00264-24','NLRC-NCR-04-00274-24','NLRC-NCR-04-00278-24','NLRC-NCR-04-00287-24','NLRC-NCR-04-00288-24','NLRC-NCR-04-00289-24','NLRC-NCR-04-00298-24','NLRC-NCR-04-00300-24','NLRC-NCR-04-00302-24','NLRC-NCR-04-00304-24','NLRC-NCR-04-00306-24','NLRC-NCR-04-00307-24','NLRC-NCR-04-00308-24','NLRC-NCR-04-00310-24','NLRC-NCR-04-00312-24','NLRC-NCR-04-00314-24','NLRC-NCR-04-00321-24','NLRC-NCR-04-00322-24','NLRC-NCR-04-00340-24','NLRC-NCR-04-00345-24','NLRC-NCR-04-00347-24','NLRC-NCR-04-00350-24','NLRC-NCR-04-00414-24','NLRC-NCR-04-00415-24','NLRC-NCR-04-00416-24','NLRC-NCR-04-00417-24','NLRC-NCR-04-00418-24','NLRC-NCR-04-00419-24','NLRC-NCR-04-00420-24','NLRC-NCR-04-00421-24','NLRC-NCR-04-00422-24','NLRC-NCR-04-00423-24','NLRC-NCR-04-00424-24','NLRC-NCR-04-00425-24','NLRC-NCR-04-00427-24','NLRC-NCR-04-00428-24','NLRC-NCR-04-00429-24','NLRC-NCR-04-00430-24','NLRC-NCR-04-00431-24','NLRC-NCR-04-00432-24','NLRC-NCR-04-00433-24','NLRC-NCR-04-00434-24','NLRC-NCR-04-00435-24','NLRC-NCR-04-00436-24','NLRC-NCR-04-00437-24','NLRC-NCR-04-00438-24','NLRC-NCR-04-00439-24','NLRC-NCR-04-00440-24','NLRC-NCR-04-00441-24','NLRC-NCR-04-00442-24','NLRC-NCR-04-00443-24','NLRC-NCR-04-00445-24','NLRC-NCR-04-00446-24','NLRC-NCR-04-00447-24','NLRC-NCR-04-00448-24','NLRC-NCR-04-00449-24','NLRC-NCR-04-00450-24','NLRC-NCR-04-00451-24','NLRC-NCR-04-00453-24','NLRC-NCR-04-00454-24','NLRC-NCR-04-00455-24','NLRC-NCR-04-00456-24','NLRC-NCR-04-00457-24','NLRC-NCR-04-00458-24','NLRC-NCR-04-00459-24','NLRC-NCR-04-00460-24','NLRC-NCR-04-00461-24','NLRC-NCR-04-00462-24','NLRC-NCR-04-00463-24','NLRC-NCR-04-00464-24','NLRC-NCR-04-00465-24','NLRC-NCR-04-00466-24','NLRC-NCR-04-00467-24','NLRC-NCR-04-00468-24','NLRC-NCR-04-00469-24','NLRC-NCR-04-00470-24','NLRC-NCR-04-00471-24','NLRC-NCR-04-00472-24','NLRC-NCR-04-00473-24','NLRC-NCR-04-00474-24','NLRC-NCR-04-00475-24','NLRC-NCR-04-00476-24','NLRC-NCR-04-00477-24','NLRC-NCR-04-00478-24','NLRC-NCR-04-00479-24','NLRC-NCR-04-00480-24','NLRC-NCR-04-00481-24','NLRC-NCR-04-00482-24','NLRC-NCR-04-00483-24','NLRC-NCR-04-00484-24','NLRC-NCR-04-00485-24','NLRC-NCR-04-00487-24','NLRC-NCR-04-00488-24','NLRC-NCR-04-00489-24','NLRC-NCR-04-00490-24','NLRC-NCR-04-00491-24','NLRC-NCR-04-00492-24','NLRC-NCR-04-00493-24','NLRC-NCR-04-00494-24','NLRC-NCR-04-00495-24','NLRC-NCR-04-00496-24','NLRC-NCR-04-00497-24','NLRC-NCR-04-00498-24','NLRC-NCR-04-00499-24','NLRC-NCR-04-00500-24','NLRC-NCR-04-00501-24','NLRC-NCR-04-00502-24','NLRC-NCR-04-00503-24','NLRC-NCR-04-00504-24','NLRC-NCR-04-00505-24','NLRC-NCR-04-00506-24','NLRC-NCR-04-00507-24','NLRC-NCR-04-00508-24','NLRC-NCR-04-00509-24','NLRC-NCR-04-00510-24','NLRC-NCR-04-00511-24','NLRC-NCR-04-00512-24','NLRC-NCR-04-00513-24','NLRC-NCR-04-00514-24','NLRC-NCR-04-00515-24','NLRC-NCR-04-00516-24','NLRC-NCR-04-00517-24','NLRC-NCR-04-00520-24','NLRC-NCR-04-00521-24','NLRC-NCR-04-00522-24','NLRC-NCR-04-00523-24','NLRC-NCR-04-00524-24','NLRC-NCR-04-00525-24','NLRC-NCR-04-00526-24','NLRC-NCR-04-00527-24','NLRC-NCR-04-00529-24','NLRC-NCR-04-00530-24','NLRC-NCR-04-00531-24','NLRC-NCR-04-00532-24','NLRC-NCR-04-00533-24','NLRC-NCR-04-00534-24','NLRC-NCR-04-00535-24','NLRC-NCR-04-00536-24','NLRC-NCR-04-00537-24','NLRC-NCR-04-00538-24','NLRC-NCR-04-00539-24','NLRC-NCR-04-00540-24','NLRC-NCR-04-00541-24','NLRC-NCR-04-00542-24','NLRC-NCR-04-00543-24','NLRC-NCR-04-00544-24','NLRC-NCR-04-00545-24','NLRC-NCR-04-00546-24','NLRC-NCR-04-00547-24','NLRC-NCR-04-00548-24','NLRC-NCR-04-00549-24','NLRC-NCR-04-00550-24','NLRC-NCR-04-00551-24','NLRC-NCR-04-00552-24','NLRC-NCR-04-00553-24','NLRC-NCR-04-00554-24','NLRC-NCR-04-00555-24','NLRC-NCR-04-00556-24','NLRC-NCR-04-00557-24','NLRC-NCR-04-00558-24','NLRC-NCR-04-00559-24','NLRC-NCR-04-00560-24','NLRC-NCR-04-00561-24','NLRC-NCR-04-00562-24','NLRC-NCR-04-00563-24','NLRC-NCR-04-00564-24','NLRC-NCR-04-00565-24','NLRC-NCR-04-00566-24','NLRC-NCR-04-00567-24','NLRC-NCR-04-00568-24','NLRC-NCR-04-00569-24','NLRC-NCR-04-00570-24','NLRC-NCR-04-00571-24','NLRC-NCR-04-00572-24','NLRC-NCR-04-00573-24','NLRC-NCR-04-00574-24','NLRC-NCR-04-00575-24','NLRC-NCR-04-00577-24','NLRC-NCR-04-00578-24','NLRC-NCR-04-00580-24','NLRC-NCR-04-00581-24','NLRC-NCR-04-00582-24','NLRC-NCR-04-00583-24','NLRC-NCR-04-00584-24','NLRC-NCR-04-00585-24','NLRC-NCR-04-00587-24','NLRC-NCR-04-00588-24','NLRC-NCR-04-00589-24','NLRC-NCR-04-00590-24','NLRC-NCR-04-00591-24','NLRC-NCR-04-00592-24','NLRC-NCR-04-00593-24','NLRC-NCR-04-00594-24','NLRC-NCR-04-00595-24','NLRC-NCR-04-00596-24','NLRC-NCR-04-00597-24','NLRC-NCR-04-00598-24','NLRC-NCR-04-00599-24','NLRC-NCR-04-00600-24','NLRC-NCR-04-00601-24','NLRC-NCR-04-00603-24','NLRC-NCR-04-00604-24','NLRC-NCR-04-00605-24','NLRC-NCR-04-00606-24','NLRC-NCR-04-00607-24','NLRC-NCR-04-00608-24','NLRC-NCR-04-00610-24','NLRC-NCR-04-00611-24','NLRC-NCR-04-00612-24','NLRC-NCR-04-00613-24','NLRC-NCR-04-00614-24','NLRC-NCR-04-00615-24','NLRC-NCR-04-00616-24','NLRC-NCR-04-00617-24','NLRC-NCR-04-00618-24','NLRC-NCR-04-00619-24','NLRC-NCR-04-00620-24','NLRC-NCR-04-00622-24','NLRC-NCR-04-00623-24','NLRC-NCR-04-00624-24','NLRC-NCR-04-00625-24','NLRC-NCR-04-00626-24','NLRC-NCR-04-00627-24','NLRC-NCR-04-00628-24','NLRC-NCR-04-00630-24','NLRC-NCR-04-00631-24','NLRC-NCR-04-00632-24','NLRC-NCR-04-00633-24','NLRC-NCR-04-00634-24','NLRC-NCR-04-00635-24','NLRC-NCR-04-00636-24','NLRC-NCR-04-00637-24','NLRC-NCR-04-00638-24','NLRC-NCR-04-00639-24','NLRC-NCR-04-00640-24','NLRC-NCR-04-00642-24','NLRC-NCR-04-00643-24','NLRC-NCR-04-00644-24','NLRC-NCR-04-00645-24','NLRC-NCR-04-00646-24','NLRC-NCR-04-00647-24','NLRC-NCR-04-00649-24','NLRC-NCR-04-00650-24','NLRC-NCR-04-00651-24','NLRC-NCR-04-00652-24','NLRC-NCR-04-00653-24','NLRC-NCR-04-00654-24','NLRC-NCR-04-00655-24','NLRC-NCR-04-00656-24','NLRC-NCR-04-00657-24','NLRC-NCR-04-00658-24','NLRC-NCR-04-00659-24','NLRC-NCR-04-00660-24','NLRC-NCR-04-00661-24','NLRC-NCR-04-00662-24','NLRC-NCR-04-00663-24','NLRC-NCR-04-00664-24','NLRC-NCR-04-00665-24','NLRC-NCR-04-00666-24','NLRC-NCR-04-00667-24','NLRC-NCR-04-00668-24','NLRC-NCR-04-00669-24','NLRC-NCR-04-00670-24','NLRC-NCR-04-00671-24','NLRC-NCR-04-00672-24','NLRC-NCR-04-00673-24','NLRC-NCR-04-00674-24','NLRC-NCR-04-00675-24','NLRC-NCR-04-00676-24','NLRC-NCR-04-00677-24','NLRC-NCR-04-00678-24','NLRC-NCR-04-00679-24','NLRC-NCR-04-00680-24','NLRC-NCR-04-00681-24','NLRC-NCR-04-00682-24','NLRC-NCR-04-00683-24','NLRC-NCR-04-00684-24','NLRC-NCR-04-00685-24','NLRC-NCR-04-00686-24','NLRC-NCR-04-00687-24','NLRC-NCR-04-00688-24','NLRC-NCR-04-00689-24','NLRC-NCR-04-00690-24','NLRC-NCR-04-00691-24','NLRC-NCR-04-00692-24','NLRC-NCR-04-00693-24','NLRC-NCR-04-00694-24','NLRC-NCR-04-00695-24','NLRC-NCR-04-00696-24','NLRC-NCR-04-00697-24','NLRC-NCR-04-00698-24','NLRC-NCR-04-00699-24','NLRC-NCR-04-00700-24','NLRC-NCR-04-00701-24','NLRC-NCR-04-00702-24','NLRC-NCR-04-00703-24','NLRC-NCR-04-00705-24','NLRC-NCR-04-00706-24','NLRC-NCR-04-00707-24','NLRC-NCR-04-00708-24','NLRC-NCR-04-00709-24','NLRC-NCR-04-00710-24','NLRC-NCR-04-00711-24','NLRC-NCR-04-00712-24','NLRC-NCR-04-00713-24','NLRC-NCR-04-00714-24','NLRC-NCR-04-00715-24','NLRC-NCR-04-00716-24','NLRC-NCR-04-00717-24','NLRC-NCR-04-00718-24','NLRC-NCR-04-00719-24','NLRC-NCR-04-00720-24','NLRC-NCR-04-00721-24','NLRC-NCR-04-00723-24','NLRC-NCR-04-00724-24','NLRC-NCR-04-00725-24','NLRC-NCR-04-00726-24','NLRC-NCR-04-00727-24','NLRC-NCR-04-00728-24','NLRC-NCR-04-00729-24','NLRC-NCR-04-00730-24','NLRC-NCR-04-00731-24','NLRC-NCR-04-00734-24','NLRC-NCR-04-00735-24','NLRC-NCR-04-00739-24','NLRC-NCR-04-00741-24','NLRC-NCR-04-00742-24','NLRC-NCR-04-00744-24','NLRC-NCR-04-00745-24','NLRC-NCR-04-00746-24','NLRC-NCR-04-00747-24','NLRC-NCR-04-00748-24','NLRC-NCR-04-00749-24','NLRC-NCR-04-00750-24','NLRC-NCR-04-00751-24','NLRC-NCR-04-00752-24','NLRC-NCR-04-00755-24','NLRC-NCR-04-00758-24','NLRC-NCR-04-00762-24','NLRC-NCR-04-00763-24','NLRC-NCR-04-00764-24','NLRC-NCR-04-00766-24','NLRC-NCR-04-00767-24','NLRC-NCR-04-00768-24','NLRC-NCR-04-00769-24','NLRC-NCR-04-00770-24','NLRC-NCR-04-00771-24','NLRC-NCR-04-00772-24','NLRC-NCR-04-00781-24','NLRC-NCR-04-00782-24','NLRC-NCR-04-00783-24','NLRC-NCR-04-00787-24','NLRC-NCR-04-00788-24','NLRC-NCR-04-00790-24','NLRC-NCR-04-00792-24','NLRC-NCR-04-00793-24','NLRC-NCR-04-00795-24','NLRC-NCR-04-00796-24','NLRC-NCR-04-00797-24','NLRC-NCR-04-00798-24','NLRC-NCR-04-00799-24','NLRC-NCR-04-00801-24','NLRC-NCR-04-00802-24','NLRC-NCR-04-00803-24','NLRC-NCR-04-00804-24','NLRC-NCR-04-00805-24','NLRC-NCR-04-00810-24','NLRC-NCR-04-00811-24','NLRC-NCR-04-00813-24','NLRC-NCR-04-00816-24','NLRC-NCR-04-00817-24','NLRC-NCR-04-00818-24','NLRC-NCR-04-00819-24','NLRC-NCR-04-00820-24','NLRC-NCR-04-00821-24','NLRC-NCR-04-00844-24','NLRC-NCR-04-00850-24','NLRC-NCR-04-00851-24','NLRC-NCR-04-00853-24','NLRC-NCR-04-00859-24','NLRC-NCR-04-00864-24','NLRC-NCR-04-00881-24','NLRC-NCR-04-00892-24','NLRC-NCR-04-00893-24','NLRC-NCR-04-00896-24','NLRC-NCR-04-00897-24','NLRC-NCR-04-00899-24','NLRC-NCR-04-00902-24','NLRC-NCR-04-00903-24','NLRC-NCR-04-00904-24','NLRC-NCR-04-00906-24','NLRC-NCR-04-00908-24','NLRC-NCR-04-00913-24','NLRC-NCR-04-00914-24','NLRC-NCR-04-00924-24','NLRC-NCR-04-00925-24','NLRC-NCR-04-00947-24','NLRC-NCR-04-00952-24','NLRC-NCR-04-00957-24','NLRC-NCR-04-00971-24','NLRC-NCR-04-00976-24','NLRC-NCR-04-00978-24','NLRC-NCR-04-00979-24','NLRC-NCR-04-00988-24','NLRC-NCR-04-01000-24','NLRC-NCR-04-01006-24','NLRC-NCR-04-01011-24','NLRC-NCR-04-01012-24','NLRC-NCR-04-01041-24','NLRC-NCR-04-01042-24','NLRC-NCR-04-01047-24','NLRC-NCR-04-01054-24','NLRC-NCR-04-01077-24','NLRC-NCR-04-01078-24','NLRC-NCR-04-01095-24','NLRC-NCR-04-01096-24','NLRC-NCR-04-01097-24','NLRC-NCR-04-01099-24','NLRC-NCR-04-01100-24','NLRC-NCR-04-01102-24','NLRC-NCR-04-01108-24','NLRC-NCR-04-01126-24','NLRC-NCR-04-01146-24','NLRC-NCR-04-01147-24','NLRC-NCR-04-01161-24','NLRC-NCR-04-01163-24','NLRC-NCR-04-01166-24','NLRC-NCR-04-01168-24','NLRC-NCR-04-01170-24','NLRC-NCR-04-01174-24','NLRC-NCR-04-01176-24','NLRC-NCR-04-01177-24','NLRC-NCR-04-01180-24','NLRC-NCR-04-01182-24','NLRC-NCR-04-01185-24','NLRC-NCR-04-01225-24','NLRC-NCR-04-01233-24','NLRC-NCR-04-01238-24','NLRC-NCR-04-01241-24','NLRC-NCR-04-01243-24','NLRC-NCR-04-01244-24','NLRC-NCR-04-01245-24','NLRC-NCR-04-01246-24','NLRC-NCR-04-01247-24','NLRC-NCR-04-01248-24','NLRC-NCR-04-01250-24','NLRC-NCR-04-01252-24','NLRC-NCR-04-01255-24','NLRC-NCR-04-01266-24','NLRC-NCR-04-01291-24','NLRC-NCR-04-01295-24','NLRC-NCR-04-01298-24','NLRC-NCR-04-01299-24','NLRC-NCR-04-01301-24','NLRC-NCR-04-01302-24','NLRC-NCR-04-01303-24','NLRC-NCR-04-01304-24','NLRC-NCR-04-01308-24','NLRC-NCR-04-01309-24','NLRC-NCR-04-01310-24','NLRC-NCR-04-01317-24','NLRC-NCR-04-01318-24','NLRC-NCR-04-01319-24','NLRC-NCR-04-01320-24','NLRC-NCR-04-01331-24','NLRC-NCR-04-01335-24','NLRC-NCR-04-01349-24','NLRC-NCR-04-01353-24','NLRC-NCR-04-01354-24','NLRC-NCR-04-01355-24','NLRC-NCR-04-01359-24','NLRC-NCR-04-01368-24','NLRC-NCR-04-01370-24','NLRC-NCR-04-01383-24','NLRC-NCR-04-01384-24','NLRC-NCR-04-01392-24','NLRC-NCR-04-01398-24','NLRC-NCR-04-01402-24','NLRC-NCR-04-01404-24','NLRC-NCR-04-01422-24','NLRC-NCR-04-01426-24','NLRC-NCR-04-01436-24','NLRC-NCR-04-01439-24','NLRC-NCR-04-01517-24','NLRC-NCR-04-01518-24','NLRC-NCR-04-01521-24','NLRC-NCR-04-01523-24','NLRC-NCR-04-01524-24','NLRC-NCR-04-01527-24','NLRC-NCR-04-01530-24','NLRC-NCR-04-01533-24','NLRC-NCR-04-01535-24','NLRC-NCR-04-01537-24','NLRC-NCR-04-01540-24','NLRC-NCR-04-01542-24','NLRC-NCR-05-00001-24','NLRC-NCR-05-00003-24','NLRC-NCR-05-00006-24','NLRC-NCR-05-00008-24','NLRC-NCR-05-00009-24','NLRC-NCR-05-00010-24','NLRC-NCR-05-00020-24','NLRC-NCR-05-00025-24','NLRC-NCR-05-00034-24','NLRC-NCR-05-00035-24','NLRC-NCR-05-00036-24','NLRC-NCR-05-00037-24','NLRC-NCR-05-00038-24','NLRC-NCR-05-00039-24','NLRC-NCR-05-00041-24','NLRC-NCR-05-00042-24','NLRC-NCR-05-00048-24','NLRC-NCR-05-00050-24','NLRC-NCR-05-00060-24','NLRC-NCR-05-00062-24','NLRC-NCR-05-00076-24','NLRC-NCR-05-00079-24','NLRC-NCR-05-00082-24','NLRC-NCR-05-00084-24','NLRC-NCR-05-00087-24','NLRC-NCR-05-00089-24','NLRC-NCR-05-00092-24','NLRC-NCR-05-00111-24','NLRC-NCR-05-00113-24','NLRC-NCR-05-00129-24','NLRC-NCR-05-00138-24','NLRC-NCR-05-00144-24','NLRC-NCR-05-00148-24','NLRC-NCR-05-00150-24','NLRC-NCR-05-00151-24','NLRC-NCR-05-00153-24','NLRC-NCR-05-00157-24','NLRC-NCR-05-00159-24','NLRC-NCR-05-00162-24','NLRC-NCR-05-00169-24','NLRC-NCR-05-00171-24','NLRC-NCR-05-00231-24','NLRC-NCR-05-00243-24','NLRC-NCR-05-00246-24','NLRC-NCR-05-00258-24','NLRC-NCR-05-00291-24','NLRC-NCR-05-00304-24','NLRC-NCR-05-00305-24','NLRC-NCR-05-00312-24','NLRC-NCR-05-00325-24','NLRC-NCR-05-00326-24','NLRC-NCR-05-00333-24','NLRC-NCR-05-00334-24','NLRC-NCR-05-00336-24','NLRC-NCR-05-00337-24','NLRC-NCR-05-00341-24','NLRC-NCR-05-00344-24','NLRC-NCR-05-00349-24','NLRC-NCR-05-00350-24','NLRC-NCR-05-00369-24','NLRC-NCR-05-00370-24','NLRC-NCR-05-00398-24','NLRC-NCR-05-00399-24','NLRC-NCR-05-00401-24','NLRC-NCR-05-00403-24','NLRC-NCR-05-00405-24','NLRC-NCR-05-00409-24','NLRC-NCR-05-00413-24','NLRC-NCR-05-00416-24','NLRC-NCR-05-00418-24','NLRC-NCR-05-00448-24','NLRC-NCR-05-00451-24','NLRC-NCR-05-00452-24','NLRC-NCR-05-00467-24','NLRC-NCR-05-00483-24','NLRC-NCR-05-00491-24','NLRC-NCR-05-00520-24','NLRC-NCR-05-00532-24','NLRC-NCR-05-00544-24','NLRC-NCR-05-00546-24','NLRC-NCR-05-00562-24','NLRC-NCR-05-00563-24','NLRC-NCR-05-00564-24','NLRC-NCR-05-00572-24','NLRC-NCR-05-00574-24','NLRC-NCR-05-00575-24','NLRC-NCR-05-00576-24','NLRC-NCR-05-00584-24','NLRC-NCR-05-00585-24','NLRC-NCR-05-00588-24','NLRC-NCR-05-00593-24','NLRC-NCR-05-00594-24','NLRC-NCR-05-00595-24','NLRC-NCR-05-00614-24','NLRC-NCR-05-00625-24','NLRC-NCR-05-00626-24','NLRC-NCR-05-00636-24','NLRC-NCR-05-00643-24','NLRC-NCR-05-00645-24','NLRC-NCR-05-00647-24','NLRC-NCR-05-00648-24','NLRC-NCR-05-00649-24','NLRC-NCR-05-00661-24','NLRC-NCR-05-00662-24','NLRC-NCR-05-00663-24','NLRC-NCR-05-00689-24','NLRC-NCR-05-00698-24','NLRC-NCR-05-00721-24','NLRC-NCR-05-00741-24','NLRC-NCR-05-00763-24','NLRC-NCR-05-00764-24','NLRC-NCR-05-00765-24','NLRC-NCR-05-00766-24','NLRC-NCR-05-00767-24','NLRC-NCR-05-00797-24','NLRC-NCR-05-00798-24','NLRC-NCR-05-00799-24','NLRC-NCR-05-00805-24','NLRC-NCR-05-00841-24','NLRC-NCR-05-00850-24','NLRC-NCR-05-00858-24','NLRC-NCR-05-00859-24','NLRC-NCR-05-00862-24','NLRC-NCR-05-00870-24','NLRC-NCR-05-00871-24','NLRC-NCR-05-00879-24','NLRC-NCR-05-00887-24','NLRC-NCR-05-00888-24','NLRC-NCR-05-00892-24','NLRC-NCR-05-00896-24','NLRC-NCR-05-00897-24','NLRC-NCR-05-00898-24','NLRC-NCR-05-00899-24','NLRC-NCR-05-00900-24','NLRC-NCR-05-00913-24','NLRC-NCR-05-00914-24','NLRC-NCR-05-00921-24','NLRC-NCR-05-00926-24','NLRC-NCR-05-00930-24','NLRC-NCR-05-00931-24','NLRC-NCR-05-00936-24','NLRC-NCR-05-00961-24','NLRC-NCR-05-00968-24','NLRC-NCR-05-00972-24','NLRC-NCR-05-00975-24','NLRC-NCR-05-00979-24','NLRC-NCR-05-01012-24','NLRC-NCR-05-01016-24','NLRC-NCR-05-01017-24','NLRC-NCR-05-01029-24','NLRC-NCR-05-01037-24','NLRC-NCR-05-01048-24','NLRC-NCR-05-01071-24','NLRC-NCR-05-01074-24','NLRC-NCR-05-01088-24','NLRC-NCR-05-01089-24','NLRC-NCR-05-01091-24','NLRC-NCR-05-01112-24','NLRC-NCR-05-01118-24','NLRC-NCR-05-01119-24','NLRC-NCR-05-01121-24','NLRC-NCR-05-01136-24','NLRC-NCR-05-01137-24','NLRC-NCR-05-01139-24','NLRC-NCR-05-01141-24','NLRC-NCR-05-01143-24','NLRC-NCR-05-01145-24','NLRC-NCR-05-01148-24','NLRC-NCR-05-01149-24','NLRC-NCR-05-01150-24','NLRC-NCR-05-01151-24','NLRC-NCR-05-01155-24','NLRC-NCR-05-01159-24','NLRC-NCR-05-01164-24','NLRC-NCR-05-01166-24','NLRC-NCR-05-01167-24','NLRC-NCR-05-01168-24','NLRC-NCR-05-01179-24','NLRC-NCR-05-01227-24','NLRC-NCR-05-01231-24','NLRC-NCR-05-01239-24','NLRC-NCR-05-01242-24','NLRC-NCR-05-01243-24','NLRC-NCR-05-01244-24','NLRC-RABII-03-00001-24','NLRC-RABVII-01-00006-24','NLRC-RABVII-01-00007-24','NLRC-RABVII-01-00026-24','NLRC-RABVII-01-00041-24','NLRC-RABVII-01-00054-24','NLRC-RABVII-01-00056-24','NLRC-RABVII-01-00098-24','NLRC-RABVII-01-00097-24','NLRC-RABVII-01-00115-24','NLRC-RABVII-01-00133-24','NLRC-RABVII-01-00171-24','NLRC-RABVII-01-00179-24','NLRC-RABVII-02-00003-24','NLRC-RABVII-02-00007-24','NLRC-RABVII-02-00033-24','NLRC-RABVII-02-00036-24','NLRC-RABVII-02-00051-24','NLRC-RABVII-02-00055-24','NLRC-RABVII-02-00063-24','NLRC-RABVII-02-00072-24','NLRC-CAR-02-00015-24','NLRC-NCR-01-00136-24','NLRC-NCR-01-00137-24','NLRC-NCR-01-00181-24','NLRC-NCR-01-00183-24','NLRC-NCR-01-00184-24','NLRC-NCR-01-00315-24','NLRC-NCR-01-00530-24','NLRC-NCR-01-00531-24','NLRC-NCR-01-00533-24','NLRC-NCR-01-00534-24','NLRC-NCR-01-00535-24','NLRC-NCR-01-00537-24','NLRC-NCR-01-00538-24','NLRC-NCR-01-00540-24','NLRC-NCR-01-00541-24','NLRC-NCR-01-00542-24','NLRC-NCR-01-00543-24','NLRC-NCR-01-00544-24','NLRC-NCR-01-00545-24','NLRC-NCR-01-00546-24','NLRC-NCR-01-00547-24','NLRC-NCR-01-00551-24','NLRC-NCR-01-00561-24','NLRC-NCR-01-00590-24','NLRC-NCR-01-00591-24','NLRC-NCR-01-00593-24','NLRC-NCR-01-00594-24','NLRC-NCR-01-00606-24','NLRC-NCR-01-00607-24','NLRC-NCR-01-00608-24','NLRC-NCR-01-00609-24','NLRC-NCR-01-00643-24','NLRC-NCR-01-00722-24','NLRC-NCR-01-00723-24','NLRC-NCR-01-00724-24','NLRC-NCR-01-00725-24','NLRC-NCR-01-00726-24','NLRC-NCR-01-00727-24','NLRC-NCR-01-00739-24','NLRC-NCR-01-00743-24','NLRC-NCR-01-00745-24','NLRC-NCR-01-00747-24','NLRC-NCR-01-00753-24','NLRC-NCR-01-00816-24','NLRC-NCR-01-00871-24','NLRC-NCR-01-00872-24','NLRC-NCR-01-00873-24','NLRC-NCR-01-00874-24','NLRC-NCR-01-00875-24','NLRC-NCR-01-00880-24','NLRC-NCR-01-00881-24','NLRC-NCR-01-00882-24','NLRC-NCR-01-00883-24','NLRC-NCR-01-00953-24','NLRC-NCR-01-00954-24','NLRC-NCR-01-00955-24','NLRC-NCR-01-00956-24','NLRC-NCR-01-00984-24','NLRC-NCR-01-00997-24','NLRC-NCR-01-01059-24','NLRC-NCR-01-01144-24','NLRC-NCR-01-01145-24','NLRC-NCR-02-00002-24','NLRC-NCR-02-00003-24','NLRC-NCR-02-00004-24','NLRC-NCR-02-00005-24','NLRC-NCR-02-00111-24','NLRC-NCR-02-00123-24','NLRC-NCR-02-00125-24','NLRC-NCR-02-00126-24','NLRC-NCR-02-00127-24','NLRC-NCR-02-00128-24','NLRC-NCR-02-00134-24','NLRC-NCR-02-00138-24','NLRC-NCR-02-00140-24','NLRC-NCR-02-00142-24','NLRC-NCR-02-00191-24','NLRC-NCR-02-00199-24','NLRC-NCR-02-00237-24','NLRC-NCR-02-00238-24','NLRC-NCR-02-00239-24','NLRC-NCR-02-00240-24','NLRC-NCR-02-00241-24','NLRC-NCR-02-00242-24','NLRC-NCR-02-00243-24','NLRC-NCR-02-00244-24','NLRC-NCR-02-00245-24','NLRC-NCR-02-00246-24','NLRC-NCR-02-00247-24','NLRC-NCR-02-00248-24','NLRC-NCR-02-00253-24','NLRC-NCR-02-00255-24','NLRC-NCR-02-00256-24','NLRC-NCR-02-00257-24','NLRC-NCR-02-00260-24','NLRC-NCR-02-00332-24','NLRC-NCR-02-00333-24','NLRC-NCR-02-00334-24','NLRC-NCR-02-00335-24','NLRC-NCR-02-00364-24','NLRC-NCR-02-00377-24','NLRC-NCR-02-00415-24','NLRC-NCR-02-00492-24','NLRC-NCR-02-00493-24','NLRC-NCR-02-00494-24','NLRC-NCR-02-00495-24','NLRC-NCR-02-00496-24','NLRC-NCR-02-00498-24','NLRC-NCR-02-00499-24','NLRC-NCR-02-00500-24','NLRC-NCR-02-00502-24','NLRC-NCR-02-00503-24','NLRC-NCR-02-00549-24','NLRC-NCR-02-00550-24','NLRC-NCR-02-00551-24','NLRC-NCR-02-00552-24','NLRC-NCR-02-00655-24','NLRC-NCR-02-00710-24','NLRC-NCR-02-00723-24','NLRC-NCR-02-00724-24','NLRC-NCR-02-00725-24','NLRC-NCR-02-00726-24','NLRC-NCR-02-00727-24','NLRC-NCR-02-00728-24','NLRC-NCR-02-00729-24','NLRC-NCR-02-00730-24','NLRC-NCR-02-00731-24','NLRC-NCR-02-00732-24','NLRC-NCR-02-00733-24','NLRC-NCR-02-00734-24','NLRC-NCR-02-00735-24','NLRC-NCR-02-00736-24','NLRC-NCR-02-00737-24','NLRC-NCR-02-00738-24','NLRC-NCR-02-00739-24','NLRC-NCR-02-00740-24','NLRC-NCR-02-00741-24','NLRC-NCR-02-00742-24','NLRC-NCR-02-00743-24','NLRC-NCR-02-00744-24','NLRC-NCR-02-00745-24','NLRC-NCR-02-00746-24','NLRC-NCR-02-00747-24','NLRC-NCR-02-00748-24','NLRC-NCR-02-00749-24','NLRC-NCR-02-00750-24','NLRC-NCR-02-00751-24','NLRC-NCR-02-00752-24','NLRC-NCR-02-00753-24','NLRC-NCR-02-00754-24','NLRC-NCR-02-00755-24','NLRC-NCR-02-00756-24','NLRC-NCR-02-00757-24','NLRC-NCR-02-00758-24','NLRC-NCR-02-00759-24','NLRC-NCR-02-00760-24','NLRC-NCR-02-00761-24','NLRC-NCR-02-00762-24','NLRC-NCR-02-00763-24','NLRC-NCR-02-00764-24','NLRC-NCR-02-00765-24','NLRC-NCR-02-00766-24','NLRC-NCR-02-00767-24','NLRC-NCR-02-00768-24','NLRC-NCR-02-00769-24','NLRC-NCR-02-00770-24','NLRC-NCR-02-00771-24','NLRC-NCR-02-00772-24','NLRC-NCR-02-00773-24','NLRC-NCR-02-00774-24','NLRC-NCR-02-00775-24','NLRC-NCR-02-00776-24','NLRC-NCR-02-00777-24','NLRC-NCR-02-00816-24','NLRC-NCR-02-00825-24','NLRC-NCR-02-00826-24','NLRC-NCR-02-00860-24','NLRC-NCR-02-00865-24','NLRC-NCR-02-00885-24','NLRC-NCR-02-00896-24','NLRC-NCR-02-00905-24','NLRC-NCR-02-00942-24','NLRC-NCR-02-00950-24','NLRC-NCR-02-00952-24','NLRC-NCR-02-00958-24','NLRC-NCR-02-01078-24','NLRC-NCR-02-01104-24','NLRC-NCR-02-01140-24','NLRC-NCR-03-00007-24','NLRC-NCR-03-00008-24','NLRC-NCR-03-00009-24','NLRC-NCR-03-00030-24','NLRC-NCR-03-00033-24','NLRC-NCR-03-00034-24','NLRC-NCR-03-00035-24',''NLRC-NCR-03-00082-24','NLRC-NCR-03-00083-24','NLRC-NCR-03-00084-24','NLRC-NCR-03-00085-24','NLRC-NCR-03-00086-24','NLRC-NCR-03-00091-24','NLRC-NCR-03-00188-24','NLRC-NCR-03-00235-24','NLRC-NCR-03-00282-24','NLRC-NCR-03-00284-24','NLRC-NCR-03-00339-24','NLRC-NCR-03-00416-24','NLRC-NCR-03-00417-24','NLRC-NCR-03-00418-24','NLRC-NCR-03-00419-24','NLRC-NCR-03-00420-24','NLRC-NCR-03-00421-24','NLRC-NCR-03-00422-24','NLRC-NCR-03-00423-24','NLRC-NCR-03-00424-24','NLRC-NCR-03-00425-24','NLRC-NCR-03-00426-24','NLRC-NCR-03-00427-24','NLRC-NCR-03-00453-24','NLRC-NCR-03-00462-24','NLRC-NCR-03-00464-24','NLRC-NCR-03-00465-24','NLRC-NCR-03-00466-24','NLRC-NCR-03-00502-24','NLRC-NCR-03-00542-24','NLRC-NCR-03-00545-24','NLRC-NCR-03-00546-24','NLRC-NCR-03-00547-24','NLRC-NCR-03-00610-24','NLRC-NCR-03-00613-24','NLRC-NCR-03-00623-24','NLRC-NCR-03-00624-24','NLRC-NCR-03-00625-24','NLRC-NCR-03-00626-24','NLRC-NCR-03-00667-24','NLRC-NCR-03-00675-24','NLRC-NCR-03-00676-24','NLRC-NCR-03-00679-24','NLRC-NCR-03-00688-24','NLRC-NCR-03-00726-24','NLRC-NCR-03-00728-24','NLRC-NCR-03-00729-24','NLRC-NCR-03-00749-24','NLRC-NCR-03-00750-24','NLRC-NCR-03-00751-24','NLRC-NCR-03-00752-24','NLRC-NCR-03-00755-24','NLRC-NCR-03-00756-24','NLRC-NCR-03-00757-24','NLRC-NCR-03-00777-24','NLRC-NCR-03-00809-24','NLRC-NCR-03-00826-24','NLRC-NCR-03-00830-24','NLRC-NCR-03-00831-24','NLRC-NCR-03-00832-24','NLRC-NCR-03-00833-24','NLRC-NCR-03-00834-24','NLRC-NCR-03-00835-24','NLRC-NCR-03-00836-24','NLRC-NCR-03-00837-24','NLRC-NCR-03-00838-24','NLRC-NCR-03-00839-24','NLRC-NCR-03-00840-24','NLRC-NCR-03-00841-24','NLRC-NCR-03-00842-24','NLRC-NCR-03-00843-24','NLRC-NCR-03-00844-24','NLRC-NCR-03-00845-24','NLRC-NCR-03-00904-24','NLRC-NCR-05-00248-24','NLRC-NCR-05-00249-24','NLRC-NCR-05-00307-24',
+
+191339,176794,176796,179670,179672,179673,180208,181197,181198,181199,181200,181201,181202,181203,181204,181207,181209,181211,181212,181213,181214,181215,181216,181217,181226,181227,181228,181229,181710,181711,181712,181713,184382,182050,182051,182052,182054,182055,182067,182290,182291,182292,188678,182293,182504,182652,182653,182654,182655,182656,182659,182676,182658,182660,182903,182904,182905,182907,185560,183107,183630,184320,184321,184671,184672,184673,184674,185553,185563,185554,185556,185557,185558,185564,185568,185570,185572,186123,186124,186125,186126,186127,186128,186129,186130,186131,186132,186133,186134,186135,186136,186138,186139,186140,186141,191351,186593,186594,186595,186596,189701,190717,187320,188099,188101,188102,188103,188104,188106,188107,188111,188113,188114,188761,188764,188765,188766,203997,189641,189636,189629,189553,189554,189555,189557,189559,189561,189563,189564,189565,189566,189567,189569,189570,189572,189573,189575,189576,189577,189579,189580,189581,189582,189584,189585,189587,189589,189591,189593,189594,189595,189596,189597,189598,189600,189603,189604,189605,189606,189607,189609,189611,189612,189613,189614,189615,189616,189618,189619,189620,189621,189623,189624,189626,189627,189948,190011,190014,190422,190992,190994,190993,190484,190877,191013,200433,191014,190980,202817,191555,191863,192167,192112,192113,192114,192333,192334,192335,192336,192337,192338,192339,192341,192342,192466,193023,193390,194042,194043,194046,194793,194794,194795,194799,194805,194806,194807,194808,194809,194811,194813,194814,197208,197204,195066,195095,195796,195065,195799,195800,195801,195803,195804,198421,196253,196255,196259,196262,196264,196269,196271,199565,196499,200195,199885,196925,196928,196930,196990,196992,196994,197007,197010,197011,197014,204349,198240,198285,198288,198289,198290,198291,198293,198295,198296,198297,198298,198299,198300,198301,198305,198310,198311,198312,198314,201175,203069,199087,203971,199086,199085,199084,199083,199082,199081,199080,199079,199280,199279,199278,199277,201459,199632,199631,199630,199629,199628,199627,199626,199625,199624,199623,199622,200004,200003,200002,200001,199999,199998,199997,199996,199995,199994,199993,199991,199990,199989,199988,199987,199986,200006,199985,200291,201145,201058,201144,201143,201057,201142,201141,201140,201139,201138,201137,201136,201135,201134,201133,201132,201131,201130,201129,201128,201127,201126,201125,201124,201123,201122,201121,201120,201119,200991,200990,200989,200988,201056,200987,200986,201118,201117,201116,200985,201115,201114,200984,201113,201112,201111,201110,201109,201108,201107,201106,201105,201104,201103,201102,201101,201100,201099,201098,201097,201096,201095,201094,201093,201092,201091,200983,201090,201089,201088,201087,201086,201085,201084,201083,201082,201081,201080,201079,201078,201077,201076,201075,201074,201073,201072,201071,200982,201055,201070,201069,201068,201067,201066,201065,201064,201063,201062,201061,201060,201033,201032,201031,201030,201029,201028,201027,201026,201025,201024,201023,201022,201021,201020,201019,201018,201017,201016,201015,201014,201013,201012,201011,201010,201009,201008,200845,200844,200843,200842,200841,200840,200839,200838,200837,200836,200835,200834,200833,200832,200831,200830,200829,200828,200827,200826,200825,200824,200823,201046,201045,201044,201007,201006,201054,201053,201052,201051,201050,201049,201048,201047,200822,200821,200820,200819,200818,200817,200816,200815,200814,200813,200812,201043,201042,201041,201040,201039,200811,200810,201038,201037,201036,201035,200981,200980,200979,200978,200977,200976,200992,201005,201004,201003,201002,201000,200999,200998,200997,200996,200995,200994,200975,200974,200973,200972,200968,200967,200966,200965,200971,200970,200964,200963,200962,200961,200960,200959,200777,200776,200775,200774,200773,200969,203248,201160,201159,201158,201157,201156,201155,201154,201153,201152,200926,200925,200924,200923,200922,200921,200920,200918,200917,200916,200915,200914,200913,200801,200800,200799,200798,200797,200796,200795,200912,200911,200794,200910,200909,200908,200907,200958,200957,200956,200955,200954,200953,200944,200943,200942,200941,200952,200951,200950,200879,200878,200877,200876,200875,200874,200873,200872,200871,200870,200869,200868,200867,200948,200947,200946,200945,200866,200865,200864,200863,200862,200861,200860,200859,200858,200940,200939,200809,200808,200807,200937,200936,200935,200934,200933,200932,200931,200930,200929,200906,200857,200901,200900,200899,200898,200897,200896,200895,200894,200893,200891,200889,200888,200887,200886,200885,200883,200882,204753,200856,200855,200853,200852,200851,200850,200849,200848,200847,200846,200804,200803,200793,200790,200789,200788,200787,200786,200791,200784,200782,200781,200780,200779,200778,201150,201388,201389,201387,201386,201385,201384,201383,201382,201381,201380,201379,201378,201377,201376,201758,201757,201756,201755,201754,201753,201752,201751,201750,201953,201749,201748,202064,202063,202062,202061,202060,202059,202395,202394,202393,202392,202391,202390,202389,202388,202686,202685,202684,202683,202682,202681,202680,202679,202678,202677,202676,202675,202674,202689,202972,202971,202970,202969,202968,202967,202966,202965,202964,202963,202962,202961,202960,203368,203367,203366,203365,203364,203363,203362,203361,203360,203359,203358,203357,203356,203355,203354,203353,203351,203680,203679,203678,203677,203676,203675,203674,203673,203672,204061,204060,204059,204058,205558,204443,209627,204442,204921,204920,204919,204918,204917,204915,204914,204913,205115,205114,205113,205112,205111,205110,210771,205109,205108,205107,205106,205105,205104,205103,205102,205101,205100,205099,205098,205097,205096,205095,205449,205448,205447,205446,205445,205444,205443,205442,205441,205440,205439,205438,207410,205612,205611,205610,205609,205608,205607,205606,205605,205604,210044,205897,205896,205895,205894,205893,205892,206138,206137,206136,211037,206135,206336,206335,206334,206333,206332,206331,206330,206329,206328,206327,206326,206325,206324,206323,206322,206321,206320,207369,207368,207367,207366,207365,207364,207363,207362,207361,207888,207887,207886,208264,208263,208262,208261,208260,208259,208258,208257,208895,208256,208255,208254,208253,208252,208251,208486,208485,208484,208483,208730,208729,208728,208727,208726,208725,208724,208723,208722,208991,208990,208989,209378,209377,209376,209375,209374,209373,209372,209371,209370,209369,209368,209704,209703,209702,209701,209700,209699,209698,209697,209696,209928,209927,209926,209925,209924,209923,209922,209921,209920,209919,209918,210148,210147,210146,210433,210432,210431,210430,210429,210428,210698,210697,210696,210695,210694,210917,210916,210915,210914,210913,210912,210911,211096,211095,211094,211093,211092,211091,211090,211089,211088,211087,211086,211085,211083,211082,211081,211080,211079,211492,211491,211490,211489,211488,211487,210676,199475,199782,199784,199751,199787,199753,199788,199758,199757,199792,199762,199764,184197,186152,205424,201569,201573,201656,201577,201671,201688
+
+191339
+176794
+176796
+179670
+179672
+179673
+180208
+181197
+181198
+181199
+181200
+181201
+181202
+181203
+181204
+181207
+181209
+181211
+181212
+181213
+181214
+181215
+181216
+181217
+181226
+181227
+181228
+181229
+181710
+181711
+181712
+181713
+184382
+182050
+182051
+182052
+182054
+182055
+182067
+182290
+182291
+182292
+188678
+182293
+182504
+182652
+182653
+182654
+182655
+182656
+182659
+182676
+182658
+182660
+182903
+182904
+182905
+182907
+185560
+183107
+183630
+184320
+184321
+184671
+184672
+184673
+184674
+185553
+185563
+185554
+185556
+185557
+185558
+185564
+185568
+185570
+185572
+186123
+186124
+186125
+186126
+186127
+186128
+186129
+186130
+186131
+186132
+186133
+186134
+186135
+186136
+186138
+186139
+186140
+186141
+191351
+186593
+186594
+186595
+186596
+189701
+190717
+187320
+188099
+188101
+188102
+188103
+188104
+188106
+188107
+188111
+188113
+188114
+188761
+188764
+188765
+188766
+203997
+189641
+189636
+189629
+189553
+189554
+189555
+189557
+189559
+189561
+189563
+189564
+189565
+189566
+189567
+189569
+189570
+189572
+189573
+189575
+189576
+189577
+189579
+189580
+189581
+189582
+189584
+189585
+189587
+189589
+189591
+189593
+189594
+189595
+189596
+189597
+189598
+189600
+189603
+189604
+189605
+189606
+189607
+189609
+189611
+189612
+189613
+189614
+189615
+189616
+189618
+189619
+189620
+189621
+189623
+189624
+189626
+189627
+189948
+190011
+190014
+190422
+190992
+190994
+190993
+190484
+190877
+191013
+200433
+191014
+190980
+202817
+191555
+191863
+192167
+192112
+192113
+192114
+192333
+192334
+192335
+192336
+192337
+192338
+192339
+192341
+192342
+192466
+193023
+193390
+194042
+194043
+194046
+194793
+194794
+194795
+194799
+194805
+194806
+194807
+194808
+194809
+194811
+194813
+194814
+197208
+197204
+195066
+195095
+195796
+195065
+195799
+195800
+195801
+195803
+195804
+198421
+196253
+196255
+196259
+196262
+196264
+196269
+196271
+199565
+196499
+200195
+199885
+196925
+196928
+196930
+196990
+196992
+196994
+197007
+197010
+197011
+197014
+204349
+198240
+198285
+198288
+198289
+198290
+198291
+198293
+198295
+198296
+198297
+198298
+198299
+198300
+198301
+198305
+198310
+198311
+198312
+198314
+201175
+203069
+199087
+203971
+199086
+199085
+199084
+199083
+199082
+199081
+199080
+199079
+199280
+199279
+199278
+199277
+201459
+199632
+199631
+199630
+199629
+199628
+199627
+199626
+199625
+199624
+199623
+199622
+200004
+200003
+200002
+200001
+199999
+199998
+199997
+199996
+199995
+199994
+199993
+199991
+199990
+199989
+199988
+199987
+199986
+200006
+199985
+200291
+201145
+201058
+201144
+201143
+201057
+201142
+201141
+201140
+201139
+201138
+201137
+201136
+201135
+201134
+201133
+201132
+201131
+201130
+201129
+201128
+201127
+201126
+201125
+201124
+201123
+201122
+201121
+201120
+201119
+200991
+200990
+200989
+200988
+201056
+200987
+200986
+201118
+201117
+201116
+200985
+201115
+201114
+200984
+201113
+201112
+201111
+201110
+201109
+201108
+201107
+201106
+201105
+201104
+201103
+201102
+201101
+201100
+201099
+201098
+201097
+201096
+201095
+201094
+201093
+201092
+201091
+200983
+201090
+201089
+201088
+201087
+201086
+201085
+201084
+201083
+201082
+201081
+201080
+201079
+201078
+201077
+201076
+201075
+201074
+201073
+201072
+201071
+200982
+201055
+201070
+201069
+201068
+201067
+201066
+201065
+201064
+201063
+201062
+201061
+201060
+201033
+201032
+201031
+201030
+201029
+201028
+201027
+201026
+201025
+201024
+201023
+201022
+201021
+201020
+201019
+201018
+201017
+201016
+201015
+201014
+201013
+201012
+201011
+201010
+201009
+201008
+200845
+200844
+200843
+200842
+200841
+200840
+200839
+200838
+200837
+200836
+200835
+200834
+200833
+200832
+200831
+200830
+200829
+200828
+200827
+200826
+200825
+200824
+200823
+201046
+201045
+201044
+201007
+201006
+201054
+201053
+201052
+201051
+201050
+201049
+201048
+201047
+200822
+200821
+200820
+200819
+200818
+200817
+200816
+200815
+200814
+200813
+200812
+201043
+201042
+201041
+201040
+201039
+200811
+200810
+201038
+201037
+201036
+201035
+200981
+200980
+200979
+200978
+200977
+200976
+200992
+201005
+201004
+201003
+201002
+201000
+200999
+200998
+200997
+200996
+200995
+200994
+200975
+200974
+200973
+200972
+200968
+200967
+200966
+200965
+200971
+200970
+200964
+200963
+200962
+200961
+200960
+200959
+200777
+200776
+200775
+200774
+200773
+200969
+203248
+201160
+201159
+201158
+201157
+201156
+201155
+201154
+201153
+201152
+200926
+200925
+200924
+200923
+200922
+200921
+200920
+200918
+200917
+200916
+200915
+200914
+200913
+200801
+200800
+200799
+200798
+200797
+200796
+200795
+200912
+200911
+200794
+200910
+200909
+200908
+200907
+200958
+200957
+200956
+200955
+200954
+200953
+200944
+200943
+200942
+200941
+200952
+200951
+200950
+200879
+200878
+200877
+200876
+200875
+200874
+200873
+200872
+200871
+200870
+200869
+200868
+200867
+200948
+200947
+200946
+200945
+200866
+200865
+200864
+200863
+200862
+200861
+200860
+200859
+200858
+200940
+200939
+200809
+200808
+200807
+200937
+200936
+200935
+200934
+200933
+200932
+200931
+200930
+200929
+200906
+200857
+200901
+200900
+200899
+200898
+200897
+200896
+200895
+200894
+200893
+200891
+200889
+200888
+200887
+200886
+200885
+200883
+200882
+204753
+200856
+200855
+200853
+200852
+200851
+200850
+200849
+200848
+200847
+200846
+200804
+200803
+200793
+200790
+200789
+200788
+200787
+200786
+200791
+200784
+200782
+200781
+200780
+200779
+200778
+201150
+201388
+201389
+201387
+201386
+201385
+201384
+201383
+201382
+201381
+201380
+201379
+201378
+201377
+201376
+201758
+201757
+201756
+201755
+201754
+201753
+201752
+201751
+201750
+201953
+201749
+201748
+202064
+202063
+202062
+202061
+202060
+202059
+202395
+202394
+202393
+202392
+202391
+202390
+202389
+202388
+202686
+202685
+202684
+202683
+202682
+202681
+202680
+202679
+202678
+202677
+202676
+202675
+202674
+202689
+202972
+202971
+202970
+202969
+202968
+202967
+202966
+202965
+202964
+202963
+202962
+202961
+202960
+203368
+203367
+203366
+203365
+203364
+203363
+203362
+203361
+203360
+203359
+203358
+203357
+203356
+203355
+203354
+203353
+203351
+203680
+203679
+203678
+203677
+203676
+203675
+203674
+203673
+203672
+204061
+204060
+204059
+204058
+205558
+204443
+209627
+204442
+204921
+204920
+204919
+204918
+204917
+204915
+204914
+204913
+205115
+205114
+205113
+205112
+205111
+205110
+210771
+205109
+205108
+205107
+205106
+205105
+205104
+205103
+205102
+205101
+205100
+205099
+205098
+205097
+205096
+205095
+205449
+205448
+205447
+205446
+205445
+205444
+205443
+205442
+205441
+205440
+205439
+205438
+207410
+205612
+205611
+205610
+205609
+205608
+205607
+205606
+205605
+205604
+210044
+205897
+205896
+205895
+205894
+205893
+205892
+206138
+206137
+206136
+211037
+206135
+206336
+206335
+206334
+206333
+206332
+206331
+206330
+206329
+206328
+206327
+206326
+206325
+206324
+206323
+206322
+206321
+206320
+207369
+207368
+207367
+207366
+207365
+207364
+207363
+207362
+207361
+207888
+207887
+207886
+208264
+208263
+208262
+208261
+208260
+208259
+208258
+208257
+208895
+208256
+208255
+208254
+208253
+208252
+208251
+208486
+208485
+208484
+208483
+208730
+208729
+208728
+208727
+208726
+208725
+208724
+208723
+208722
+208991
+208990
+208989
+209378
+209377
+209376
+209375
+209374
+209373
+209372
+209371
+209370
+209369
+209368
+209704
+209703
+209702
+209701
+209700
+209699
+209698
+209697
+209696
+209928
+209927
+209926
+209925
+209924
+209923
+209922
+209921
+209920
+209919
+209918
+210148
+210147
+210146
+210433
+210432
+210431
+210430
+210429
+210428
+210698
+210697
+210696
+210695
+210694
+210917
+210916
+210915
+210914
+210913
+210912
+210911
+211096
+211095
+211094
+211093
+211092
+211091
+211090
+211089
+211088
+211087
+211086
+211085
+211083
+211082
+211081
+211080
+211079
+211492
+211491
+211490
+211489
+211488
+211487
+210676
+199475
+199782
+199784
+199751
+199787
+199753
+199788
+199758
+199757
+199792
+199762
+199764
+184197
+186152
+205424
+201569
+201573
+201656
+201577
+201671
+201688
+
+'NLRC-NCR-02-00724-19',
+'NLRC-NCR-04-00786-19',
+'NLRC-NCR-05-00456-19',
+'NLRC-NCR-05-00660-19',
+'NLRC-NCR-07-00045-19',
+'NLRC-NCR-07-00516-19',
+'NLRC-NCR-01-00369-20',
+'NLRC-NCR-02-00200-20',
+'NLRC-NCR-02-00549-20',
+'NLRC-NCR-02-00816-20',
+'NLRC-NCR-02-00939-20',
+'NLRC-NCR-03-00130-20',
+'NLRC-NCR-01-00015-21',
+'NLRC-NCR-01-00194-21',
+'NLRC-NCR-01-00227-21',
+'NLRC-NCR-01-00280-21',
+'NLRC-NCR-01-00287-21',
+'NLRC-NCR-01-00308-21',
+'NLRC-NCR-01-00391-21',
+'NLRC-NCR-01-00393-21',
+'NLRC-NCR-01-00461-21',
+'NLRC-NCR-01-00700-21',
+'NLRC-NCR-01-00716-21',
+'NLRC-NCR-01-00733-21',
+'NLRC-NCR-01-00741-21',
+'NLRC-NCR-01-00757-21',
+'NLRC-NCR-01-00763-21',
+'NLRC-NCR-01-00894-21',
+'NLRC-NCR-01-00919-21',
+'NLRC-NCR-01-01005-21',
+'NLRC-NCR-01-00945-21',
+'NLRC-NCR-01-00961-21',
+'NLRC-NCR-01-00980-21',
+'NLRC-NCR-01-00983-21',
+'NLRC-NCR-01-01010-21',
+'NLRC-NCR-01-01027-21',
+'NLRC-NCR-01-01028-21',
+'NLRC-NCR-01-01045-21',
+'NLRC-NCR-01-01056-21',
+'NLRC-NCR-01-01147-21',
+'NLRC-NCR-01-01158-21',
+'NLRC-NCR-01-01225-21',
+'NLRC-NCR-01-01227-21',
+'NLRC-NCR-01-01236-21',
+'NLRC-NCR-01-01264-21',
+'NLRC-NCR-01-01290-21',
+'NLRC-NCR-01-01301-21',
+'NLRC-NCR-01-01306-21',
+'NLRC-NCR-01-01319-21',
+'NLRC-NCR-01-01332-21',
+'NLRC-NCR-01-01391-21',
+'NLRC-NCR-01-01474-21',
+'NLRC-NCR-01-01506-21',
+'NLRC-NCR-01-01511-21',
+'NLRC-NCR-01-01519-21',
+'NLRC-NCR-01-01527-21',
+'NLRC-NCR-01-01536-21',
+'NLRC-NCR-01-01571-21',
+'NLRC-NCR-01-01586-21',
+'NLRC-NCR-01-01588-21',
+'NLRC-NCR-01-01600-21',
+'NLRC-NCR-01-01654-21',
+'NLRC-NCR-01-01661-21',
+'NLRC-NCR-01-01694-21',
+'NLRC-NCR-01-01702-21',
+'NLRC-NCR-01-01709-21',
+'NLRC-NCR-01-01712-21',
+'NLRC-NCR-01-01740-21',
+'NLRC-NCR-02-00031-21',
+'NLRC-NCR-02-00038-21',
+'NLRC-NCR-02-00043-21',
+'NLRC-NCR-02-00058-21',
+'NLRC-NCR-02-00075-21',
+'NLRC-NCR-02-00074-21',
+'NLRC-NCR-02-00083-21',
+'NLRC-NCR-02-00085-21',
+'NLRC-NCR-02-00111-21',
+'NLRC-NCR-02-00118-21',
+'NLRC-NCR-02-00138-21',
+'NLRC-NCR-02-00148-21',
+'NLRC-NCR-02-00266-21',
+'NLRC-NCR-02-00289-21',
+'NLRC-NCR-02-00307-21',
+'NLRC-NCR-02-00317-21',
+'NLRC-NCR-02-00373-21',
+'NLRC-NCR-02-00423-21',
+'NLRC-NCR-02-00429-21',
+'NLRC-NCR-02-00443-21',
+'NLRC-NCR-02-00450-21',
+'NLRC-NCR-02-00461-21',
+'NLRC-NCR-02-00669-21',
+'NLRC-NCR-02-00479-21',
+'NLRC-NCR-02-00501-21',
+'NLRC-NCR-02-00618-21',
+'NLRC-NCR-02-00629-21',
+'NLRC-NCR-02-00637-21',
+'NLRC-NCR-02-00661-21',
+'NLRC-NCR-02-00670-21',
+'NLRC-NCR-02-00673-21',
+'NLRC-NCR-02-00679-21',
+'NLRC-NCR-02-00716-21',
+'NLRC-NCR-02-00738-21',
+'NLRC-NCR-02-00763-21',
+'NLRC-NCR-02-00765-21',
+'NLRC-NCR-02-00777-21',
+'NLRC-NCR-02-00781-21',
+'NLRC-NCR-02-00839-21',
+'NLRC-NCR-02-00842-21',
+'NLRC-NCR-02-00851-21',
+'NLRC-NCR-02-00857-21',
+'NLRC-NCR-02-00873-21',
+'NLRC-NCR-02-00905-21',
+'NLRC-NCR-02-00912-21',
+'NLRC-NCR-02-00910-21',
+'NLRC-NCR-02-00926-21',
+'NLRC-NCR-02-00977-21',
+'NLRC-NCR-02-00987-21',
+'NLRC-NCR-02-01018-21',
+'NLRC-NCR-02-01036-21',
+'NLRC-NCR-02-01037-21',
+'NLRC-NCR-02-01039-21',
+'NLRC-NCR-02-01067-21',
+'NLRC-NCR-02-01075-21',
+'NLRC-NCR-02-01085-21',
+'NLRC-NCR-02-01107-21',
+'NLRC-NCR-02-01109-21',
+'NLRC-NCR-02-01115-21',
+'NLRC-NCR-02-01133-21',
+'NLRC-NCR-02-01137-21',
+'NLRC-NCR-02-01141-21',
+'NLRC-NCR-02-01142-21',
+'NLRC-NCR-02-01144-21',
+'NLRC-NCR-02-01158-21',
+'NLRC-NCR-02-01165-21',
+'NLRC-NCR-02-01168-21',
+'NLRC-NCR-02-01176-21',
+'NLRC-NCR-02-01183-21',
+'NLRC-NCR-02-01192-21',
+'NLRC-NCR-02-01217-21',
+'NLRC-NCR-02-01243-21',
+'NLRC-NCR-02-01263-21',
+'NLRC-NCR-02-01264-21',
+'NLRC-NCR-02-01281-21',
+'NLRC-NCR-02-01315-21',
+'NLRC-NCR-02-01351-21',
+'NLRC-NCR-02-01357-21',
+'NLRC-NCR-02-01358-21',
+'NLRC-NCR-02-01367-21',
+'NLRC-NCR-02-01373-21',
+'NLRC-NCR-02-01377-21',
+'NLRC-NCR-02-01406-21',
+'NLRC-NCR-02-01414-21',
+'NLRC-NCR-02-01422-21',
+'NLRC-NCR-02-01428-21',
+'NLRC-NCR-02-01507-21',
+'NLRC-NCR-03-00001-21',
+'NLRC-NCR-03-00020-21',
+'NLRC-NCR-03-00031-21',
+'NLRC-NCR-03-00030-21',
+'NLRC-NCR-03-00078-21',
+'NLRC-NCR-03-00101-21',
+'NLRC-NCR-03-00157-21',
+'NLRC-NCR-03-00188-21',
+'NLRC-NCR-03-00206-21',
+'NLRC-NCR-03-00210-21',
+'NLRC-NCR-03-00218-21',
+'NLRC-NCR-03-00228-21',
+'NLRC-NCR-03-00231-21',
+'NLRC-NCR-03-00237-21',
+'NLRC-NCR-03-00304-21',
+'NLRC-NCR-03-00337-21',
+'NLRC-NCR-03-00339-21',
+'NLRC-NCR-03-00354-21',
+'NLRC-NCR-03-00357-21',
+'NLRC-NCR-03-00359-21',
+'NLRC-NCR-03-00360-21',
+'NLRC-NCR-03-00386-21',
+'NLRC-NCR-03-00387-21',
+'NLRC-NCR-03-00414-21',
+'NLRC-NCR-03-00437-21',
+'NLRC-NCR-03-00440-21',
+'NLRC-NCR-03-00451-21',
+'NLRC-NCR-03-00465-21',
+'NLRC-NCR-03-00468-21',
+'NLRC-NCR-03-00483-21',
+'NLRC-NCR-03-00494-21',
+'NLRC-NCR-03-00497-21',
+'NLRC-NCR-03-00504-21',
+'NLRC-NCR-03-00513-21',
+'NLRC-NCR-03-00530-21',
+'NLRC-NCR-03-00554-21',
+'NLRC-NCR-03-00555-21',
+'NLRC-NCR-03-00556-21',
+'NLRC-NCR-03-00562-21',
+'NLRC-NCR-03-00568-21',
+'NLRC-NCR-03-00570-21',
+'NLRC-NCR-03-00576-21',
+'NLRC-NCR-03-00584-21',
+'NLRC-NCR-03-00577-21',
+'NLRC-NCR-03-00595-21',
+'NLRC-NCR-03-00598-21',
+'NLRC-NCR-03-00599-21',
+'NLRC-NCR-03-00603-21',
+'NLRC-NCR-03-00601-21',
+'NLRC-NCR-03-00604-21',
+'NLRC-NCR-03-00609-21',
+'NLRC-NCR-03-00632-21',
+'NLRC-NCR-03-00633-21',
+'NLRC-NCR-03-00649-21',
+'NLRC-NCR-03-00651-21',
+'NLRC-NCR-03-00669-21',
+'NLRC-NCR-03-00677-21',
+'NLRC-NCR-03-00678-21',
+'NLRC-NCR-03-00689-21',
+'NLRC-NCR-03-00705-21',
+'NLRC-NCR-03-00722-21',
+'NLRC-NCR-03-00725-21',
+'NLRC-NCR-03-00771-21',
+'NLRC-NCR-03-00840-21',
+'NLRC-NCR-03-00843-21',
+'NLRC-NCR-03-00856-21',
+'NLRC-NCR-03-00945-21',
+'NLRC-NCR-03-00969-21',
+'NLRC-NCR-03-00975-21',
+'NLRC-NCR-03-00980-21',
+'NLRC-NCR-03-01003-21',
+'NLRC-NCR-03-01016-21',
+'NLRC-NCR-03-01032-21',
+'NLRC-NCR-03-01054-21',
+'NLRC-NCR-03-01066-21',
+'NLRC-NCR-03-01084-21',
+'NLRC-NCR-03-01129-21',
+'NLRC-NCR-03-01146-21',
+'NLRC-NCR-03-01152-21',
+'NLRC-NCR-03-01161-21',
+'NLRC-NCR-03-01215-21',
+'NLRC-NCR-03-01224-21',
+'NLRC-NCR-03-01227-21',
+'NLRC-NCR-03-01254-21',
+'NLRC-NCR-03-01261-21',
+'NLRC-NCR-03-01267-21',
+'NLRC-NCR-03-01269-21',
+'NLRC-NCR-03-01274-21',
+'NLRC-NCR-03-01275-21',
+'NLRC-NCR-03-01307-21',
+'NLRC-NCR-03-01310-21',
+'NLRC-NCR-03-01319-21',
+'NLRC-NCR-03-01356-21',
+'NLRC-NCR-03-01357-21',
+'NLRC-NCR-03-01361-21',
+'NLRC-NCR-03-01370-21',
+'NLRC-NCR-03-01374-21',
+'NLRC-NCR-03-01434-21',
+'NLRC-NCR-03-01436-21',
+'NLRC-NCR-03-01514-21',
+'NLRC-NCR-03-01640-21',
+'NLRC-NCR-03-01642-21',
+'NLRC-NCR-03-01659-21',
+'NLRC-NCR-03-01666-21',
+'NLRC-NCR-03-01674-21',
+'NLRC-NCR-03-01683-21',
+'NLRC-NCR-03-01698-21',
+'NLRC-NCR-03-01699-21',
+'NLRC-NCR-03-01702-21',
+'NLRC-NCR-03-01703-21',
+'NLRC-NCR-03-01717-21',
+'NLRC-NCR-03-01740-21',
+'NLRC-NCR-03-01743-21',
+'NLRC-NCR-03-01746-21',
+'NLRC-NCR-03-01751-21',
+'NLRC-NCR-03-01755-21',
+'NLRC-NCR-03-01757-21',
+'NLRC-NCR-03-01759-21',
+'NLRC-NCR-03-01760-21',
+'NLRC-NCR-03-01763-21',
+'NLRC-NCR-03-01765-21',
+'NLRC-NCR-03-01766-21',
+'NLRC-NCR-03-01769-21',
+'NLRC-NCR-03-01770-21',
+'NLRC-NCR-03-01773-21',
+'NLRC-NCR-03-01782-21',
+'NLRC-NCR-03-01829-21',
+'NLRC-NCR-03-01875-21',
+'NLRC-NCR-03-01882-21',
+'NLRC-NCR-03-01885-21',
+'NLRC-NCR-03-01889-21',
+'NLRC-NCR-03-01893-21',
+'NLRC-NCR-03-01897-21',
+'NLRC-NCR-03-01972-21',
+'NLRC-NCR-03-01974-21',
+'NLRC-NCR-03-01975-21',
+'NLRC-NCR-03-01977-21',
+'NLRC-NCR-03-01979-21',
+'NLRC-NCR-03-01984-21',
+'NLRC-NCR-03-01985-21',
+'NLRC-NCR-03-01993-21',
+'NLRC-NCR-03-02000-21',
+'NLRC-NCR-03-02005-21',
+'NLRC-NCR-03-02032-21',
+'NLRC-NCR-03-02034-21',
+'NLRC-NCR-03-02036-21',
+'NLRC-NCR-03-02048-21',
+'NLRC-NCR-03-02057-21',
+'NLRC-NCR-03-02060-21',
+'NLRC-NCR-03-02144-21',
+'NLRC-NCR-03-02160-21',
+'NLRC-NCR-03-02181-21',
+'NLRC-NCR-03-02182-21',
+'NLRC-NCR-03-02184-21',
+'NLRC-NCR-03-02200-21',
+'NLRC-NCR-03-02231-21',
+'NLRC-NCR-03-02240-21',
+'NLRC-NCR-03-02297-21',
+'NLRC-NCR-03-02302-21',
+'NLRC-NCR-04-00030-21',
+'NLRC-NCR-04-00032-21',
+'NLRC-NCR-04-00058-21',
+'NLRC-NCR-04-00061-21',
+'NLRC-NCR-04-00063-21',
+'NLRC-NCR-04-00066-21',
+'NLRC-NCR-04-00078-21',
+'NLRC-NCR-04-00081-21',
+'NLRC-NCR-04-00116-21',
+'NLRC-NCR-04-00119-21',
+'NLRC-NCR-04-00121-21',
+'NLRC-NCR-04-00122-21',
+'NLRC-NCR-04-00156-21',
+'NLRC-NCR-04-00161-21',
+'NLRC-NCR-04-00162-21',
+'NLRC-NCR-04-00166-21',
+'NLRC-NCR-04-00180-21',
+'NLRC-NCR-04-00209-21',
+'NLRC-NCR-04-00283-21',
+'NLRC-NCR-04-00422-21',
+'NLRC-NCR-04-00433-21',
+'NLRC-NCR-04-00446-21',
+'NLRC-NCR-04-00453-21',
+'NLRC-NCR-04-00469-21',
+'NLRC-NCR-04-00490-21',
+'NLRC-NCR-04-00502-21',
+'NLRC-NCR-04-00516-21',
+'NLRC-NCR-04-00519-21',
+'NLRC-NCR-04-00520-21',
+'NLRC-NCR-04-00544-21',
+'NLRC-NCR-04-00553-21',
+'NLRC-NCR-04-00555-21',
+'NLRC-NCR-04-00554-21',
+'NLRC-NCR-04-00562-21',
+'NLRC-NCR-04-00571-21',
+'NLRC-NCR-04-00572-21',
+'NLRC-NCR-04-00580-21',
+'NLRC-NCR-04-00585-21',
+'NLRC-NCR-04-00605-21',
+'NLRC-NCR-04-00666-21',
+'NLRC-NCR-04-00693-21',
+'NLRC-NCR-04-00712-21',
+'NLRC-NCR-04-00719-21',
+'NLRC-NCR-04-00724-21',
+'NLRC-NCR-04-00749-21',
+'NLRC-NCR-04-00751-21',
+'NLRC-NCR-04-00770-21',
+'NLRC-NCR-04-00779-21',
+'NLRC-NCR-04-00805-21',
+'NLRC-NCR-04-00806-21',
+'NLRC-NCR-04-00865-21',
+'NLRC-NCR-04-00876-21',
+'NLRC-NCR-04-00905-21',
+'NLRC-NCR-04-00931-21',
+'NLRC-NCR-04-00944-21',
+'NLRC-NCR-04-01017-21',
+'NLRC-NCR-04-01018-21',
+'NLRC-NCR-04-01026-21',
+'NLRC-NCR-04-01029-21',
+'NLRC-NCR-04-01038-21',
+'NLRC-NCR-04-01096-21',
+'NLRC-NCR-04-01139-21',
+'NLRC-NCR-04-01193-21',
+'NLRC-NCR-04-01208-21',
+'NLRC-NCR-04-01240-21',
+'NLRC-NCR-04-01300-21',
+'NLRC-NCR-04-01311-21',
+'NLRC-NCR-04-01312-21',
+'NLRC-NCR-04-01315-21',
+'NLRC-NCR-04-01316-21',
+'NLRC-NCR-04-01327-21',
+'NLRC-NCR-04-01334-21',
+'NLRC-NCR-04-01335-21',
+'NLRC-NCR-04-01338-21',
+'NLRC-NCR-04-01344-21',
+'NLRC-NCR-04-01368-21',
+'NLRC-NCR-04-01372-21',
+'NLRC-NCR-04-01380-21',
+'NLRC-NCR-04-01381-21',
+'NLRC-NCR-04-01383-21',
+'NLRC-NCR-05-00003-21',
+'NLRC-NCR-05-00035-21',
+'NLRC-NCR-05-00051-21',
+'NLRC-NCR-05-00054-21',
+'NLRC-NCR-05-00061-21',
+'NLRC-NCR-05-00074-21',
+'NLRC-NCR-05-00080-21',
+'NLRC-NCR-05-00133-21',
+'NLRC-NCR-05-00225-21',
+'NLRC-NCR-05-00224-21',
+'NLRC-NCR-05-00350-21',
+'NLRC-NCR-05-00370-21',
+'NLRC-NCR-05-00390-21',
+'NLRC-NCR-05-00395-21',
+'NLRC-NCR-05-00437-21',
+'NLRC-NCR-05-00443-21',
+'NLRC-NCR-05-00451-21',
+'NLRC-NCR-05-00470-21',
+'NLRC-NCR-05-00522-21',
+'NLRC-NCR-05-00525-21',
+'NLRC-NCR-05-00548-21',
+'NLRC-NCR-05-00558-21',
+'NLRC-NCR-05-00559-21',
+'NLRC-NCR-05-00563-21',
+'NLRC-NCR-05-00564-21',
+'NLRC-NCR-05-00572-21',
+'NLRC-NCR-05-00594-21',
+'NLRC-NCR-05-00595-21',
+'NLRC-NCR-05-00626-21',
+'NLRC-NCR-05-00651-21',
+'NLRC-NCR-05-00662-21',
+'NLRC-NCR-05-00870-21',
+'NLRC-NCR-05-00873-21',
+'NLRC-NCR-05-00879-21',
+'NLRC-NCR-05-00931-21',
+'NLRC-NCR-05-00933-21',
+'NLRC-NCR-05-00936-21',
+'NLRC-NCR-05-00943-21',
+'NLRC-NCR-05-01058-21',
+'NLRC-NCR-05-01065-21',
+'NLRC-NCR-05-01073-21',
+'NLRC-NCR-05-01078-21',
+'NLRC-NCR-05-01086-21',
+'NLRC-NCR-05-01165-21',
+'NLRC-NCR-05-01241-21',
+'NLRC-NCR-05-01277-21',
+'NLRC-NCR-05-01279-21',
+'NLRC-NCR-05-01293-21',
+'NLRC-NCR-05-01328-21',
+'NLRC-NCR-05-01333-21',
+'NLRC-NCR-05-01385-21',
+'NLRC-NCR-05-01446-21',
+'NLRC-NCR-05-01534-21',
+'NLRC-NCR-05-01626-21',
+'NLRC-NCR-05-01628-21',
+'NLRC-NCR-05-01635-21',
+'NLRC-NCR-05-01758-21',
+'NLRC-NCR-05-01761-21',
+'NLRC-NCR-05-01763-21',
+'NLRC-NCR-05-01772-21',
+'NLRC-NCR-05-01788-21',
+'NLRC-NCR-05-01804-21',
+'NLRC-NCR-05-01819-21',
+'NLRC-NCR-05-01833-21',
+'NLRC-NCR-06-00095-21',
+'NLRC-NCR-06-00100-21',
+'NLRC-NCR-06-00141-21',
+'NLRC-NCR-06-00142-21',
+'NLRC-NCR-06-00143-21',
+'NLRC-NCR-06-00201-21',
+'NLRC-NCR-06-00216-21',
+'NLRC-NCR-06-00273-21',
+'NLRC-NCR-06-00282-21',
+'NLRC-NCR-06-00285-21',
+'NLRC-NCR-06-00331-21',
+'NLRC-NCR-06-00307-21',
+'NLRC-NCR06-00312-21',
+'NLRC-NCR-06-00314-21',
+'NLRC-NCR-06-00394-21',
+'NLRC-NCR-06-00401-21',
+'NLRC-NCR-06-00421-21',
+'NLRC-NCR-06-00446-21',
+'NLRC-NCR-06-00457-21',
+'NLRC-NCR-06-00468-21',
+'NLRC-NCR-06-00568-21',
+'NLRC-NCR-06-00609-21',
+'NLRC-NCR-06-00773-21',
+'NLRC-NCR-06-00849-21',
+'NLRC-NCR-06-00860-21',
+'NLRC-NCR-06-00877-21',
+'NLRC-NCR-06-00962-21',
+'NLRC-NCR-06-00963-21',
+'NLRC-NCR-06-00976-21',
+'NLRC-NCR-06-01268-21',
+'NLRC-NCR-06-01277-21',
+'NLRC-NCR-06-01276-21',
+'NLRC-NCR-06-01359-21',
+'NLRC-NCR-06-01368-21',
+'NLRC-NCR-06-01369-21',
+'NLRC-NCR-06-01374-21',
+'NLRC-NCR-06-01397-21',
+'NLRC-NCR-06-01402-21',
+'NLRC-NCR-06-01414-21',
+'NLRC-NCR-06-01458-21',
+'NLRC-NCR-06-01468-21',
+'NLRC-NCR-06-01475-21',
+'NLRC-NCR-06-01502-21',
+'NLRC-NCR-06-01504-21',
+'NLRC-NCR-07-00010-21',
+'NLRC-NCR-07-00038-21',
+'NLRC-NCR-07-00051-21',
+'NLRC-NCR-07-00081-21',
+'NLRC-NCR-07-00092-21',
+'NLRC-NCR-07-00105-21',
+'NLRC-NCR-07-00149-21',
+'NLRC-NCR-07-00150-21',
+'NLRC-NCR-07-00396-21',
+'NLRC-NCR-07-00407-21',
+'NLRC-NCR-07-00408-21',
+'NLRC-NCR-07-00412-21',
+'NLRC-NCR-07-00417-21',
+'NLRC-NCR-07-00472-21',
+'NLRC-NCR-07-00564-21',
+'NLRC-NCR-07-00582-21',
+'NLRC-NCR-07-00722-21',
+'NLRC-NCR-07-00723-21',
+'NLRC-NCR-07-00743-21',
+'NLRC-NCR-07-00800-21',
+'NLRC-NCR-07-00815-21',
+'NLRC-NCR-07-00854-21',
+'NLRC-NCR-07-00873-21',
+'NLRC-NCR-07-00957-21',
+'NLRC-NCR-07-01001-21',
+'NLRC-NCR-07-01019-21',
+'NLRC-NCR-07-01051-21',
+'NLRC-NCR-07-01054-21',
+'NLRC-NCR-07-01068-21',
+'NLRC-NCR-07-01110-21',
+'NLRC-NCR-07-01155-21',
+'NLRC-NCR-07-01161-21',
+'NLRC-NCR-07-01181-21',
+'NLRC-NCR-07-01194-21',
+'NLRC-NCR-07-01285-21',
+'NLRC-NCR-07-01288-21',
+'NLRC-NCR-07-01326-21',
+'NLRC-NCR-07-01359-21',
+'NLRC-NCR-07-01416-21',
+'NLRC-NCR-07-01431-21',
+'NLRC-NCR-07-01444-21',
+'NLRC-NCR-07-01475-21',
+'NLRC-NCR-07-01570-21',
+'NLRC-NCR-07-01581-21',
+'NLRC-NCR-08-00039-21',
+'NLRC-NCR-08-00060-21',
+'NLRC-NCR-08-00063-21',
+'NLRC-NCR-08-00097-21',
+'NLRC-NCR-08-00102-21',
+'NLRC-NCR-08-00134-21',
+'NLRC-NCR-08-00312-21',
+'NLRC-NCR-08-00315-21',
+'NLRC-NCR-08-00316-21',
+'NLRC-NCR-08-00461-21',
+'NLRC-NCR-08-00537-21',
+'NLRC-NCR-08-00593-21',
+'NLRC-NCR-08-00656-21',
+'NLRC-NCR-08-01212-21',
+'NLRC-NCR-08-01218-21',
+'NLRC-NCR-08-01242-21',
+'NLRC-NCR-08-01301-21',
+'NLRC-NCR-08-01316-21',
+'NLRC-NCR-08-01430-21',
+'NLRC-NCR-08-01444-21',
+'NLRC-NCR-08-01473-21',
+'NLRC-NCR-08-01479-21',
+'NLRC-NCR-08-01580-21',
+'NLRC-NCR-08-01597-21',
+'NLRC-NCR-08-01610-21',
+'NLRC-NCR-08-01808-21',
+'NLRC-NCR-08-01866-21',
+'NLRC-NCR-08-01870-21',
+'NLRC-NCR-08-01938-21',
+'NLRC-NCR-08-01939-21',
+'NLRC-NCR-09-00010-21',
+'NLRC-NCR-09-00044-21',
+'NLRC-NCR-09-00045-21',
+'NLRC-NCR-09-00097-21',
+'NLRC-NCR-09-00103-21',
+'NLRC-NCR-09-00157-21',
+'NLRC-NCR-09-00164-21',
+'NLRC-NCR-09-00174-21',
+'NLRC-NCR-09-00260-21',
+'NLRC-NCR-09-00272-21',
+'NLRC-NCR-09-00531-21',
+'NLRC-NCR-09-00533-21',
+'NLRC-NCR-09-00543-21',
+'NLRC-NCR-09-00545-21',
+'NLRC-NCR-09-00586-21',
+'NLRC-NCR-09-00592-21',
+'NLRC-NCR-09-00599-21',
+'NLRC-NCR-09-00611-21',
+'NLRC-NCR-09-00632-21',
+'NLRC-NCR-09-00702-21',
+'NLRC-NCR-09-00888-21',
+'NLRC-NCR-09-00929-21',
+'NLRC-NCR-09-00950-21',
+'NLRC-NCR-09-00960-21',
+'NLRC-NCR-09-00964-21',
+'NLRC-NCR-09-01074-21',
+'NLRC-NCR-09-01148-21',
+'NLRC-NCR-09-01278-21',
+'NLRC-NCR-09-01292-21',
+'NLRC-NCR-09-01295-21',
+'NLRC-NCR-09-01354-21',
+'NLRC-NCR-09-01745-21',
+'NLRC-NCR-09-01814-21',
+'NLRC-NCR-10-00010-21',
+'NLRC-NCR-10-00051-21',
+'NLRC-NCR-10-00057-21',
+'NLRC-NCR-10-00110-21',
+'NLRC-NCR-10-00217-21',
+'NLRC-NCR-10-00218-21',
+'NLRC-NCR-10-00225-21',
+'NLRC-NCR-10-00309-21',
+'NLRC-NCR-10-00353-21',
+'NLRC-NCR-10-00369-21',
+'NLRC-NCR-10-00409-21',
+'NLRC-NCR-10-00413-21',
+'NLRC-NCR-10-00432-21',
+'NLRC-NCR-10-00434-21',
+'NLRC-NCR-10-00509-21',
+'NLRC-NCR-10-00515-21',
+'NLRC-NCR-10-00572-21',
+'NLRC-NCR-10-00582-21',
+'NLRC-NCR-10-00655-21',
+'NLRC-NCR-10-00660-21',
+'NLRC-NCR-10-00684-21',
+'NLRC-NCR-10-00685-21',
+'NLRC-NCR-10-00715-21',
+'NLRC-NCR-10-00726-21',
+'NLRC-NCR-10-00810-21',
+'NLRC-NCR-10-00853-21',
+'NLRC-NCR-10-00981-21',
+'NLRC-NCR-10-00987-21',
+'NLRC-NCR-10-00999-21',
+'NLRC-NCR-10-01284-21',
+'NLRC-NCR-10-01286-21',
+'NLRC-NCR-10-01301-21',
+'NLRC-NCR-10-01302-21',
+'NLRC-NCR-10-01381-21',
+'NLRC-NCR-10-01394-21',
+'NLRC-NCR-10-01452-21',
+'NLRC-NCR-10-01490-21',
+'NLRC-NCR-10-01511-21',
+'NLRC-NCR-10-01528-21',
+'NLRC-NCR-11-00060-21',
+'NLRC-NCR-11-00073-21',
+'NLRC-NCR-11-00119-21',
+'NLRC-NCR-11-00157-21',
+'NLRC-NCR-11-00169-21',
+'NLRC-NCR-11-00171-21',
+'NLRC-NCR-11-00193-21',
+'NLRC-NCR-11-00209-21',
+'NLRC-NCR-11-00233-21',
+'NLRC-NCR-11-00258-21',
+'NLRC-NCR-11-00265-21',
+'NLRC-NCR-11-00275-21',
+'NLRC-NCR-11-00281-21',
+'NLRC-NCR-11-00338-21',
+'NLRC-NCR-11-00351-21',
+'NLRC-NCR-11-00380-21',
+'NLRC-NCR-11-00391-21',
+'NLRC-NCR-11-00396-21',
+'NLRC-NCR-11-00406-21',
+'NLRC-NCR-11-00425-21',
+'NLRC-NCR-11-00481-21',
+'NLRC-NCR-11-00500-21',
+'NLRC-NCR-11-00503-21',
+'NLRC-NCR-11-00504-21',
+'NLRC-NCR-11-00506-21',
+'NLRC-NCR-11-00507-21',
+'NLRC-NCR-11-00513-21',
+'NLRC-NCR-11-00514-21',
+'NLRC-NCR-11-00534-21',
+'NLRC-NCR-11-00583-21',
+'NLRC-NCR-11-00589-21',
+'NLRC-NCR-11-00591-21',
+'NLRC-NCR-11-00779-21',
+'NLRC-NCR-11-00781-21',
+'NLRC-NCR-11-00784-21',
+'NLRC-NCR-11-00785-21',
+'NLRC-NCR-11-00816-21',
+'NLRC-NCR-11-00825-21',
+'NLRC-NCR-11-00826-21',
+'NLRC-NCR-11-00833-21',
+'NLRC-NCR-11-00876-21',
+'NLRC-NCR-11-00879-21',
+'NLRC-NCR-11-00900-21',
+'NLRC-NCR-11-00913-21',
+'NLRC-NCR-11-01025-21',
+'NLRC-NCR-11-01067-21',
+'NLRC-NCR-11-01081-21',
+'NLRC-NCR-11-01122-21',
+'NLRC-NCR-11-01143-21',
+'NLRC-NCR-11-01194-21',
+'NLRC-NCR-11-01215-21',
+'NLRC-NCR-11-01237-21',
+'NLRC-NCR-12-00001-21',
+'NLRC-NCR-12-00009-21',
+'NLRC-NCR-12-00013-21',
+'NLRC-NCR-12-00018-21',
+'NLRC-NCR-12-00082-21',
+'NLRC-NCR-12-00113-21',
+'NLRC-NCR-12-00114-21',
+'NLRC-NCR-12-00132-21',
+'NLRC-NCR-12-00160-21',
+'NLRC-NCR-12-00176-21',
+'NLRC-NCR-12-00185-21',
+'NLRC-NCR-12-00198-21',
+'NLRC-NCR-12-00364-21',
+'NLRC-NCR-12-00377-21',
+'NLRC-NCR-12-00380-21',
+'NLRC-NCR-12-00505-21',
+'NLRC-NCR-12-00507-21',
+'NLRC-NCR-12-00624-21',
+'NLRC-NCR-12-00644-21',
+'NLRC-NCR-12-00667-21',
+'NLRC-NCR-12-00670-21',
+'NLRC-NCR-12-00695-21',
+'NLRC-NCR-12-00718-21',
+'NLRC-NCR-12-00735-21',
+'NLRC-NCR-12-00736-21',
+'NLRC-NCR-12-00737-21',
+'NLRC-NCR-12-00739-21',
+'NLRC-NCR-12-00744-21',
+'NLRC-NCR-12-00748-21',
+'NLRC-NCR-12-00749-21',
+'NLRC-NCR-12-00750-21',
+'NLRC-NCR-12-00753-21',
+'NLRC-NCR-12-00763-21',
+'NLRC-NCR-12-00775-21',
+'NLRC-NCR-12-00781-21',
+'NLRC-NCR-12-00802-21',
+'NLRC-NCR-12-00852-21',
+'NLRC-NCR-12-00859-21',
+'NLRC-NCR-12-00894-21',
+'NLRC-NCR-12-00901-21',
+'NLRC-NCR-12-00907-21',
+'NLRC-NCR-12-00918-21',
+'NLRC-NCR-12-00963-21',
+'NLRC-NCR-12-00993-21',
+'NLRC-NCR-12-00997-21',
+'NLRC-NCR-12-01042-21',
+'NLRC-NCR-12-01062-21',
+'NLRC-NCR-12-01079-21',
+'NLRC-NCR-01-00012-22',
+'NLRC-NCR-01-00038-22',
+'NLRC-NCR-01-00071-22',
+'NLRC-NCR-01-00165-22',
+'NLRC-NCR-01-00244-22',
+'NLRC-NCR-01-00264-22',
+'NLRC-NCR-01-00476-22',
+'NLRC-NCR-01-00513-22',
+'NLRC-NCR-01-00524-22',
+'NLRC-NCR-01-00581-22',
+'NLRC-NCR-01-00598-22',
+'NLRC-NCR-01-00618-22',
+'NLRC-NCR-01-00631-22',
+'NLRC-NCR-01-00661-22',
+'NLRC-NCR-01-00680-22',
+'NLRC-NCR-01-00682-22',
+'NLRC-NCR-01-00701-22',
+'NLRC-NCR-01-00785-22',
+'NLRC-NCR-01-00844-22',
+'NLRC-NCR-01-00846-22',
+'NLRC-NCR-01-00960-22',
+'NLRC-NCR-01-01002-22',
+'NLRC-NCR-01-01085-22',
+'NLRC-NCR-01-01205-22',
+'NLRC-NCR-02-00001-22',
+'NLRC-NCR-02-00093-22',
+'NLRC-NCR-02-00095-22',
+'NLRC-NCR-02-00141-22',
+'NLRC-NCR-02-00143-22',
+'NLRC-NCR-02-00207-22',
+'NLRC-NCR-02-00232-22',
+'NLRC-NCR-02-00234-22',
+'NLRC-NCR-02-00251-22',
+'NLRC-NCR-02-00280-22',
+'NLRC-NCR-02-00288-22',
+'NLRC-NCR-02-00303-22',
+'NLRC-NCR-02-00341-22',
+'NLRC-NCR-02-00378-22',
+'NLRC-NCR-02-00382-22',
+'NLRC-NCR-02-00392-22',
+'NLRC-NCR-02-00418-22',
+'NLRC-NCR-02-00420-22',
+'NLRC-NCR-02-00437-22',
+'NLRC-NCR-02-00447-22',
+'NLRC-NCR-02-00528-22',
+'NLRC-NCR-02-00535-22',
+'NLRC-NCR-02-00550-22',
+'NLRC-NCR-02-00551-22',
+'NLRC-NCR-02-00554-22',
+'NLRC-NCR-02-00575-22',
+'NLRC-NCR-02-00612-22',
+'NLRC-NCR-02-00619-22',
+'NLRC-NCR-02-00667-22',
+'NLRC-NCR-02-00677-22',
+'NLRC-NCR-02-00680-22',
+'NLRC-NCR-02-00687-22',
+'NLRC-NCR-02-00691-22',
+'NLRC-NCR-02-00797-22',
+'NLRC-NCR-02-00811-22',
+'NLRC-NCR-02-00819-22',
+'NLRC-NCR-02-00839-22',
+'NLRC-NCR-02-00858-22',
+'NLRC-NCR-02-00863-22',
+'NLRC-NCR-02-00869-22',
+'NLRC-NCR-02-00914-22',
+'NLRC-NCR-02-00927-22',
+'NLRC-NCR-02-00951-22',
+'NLRC-NCR-02-00952-22',
+'NLRC-NCR-02-00959-22',
+'NLRC-NCR-02-01035-22',
+'NLRC-NCR-02-01075-22',
+'NLRC-NCR-02-01104-22',
+'NLRC-NCR-02-01116-22',
+'NLRC-NCR-02-01198-22',
+'NLRC-NCR-02-01225-22',
+'NLRC-NCR-02-01242-22',
+'NLRC-NCR-03-00005-22',
+'NLRC-NCR-03-00013-22',
+'NLRC-NCR-03-00023-22',
+'NLRC-NCR-03-00025-22',
+'NLRC-NCR-03-00094-22',
+'NLRC-NCR-03-00113-22',
+'NLRC-NCR-03-00133-22',
+'NLRC-NCR-03-00146-22',
+'NLRC-NCR-03-00256-22',
+'NLRC-NCR-03-00280-22',
+'NLRC-NCR-03-00313-22',
+'NLRC-NCR-03-00333-22',
+'NLRC-NCR-03-00404-22',
+'NLRC-NCR-03-00463-22',
+'NLRC-NCR-03-00489-22',
+'NLRC-NCR-03-00550-22',
+'NLRC-NCR-03-00569-22',
+'NLRC-NCR-03-00585-22',
+'NLRC-NCR-03-00613-22',
+'NLRC-NCR-03-00621-22',
+'NLRC-NCR-03-00629-22',
+'NLRC-NCR-03-00664-22',
+'NLRC-NCR-03-00709-22',
+'NLRC-NCR-03-00820-22',
+'NLRC-NCR-03-00866-22',
+'NLRC-NCR-03-00885-22',
+'NLRC-NCR-03-00887-22',
+'NLRC-NCR-03-00978-22',
+'NLRC-NCR-03-01004-22',
+'NLRC-NCR-03-01038-22',
+'NLRC-NCR-03-01043-22',
+'NLRC-NCR-03-01047-22',
+'NLRC-NCR-03-01050-22',
+'NLRC-NCR-03-01054-22',
+'NLRC-NCR-03-01093-22',
+'NLRC-NCR-03-01121-22',
+'NLRC-NCR-03-01171-22',
+'NLRC-NCR-03-01220-22',
+'NLRC-NCR-03-01222-22',
+'NLRC-NCR-03-01243-22',
+'NLRC-NCR-03-01247-22',
+'NLRC-NCR-03-01297-22',
+'NLRC-NCR-03-01310-22',
+'NLRC-NCR-04-00003-22',
+'NLRC-NCR-04-00015-22',
+'NLRC-NCR-04-00087-22',
+'NLRC-NCR-04-00158-22',
+'NLRC-NCR-04-00226-22',
+'NLRC-NCR-04-00243-22',
+'NLRC-NCR-04-00279-22',
+'NLRC-NCR-04-00310-22',
+'NLRC-NCR-04-00314-22',
+'NLRC-NCR-04-00320-22',
+'NLRC-NCR-04-00332-22',
+'NLRC-NCR-04-00414-22',
+'NLRC-NCR-04-00426-22',
+'NLRC-NCR-04-00443-22',
+'NLRC-NCR-04-00486-22',
+'NLRC-NCR-04-00517-22',
+'NLRC-NCR-04-00590-22',
+'NLRC-NCR-04-00610-22',
+'NLRC-NCR-04-00641-22',
+'NLRC-NCR-04-00650-22',
+'NLRC-NCR-04-00695-22',
+'NLRC-NCR-04-00698-22',
+'NLRC-NCR-04-00701-22',
+'NLRC-NCR-04-00710-22',
+'NLRC-NCR-04-00770-22',
+'NLRC-NCR-04-00804-22',
+'NLRC-NCR-04-00817-22',
+'NLRC-NCR-04-00868-22',
+'NLRC-NCR-04-00875-22',
+'NLRC-NCR-04-01021-22',
+'NLRC-NCR-04-01031-22',
+'NLRC-NCR-04-01054-22',
+'NLRC-NCR-04-01061-22',
+'NLRC-NCR-04-01067-22',
+'NLRC-NCR-04-01073-22',
+'NLRC-NCR-04-01076-22',
+'NLRC-NCR-04-01078-22',
+'NLRC-NCR-04-01079-22',
+'NLRC-NCR-05-00032-22',
+'NLRC-NCR-05-00055-22',
+'NLRC-NCR-05-00078-22',
+'NLRC-NCR-05-00097-22',
+'NLRC-NCR-05-00181-22',
+'NLRC-NCR-05-00183-22',
+'NLRC-NCR-05-00184-22',
+'NLRC-NCR-05-00197-22',
+'NLRC-NCR-05-00201-22',
+'NLRC-NCR-05-00287-22',
+'NLRC-NCR-05-00313-22',
+'NLRC-NCR-05-00336-22',
+'NLRC-NCR-05-00339-22',
+'NLRC-NCR-05-00341-22',
+'NLRC-NCR-05-00347-22',
+'NLRC-NCR-05-00348-22',
+'NLRC-NCR-05-00350-22',
+'NLRC-NCR-05-00359-22',
+'NLRC-NCR-05-00377-22',
+'NLRC-NCR-05-00392-22',
+'NLRC-NCR-05-00410-22',
+'NLRC-NCR-05-00451-22',
+'NLRC-NCR-05-00461-22',
+'NLRC-NCR-05-00473-22',
+'NLRC-NCR-05-00480-22',
+'NLRC-NCR-05-00524-22',
+'NLRC-NCR-05-00532-22',
+'NLRC-NCR-05-00543-22',
+'NLRC-NCR-05-00544-22',
+'NLRC-NCR-05-00575-22',
+'NLRC-NCR-05-00582-22',
+'NLRC-NCR-05-00586-22',
+'NLRC-NCR-05-00587-22',
+'NLRC-NCR-05-00588-22',
+'NLRC-NCR-05-00589-22',
+'NLRC-NCR-05-00590-22',
+'NLRC-NCR-05-00591-22',
+'NLRC-NCR-05-00611-22',
+'NLRC-NCR-05-00633-22',
+'NLRC-NCR-05-00637-22',
+'NLRC-NCR-05-00653-22',
+'NLRC-NCR-05-00690-22',
+'NLRC-NCR-05-00711-22',
+'NLRC-NCR-05-00715-22',
+'NLRC-NCR-05-00743-22',
+'NLRC-NCR-05-00821-22',
+'NLRC-NCR-05-00822-22',
+'NLRC-NCR-05-00830-22',
+'NLRC-NCR-05-00836-22',
+'NLRC-NCR-05-00839-22',
+'NLRC-NCR-05-00844-22',
+'NLRC-NCR-05-00851-22',
+'NLRC-NCR-05-00858-22',
+'NLRC-NCR-05-00878-22',
+'NLRC-NCR-05-00883-22',
+'NLRC-NCR-05-00911-22',
+'NLRC-NCR-05-00958-22',
+'NLRC-NCR-05-00974-22',
+'NLRC-NCR-05-00987-22',
+'NLRC-NCR-05-00995-22',
+'NLRC-NCR-05-01007-22',
+'NLRC-NCR-05-01016-22',
+'NLRC-NCR-05-01033-22',
+'NLRC-NCR-05-01063-22',
+'NLRC-NCR-06-00010-22',
+'NLRC-NCR-06-00015-22',
+'NLRC-NCR-06-00032-22',
+'NLRC-NCR-06-00035-22',
+'NLRC-NCR-06-00108-22',
+'NLRC-NCR-06-00112-22',
+'NLRC-NCR-06-00154-22',
+'NLRC-NCR-06-00171-22',
+'NLRC-NCR-06-00172-22',
+'NLRC-NCR-06-00175-22',
+'NLRC-NCR-06-00183-22',
+'NLRC-NCR-06-00200-22',
+'NLRC-NCR-06-00207-22',
+'NLRC-NCR-06-00293-22',
+'NLRC-NCR-06-00300-22',
+'NLRC-NCR-06-00319-22',
+'NLRC-NCR-06-00322-22',
+'NLRC-NCR-06-00366-22',
+'NLRC-NCR-06-00375-22',
+'NLRC-NCR-06-00376-22',
+'NLRC-NCR-06-00382-22',
+'NLRC-NCR-06-00464-22',
+'NLRC-NCR-06-00467-22',
+'NLRC-NCR-06-00474-22',
+'NLRC-NCR-06-00491-22',
+'NLRC-NCR-06-00546-22',
+'NLRC-NCR-06-00558-22',
+'NLRC-NCR-06-00567-22',
+'NLRC-NCR-06-00568-22',
+'NLRC-NCR-06-00570-22',
+'NLRC-NCR-06-00591-22',
+'NLRC-NCR-06-00690-22',
+'NLRC-NCR-06-00747-22',
+'NLRC-NCR-06-00748-22',
+'NLRC-NCR-06-00756-22',
+'NLRC-NCR-06-00772-22',
+'NLRC-NCR-06-00808-22',
+'NLRC-NCR-06-00871-22',
+'NLRC-NCR-06-00878-22',
+'NLRC-NCR-06-00884-22',
+'NLRC-NCR-06-00910-22',
+'NLRC-NCR-06-00919-22',
+'NLRC-NCR-06-00951-22',
+'NLRC-NCR-06-01001-22',
+'NLRC-NCR-06-01038-22',
+'NLRC-NCR-06-01040-22',
+'NLRC-NCR-06-01060-22',
+'NLRC-NCR-06-01061-22',
+'NLRC-NCR-06-01069-22',
+'NLRC-NCR-06-01081-22',
+'NLRC-NCR-06-01228-22',
+'NLRC-NCR-06-01234-22',
+'NLRC-NCR-06-01261-22',
+'NLRC-NCR-06-01345-22',
+'NLRC-NCR-06-01357-22',
+'NLRC-NCR-06-01374-22',
+'NLRC-NCR-06-01375-22',
+'NLRC-NCR-06-01377-22',
+'NLRC-NCR-06-01419-22',
+'NLRC-NCR-06-01422-22',
+'NLRC-NCR-06-01424-22',
+'NLRC-NCR-06-01429-22',
+'NLRC-NCR-06-01428-22',
+'NLRC-NCR-06-01433-22',
+'NLRC-NCR-06-01434-22',
+'NLRC-NCR-07-00007-22',
+'NLRC-NCR-07-00030-22',
+'NLRC-NCR-07-00035-22',
+'NLRC-NCR-07-00040-22',
+'NLRC-NCR-07-00049-22',
+'NLRC-NCR-07-00109-22',
+'NLRC-NCR-07-00110-22',
+'NLRC-NCR-07-00127-22',
+'NLRC-NCR-07-00144-22',
+'NLRC-NCR-07-00147-22',
+'NLRC-NCR-07-00258-22',
+'NLRC-NCR-07-00295-22',
+'NLRC-NCR-07-00324-22',
+'NLRC-NCR-07-00327-22',
+'NLRC-NCR-07-00354-22',
+'NLRC-NCR-07-00469-22',
+'NLRC-NCR-07-00555-22',
+'NLRC-NCR-07-00568-22',
+'NLRC-NCR-07-00579-22',
+'NLRC-NCR-07-00648-22',
+'NLRC-NCR-07-00650-22',
+'NLRC-NCR-07-00655-22',
+'NLRC-NCR-07-00663-22',
+'NLRC-NCR-07-00751-22',
+'NLRC-NCR-07-00765-22',
+'NLRC-NCR-07-00769-22',
+'NLRC-NCR-07-00789-22',
+'NLRC-NCR-07-00873-22',
+'NLRC-NCR-07-00951-22',
+'NLRC-NCR-07-00954-22',
+'NLRC-NCR-07-00955-22',
+'NLRC-NCR-07-00971-22',
+'NLRC-NCR-07-01002-22',
+'NLRC-NCR-07-01011-22',
+'NLRC-NCR-07-01015-22',
+'NLRC-NCR-07-01020-22',
+'NLRC-NCR-07-01023-22',
+'NLRC-NCR-07-01030-22',
+'NLRC-NCR-07-01064-22',
+'NLRC-NCR-07-01084-22',
+'NLRC-NCR-07-01091-22',
+'NLRC-NCR-07-01093-22',
+'NLRC-NCR-07-01124-22',
+'NLRC-NCR-07-01125-22',
+'NLRC-NCR-07-01128-22',
+'NLRC-NCR-07-01140-22',
+'NLRC-NCR-07-01145-22',
+'NLRC-NCR-07-01234-22',
+'NLRC-NCR-07-01237-22',
+'NLRC-NCR-07-01239-22',
+'NLRC-NCR-07-01284-22',
+'NLRC-NCR-07-01287-22',
+'NLRC-NCR-07-01302-22',
+'NLRC-NCR-07-01316-22',
+'NLRC-NCR-07-01327-22',
+'NLRC-NCR-07-01344-22',
+'NLRC-NCR-07-01351-22',
+'NLRC-NCR-07-01399-22',
+'NLRC-NCR-07-01401-22',
+'NLRC-NCR-08-00002-22',
+'NLRC-NCR-08-00017-22',
+'NLRC-NCR-08-00025-22',
+'NLRC-NCR-08-00058-22',
+'NLRC-NCR-08-00073-22',
+'NLRC-NCR-08-00076-22',
+'NLRC-NCR-08-00075-22',
+'NLRC-NCR-08-00084-22',
+'NLRC-NCR-08-00110-22',
+'NLRC-NCR-08-00129-22',
+'NLRC-NCR-08-00152-22',
+'NLRC-NCR-08-00161-22',
+'NLRC-NCR-08-00194-22',
+'NLRC-NCR-08-00246-22',
+'NLRC-NCR-08-00253-22',
+'NLRC-NCR-08-00284-22',
+'NLRC-NCR-08-00315-22',
+'NLRC-NCR-08-00318-22',
+'NLRC-NCR-08-00321-22',
+'NLRC-NCR-08-00334-22',
+'NLRC-NCR-08-00335-22',
+'NLRC-NCR-08-00430-22',
+'NLRC-NCR-08-00501-22',
+'NLRC-NCR-08-00523-22',
+'NLRC-NCR-08-00533-22',
+'NLRC-NCR-08-00534-22',
+'NLRC-NCR-08-00538-22',
+'NLRC-NCR-08-00541-22',
+'NLRC-NCR-08-00544-22',
+'NLRC-NCR-08-00557-22',
+'NLRC-NCR-08-00601-22',
+'NLRC-NCR-08-00618-22',
+'NLRC-NCR-08-00625-22',
+'NLRC-NCR-08-00646-22',
+'NLRC-NCR-08-00653-22',
+'NLRC-NCR-08-00693-22',
+'NLRC-NCR-08-00699-22',
+'NLRC-NCR-08-00714-22',
+'NLRC-NCR-08-00742-22',
+'NLRC-NCR-08-00864-22',
+'NLRC-NCR-08-00909-22',
+'NLRC-NCR-08-00935-22',
+'NLRC-NCR-08-00988-22',
+'NLRC-NCR-08-00989-22',
+'NLRC-NCR-08-01013-22',
+'NLRC-NCR-08-01017-22',
+'NLRC-NCR-08-01040-22',
+'NLRC-NCR-08-01081-22',
+'NLRC-NCR-08-01091-22',
+'NLRC-NCR-08-01139-22',
+'NLRC-NCR-09-00103-22',
+'NLRC-NCR-09-00145-22',
+'NLRC-NCR-09-00168-22',
+'NLRC-NCR-09-00181-22',
+'NLRC-NCR-09-00184-22',
+'NLRC-NCR-09-00203-22',
+'NLRC-NCR-09-00213-22',
+'NLRC-NCR-09-00239-22',
+'NLRC-NCR-09-00260-22',
+'NLRC-NCR-09-00271-22',
+'NLRC-NCR-09-00274-22',
+'NLRC-NCR-09-00288-22',
+'NLRC-NCR-09-00293-22',
+'NLRC-NCR-09-00312-22',
+'NLRC-NCR-09-00342-22',
+'NLRC-NCR-09-00373-22',
+'NLRC-NCR-09-00380-22',
+'NLRC-NCR-09-00405-22',
+'NLRC-NCR-09-00410-22',
+'NLRC-NCR-09-00430-22',
+'NLRC-NCR-09-00446-22',
+'NLRC-NCR-09-00451-22',
+'NLRC-NCR-09-00464-22',
+'NLRC-NCR-09-00482-22',
+'NLRC-NCR-09-00510-22',
+'NLRC-NCR-09-00523-22',
+'NLRC-NCR-09-00530-22',
+'NLRC-NCR-09-00559-22',
+'NLRC-NCR-09-00567-22',
+'NLRC-NCR-09-00605-22',
+'NLRC-NCR-09-00615-22',
+'NLRC-NCR-09-00619-22',
+'NLRC-NCR-09-00632-22',
+'NLRC-NCR-09-00638-22',
+'NLRC-NCR-09-00637-22',
+'NLRC-NCR-09-00687-22',
+'NLRC-NCR-09-00707-22',
+'NLRC-NCR-09-00733-22',
+'NLRC-NCR-09-00735-22',
+'NLRC-NCR-09-00739-22',
+'NLRC-NCR-09-00742-22',
+'NLRC-NCR-09-00765-22',
+'NLRC-NCR-09-00814-22',
+'NLRC-NCR-09-00818-22',
+'NLRC-NCR-09-00833-22',
+'NLRC-NCR-09-00842-22',
+'NLRC-NCR-09-00866-22',
+'NLRC-NCR-09-00868-22',
+'NLRC-NCR-09-00875-22',
+'NLRC-NCR-10-00030-22',
+'NLRC-NCR-10-00044-22',
+'NLRC-NCR-10-00085-22',
+'NLRC-NCR-10-00087-22',
+'NLRC-NCR-10-00093-22',
+'NLRC-NCR-10-00118-22',
+'NLRC-NCR-10-00121-22',
+'NLRC-NCR-10-00150-22',
+'NLRC-NCR-10-00152-22',
+'NLRC-NCR-10-00162-22',
+'NLRC-NCR-10-00178-22',
+'NLRC-NCR-10-00179-22',
+'NLRC-NCR-10-00189-22',
+'NLRC-NCR-10-00260-22',
+'NLRC-NCR-10-00259-22',
+'NLRC-NCR-10-00265-22',
+'NLRC-NCR-10-00274-22',
+'NLRC-NCR-10-00294-22',
+'NLRC-NCR-10-00304-22',
+'NLRC-NCR-10-00310-22',
+'NLRC-NCR-10-00335-22',
+'NLRC-NCR-10-00348-22',
+'NLRC-NCR-10-00353-22',
+'NLRC-NCR-10-00365-22',
+'NLRC-NCR-10-00372-22',
+'NLRC-NCR-10-00392-22',
+'NLRC-NCR-10-00399-22',
+'NLRC-NCR-10-00423-22',
+'NLRC-NCR-10-00448-22',
+'NLRC-NCR-10-00457-22',
+'NLRC-NCR-10-00459-22',
+'NLRC-NCR-10-00469-22',
+'NLRC-NCR-10-00474-22',
+'NLRC-NCR-10-00482-22',
+'NLRC-NCR-10-00512-22',
+'NLRC-NCR-10-00516-22',
+'NLRC-NCR-10-00536-22',
+'NLRC-NCR-10-00541-22',
+'NLRC-NCR-10-00553-22',
+'NLRC-NCR-10-00578-22',
+'NLRC-NCR-10-00591-22',
+'NLRC-NCR-10-00608-22',
+'NLRC-NCR-10-00653-22',
+'NLRC-NCR-10-00667-22',
+'NLRC-NCR-10-00677-22',
+'NLRC-NCR-10-00695-22',
+'NLRC-NCR-10-00699-22',
+'NLRC-NCR-10-00729-22',
+'NLRC-NCR-10-00732-22',
+'NLRC-NCR-10-00743-22',
+'NLRC-NCR-10-00752-22',
+'NLRC-NCR-10-00757-22',
+'NLRC-NCR-10-00780-22',
+'NLRC-NCR-10-00784-22',
+'NLRC-NCR-10-00788-22',
+'NLRC-NCR-10-00796-22',
+'NLRC-NCR-10-00811-22',
+'NLRC-NCR-10-00817-22',
+'NLRC-NCR-10-00829-22',
+'NLRC-NCR-10-00844-22',
+'NLRC-NCR-10-00864-22',
+'NLRC-NCR-10-00882-22',
+'NLRC-NCR-10-00897-22',
+'NLRC-NCR-10-00906-22',
+'NLRC-NCR-10-00934-22',
+'NLRC-NCR-10-00938-22',
+'NLRC-NCR-10-00948-22',
+'NLRC-NCR-10-00971-22',
+'NLRC-NCR-10-00982-22',
+'NLRC-NCR-10-00993-22',
+'NLRC-NCR-10-00999-22',
+'NLRC-NCR-10-01001-22',
+'NLRC-NCR-11-00016-22',
+'NLRC-NCR-11-00024-22',
+'NLRC-NCR-11-00026-22',
+'NLRC-NCR-11-00028-22',
+'NLRC-NCR-11-00080-22',
+'NLRC-NCR-11-00087-22',
+'NLRC-NCR-11-00114-22',
+'NLRC-NCR-11-00118-22',
+'NLRC-NCR-11-00121-22',
+'NLRC-NCR-11-00140-22',
+'NLRC-NCR-11-00145-22',
+'NLRC-NCR-11-00157-22',
+'NLRC-NCR-11-00169-22',
+'NLRC-NCR-11-00170-22',
+'NLRC-NCR-11-00186-22',
+'NLRC-NCR-11-00189-22',
+'NLRC-NCR-11-00239-22',
+'NLRC-NCR-11-00243-22',
+'NLRC-NCR-11-00290-22',
+'NLRC-NCR-11-00312-22',
+'NLRC-NCR-11-00316-22',
+'NLRC-NCR-11-00319-22',
+'NLRC-NCR-11-00325-22',
+'NLRC-NCR-11-00338-22',
+'NLRC-NCR-11-00340-22',
+'NLRC-NCR-11-00382-22',
+'NLRC-NCR-11-00390-22',
+'NLRC-NCR-11-00402-22',
+'NLRC-NCR-11-00410-22',
+'NLRC-NCR-11-00412-22',
+'NLRC-NCR-11-00416-22',
+'NLRC-NCR-11-00430-22',
+'NLRC-NCR-11-00447-22',
+'NLRC-NCR-11-00454-22',
+'NLRC-NCR-11-00457-22',
+'NLRC-NCR-11-00466-22',
+'NLRC-NCR-11-00585-22',
+'NLRC-NCR-11-00587-22',
+'NLRC-NCR-11-00591-22',
+'NLRC-NCR-11-00601-22',
+'NLRC-NCR-11-00614-22',
+'NLRC-NCR-11-00888-22',
+'NLRC-NCR-11-00923-22',
+'NLRC-NCR-11-00926-22',
+'NLRC-NCR-11-00960-22',
+'NLRC-NCR-11-00962-22',
+'NLRC-NCR-11-00996-22',
+'NLRC-NCR-11-00999-22',
+'NLRC-NCR-11-01000-22',
+'NLRC-NCR-11-01003-22',
+'NLRC-NCR-11-01049-22',
+'NLRC-NCR-11-01071-22',
+'NLRC-NCR-11-01076-22',
+'NLRC-NCR-11-01109-22',
+'NLRC-NCR-11-01112-22',
+'NLRC-NCR-11-01127-22',
+'NLRC-NCR-11-01129-22',
+'NLRC-NCR-11-01131-22',
+'NLRC-NCR-11-01138-22',
+'NLRC-NCR-11-01139-22',
+'NLRC-NCR-11-01176-22',
+'NLRC-NCR-11-01195-22',
+'NLRC-NCR-11-01239-22',
+'NLRC-NCR-11-01241-22',
+'NLRC-NCR-11-01271-22',
+'NLRC-NCR-11-01289-22',
+'NLRC-NCR-11-01312-22',
+'NLRC-NCR-11-01328-22',
+'NLRC-NCR-11-01336-22',
+'NLRC-NCR-11-01343-22',
+'NLRC-NCR-11-01370-22',
+'NLRC-NCR-11-01380-22',
+'NLRC-NCR-11-01387-22',
+'NLRC-NCR-12-00005-22',
+'NLRC-NCR-12-00026-22',
+'NLRC-NCR-12-00052-22',
+'NLRC-NCR-12-00061-22',
+'NLRC-NCR-12-00063-22',
+'NLRC-NCR-12-00095-22',
+'NLRC-NCR-12-00136-22',
+'NLRC-NCR-12-00157-22',
+'NLRC-NCR-12-00160-22',
+'NLRC-NCR-12-00172-22',
+'NLRC-NCR-12-00183-22',
+'NLRC-NCR-12-00207-22',
+'NLRC-NCR-12-00209-22',
+'NLRC-NCR-12-00213-22',
+'NLRC-NCR-12-00214-22',
+'NLRC-NCR-12-00232-22',
+'NLRC-NCR-12-00237-22',
+'NLRC-NCR-12-00254-22',
+'NLRC-NCR-12-00318-22',
+'NLRC-NCR-12-00342-22',
+'NLRC-NCR-12-00348-22',
+'NLRC-NCR-12-00353-22',
+'NLRC-NCR-12-00387-22',
+'NLRC-NCR-12-00390-22',
+'NLRC-NCR-12-00409-22',
+'NLRC-NCR-12-00420-22',
+'NLRC-NCR-12-00424-22',
+'NLRC-NCR-12-00431-22',
+'NLRC-NCR-12-00471-22',
+'NLRC-NCR-12-00484-22',
+'NLRC-NCR-12-00512-22',
+'NLRC-NCR-12-00529-22',
+'NLRC-NCR-12-00551-22',
+'NLRC-NCR-12-00555-22',
+'NLRC-NCR-12-00563-22',
+'NLRC-NCR-12-00571-22',
+'NLRC-NCR-12-00573-22',
+'NLRC-NCR-12-00583-22',
+'NLRC-NCR-12-00584-22',
+'NLRC-NCR-12-00596-22',
+'NLRC-NCR-12-00602-22',
+'NLRC-NCR-12-00609-22',
+'NLRC-NCR-12-00637-22',
+'NLRC-NCR-12-00647-22',
+'NLRC-NCR-12-00649-22',
+'NLRC-NCR-12-00652-22',
+'NLRC-NCR-12-00664-22',
+'NLRC-NCR-12-00667-22',
+'NLRC-NCR-12-00675-22',
+'NLRC-NCR-12-00677-22',
+'NLRC-NCR-12-00678-22',
+'NLRC-NCR-12-00682-22',
+'NLRC-NCR-12-00720-22',
+'NLRC-NCR-12-00764-22',
+'NLRC-NCR-12-00771-22',
+'NLRC-NCR-12-00778-22',
+'NLRC-NCR-12-00781-22',
+'NLRC-NCR-12-00790-22',
+'NLRC-NCR-12-00810-22',
+'NLRC-NCR-12-00816-22',
+'NLRC-NCR-12-00818-22',
+'NLRC-NCR-12-00843-22',
+'NLRC-NCR-12-00854-22',
+'NLRC-NCR-12-00856-22'
