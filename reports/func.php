@@ -14,7 +14,7 @@ $conditions = [];
 
 
 
-if (isset($_POST['extractdata'])) {
+/* if (isset($_POST['extractdata'])) {
     if ($report_list === "1") {
         $baseQuery = "SELECT a.docket_number, a.case_title, a.filed_date, b.date_disposed, e.disposition_type, 
             CONCAT(d.fname, ' ', d.mname, ' ' , d.lname) AS `Labor Arbiter`, c.org_code, b.created_date, 
@@ -109,7 +109,7 @@ if (isset($_POST['extractdata'])) {
             echo 'Error: ' . $e->getMessage();
         }
     }
-}
+} */
 
 
 if (isset($_POST['settb'])) {
@@ -287,20 +287,50 @@ if (isset($_POST['settb'])) {
         and not d.user_id = 769
         order by 3 asc;";
     } else if ($report_list === "7") {
-        $sql = "SELECT a.docket_number as `Docket number`, a.case_title as `Case title`, a.filed_date as `Filed date`, concat(d.fname, ' ', d.mname, ' ' , d.lname) as LA, d.user_id as `User id`
-        from cases as a
-        left join dockets as c on a.docket_id = c.docket_id
-        left join ects_core.users as d on a.process_by = d.user_id
-        left join (select bb.* from docket_disposition as bb inner join (select docket_id, min(disposition_id) as MaxDate from docket_disposition group by docket_id ) xm on bb.docket_id = xm.docket_id and bb.disposition_id = xm.MaxDate) as b on b.docket_id = a.docket_id
-        where a.process_by is not null
-        and a.case_type_code = 'CASE'
-          " . ($org_code ? ' AND c.org_code IN (' . implode(',', array_map(function ($org) {
+        $sql = "WITH RankedCases AS (
+    SELECT 
+        c.org_code as `Organizational code`,
+        a.docket_number as `Docket number`,
+        a.case_title as `Case title`,
+        DATE_FORMAT(a.filed_date, '%M %d, %Y') as `Filed date`,
+        CONCAT(d.fname, ' ', d.mname, ' ' , d.lname) as LA,
+        d.user_id as `User id`,
+        ROW_NUMBER() OVER (PARTITION BY c.org_code ORDER BY a.filed_date) as rn
+    FROM cases as a
+    LEFT JOIN dockets as c ON a.docket_id = c.docket_id
+    LEFT JOIN ects_core.users as d ON a.process_by = d.user_id
+    LEFT JOIN (
+        SELECT 
+            bb.* 
+        FROM docket_disposition as bb 
+        INNER JOIN (
+            SELECT 
+                docket_id, 
+                MIN(disposition_id) as MaxDate 
+            FROM docket_disposition 
+            GROUP BY docket_id
+        ) xm ON bb.docket_id = xm.docket_id AND bb.disposition_id = xm.MaxDate
+    ) as b ON b.docket_id = a.docket_id
+    WHERE a.process_by IS NOT NULL
+      AND a.case_type_code = 'CASE'
+      " . ($org_code ? ' AND c.org_code IN (' . implode(',', array_map(function ($org) {
             return "'$org'";
         }, $org_code)) . ')' : '') . "
-        " . ($start_date && $end_date ? " AND a.filed_date BETWEEN '$start_date' AND '$end_date'" : '') . "
-        and b.date_disposed is null
-        and not d.user_id = 769
-        order by 3 asc; ";
+      " . ($start_date && $end_date ? " AND a.filed_date BETWEEN '$start_date' AND '$end_date'" : '') . "
+      AND b.date_disposed IS NULL
+      AND NOT d.user_id = 769
+)
+SELECT 
+    `Organizational code`,
+    `Docket number`,
+    `Case title`,
+    `Filed date`,
+    LA,
+    `User id`
+FROM RankedCases
+WHERE rn = 1
+ORDER BY `Filed date` ASC;
+";
     } else if ($report_list === "8") {
         $sql = "SELECT concat(d.fname, ' ', d.mname, ' ' , d.lname) as LA, count(d.username) as `Count`, c.org_code as `Organization code`
         from cases as a
@@ -350,7 +380,26 @@ if (isset($_POST['settb'])) {
     " . ($start_date && $end_date ? " and a.filed_date between '$start_date' and '$end_date'" : '') . "
     group by d.fname, d.mname, d.lname
     ;";
-    } else {
+    } 
+    else if ($report_list === "10"){
+        $sql = "SELECT (@cnt := @cnt + 1) AS `No`, c.case_id as `Case id`, c.case_title `Case title`, c.filed_date `Filed date`, dd.date_disposed `Date disposed`,
+            TIMESTAMPDIFF(day, c.filed_date, dd.date_disposed) AS `Age`, pas.available_date , pdt.disposition_type AS `Disposition type`, dd.amount_peso, dd.award_type , u.user_id `user_id of process by`, concat(u.lname, ', ', u.fname, ' ', u.mname) as `LA`
+        from cases c
+        JOIN (SELECT @cnt := 0) AS dummy
+        join dockets d on d.docket_id = c.docket_id
+        left join docket_disposition dd on dd.docket_id = d.docket_id
+        left join param_disposition_types pdt on pdt.disposition_type_id = dd.disposition_type_id
+        join ects_core.users u on u.user_id = c.process_by
+        join ects_core.user_roles ur on ur.user_id = u.user_id and ur.role_code = 'CON_MED'
+        JOIN docket_tasks dt ON dt.docket_id = d.docket_id and dt.task_name like 'First con%'
+        LEFT JOIN param_availability_schedule pas on pas.availability_schedule_id = dt.availability_schedule_id
+        where c.case_type_code = 'RFA'
+        " . ($start_date && $end_date ? " and c.filed_date between '$start_date' and '$end_date'" : '') . "
+        and c.process_by = 1215 
+        order by c.raffled_date asc
+;";
+    }
+    else {
         echo json_encode(['error' => 'Select a report to generate']);
         exit;
     }

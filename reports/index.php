@@ -37,6 +37,7 @@ if (!($_SESSION['usertype'] === "superadmin")) {
                 <option value="7">ECTS STATUS</option>
                 <option value="8">ARBITER REPORTS ALL CASES COUNT ONLY</option>
                 <option value="9">ARBITER ALL CASES COUNTS WITH PENDING</option>
+                <option value="10">LIST OF CASES FROM 9 MONTHS TILL NOW, CONMED RATING</option>
               </select>
             </div>
             <!-- <div class="col-auto">
@@ -118,7 +119,7 @@ if (!($_SESSION['usertype'] === "superadmin")) {
             </div>
             <div class="col-2">
               <div class="form-group">
-                <label for="end_date" class="form-label">End Date</label>
+                <label for="end_date" class="form-label">End Date <div class="badge bg-info text-wrap" onclick="settodayed(this);">Set today</div></label>
                 <input type="date" class="form-control form-control-sm" name="end_date" id="end_date" value="<?php echo date('Y-m-d'); ?>">
               </div>
             </div>

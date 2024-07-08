@@ -23,12 +23,39 @@ $(document).ready(function () {
          setpages();
      }); */
 
-    $('#report_list').change(function (e) {
-        settb();
-    });
+    setTimeout(() => {
+        $('#report_list').change(function (e) {
+            console.log("asd");
+            if ($(this).val() === "10") {
+                var today = new Date();
+                today.setMonth(today.getMonth() - 9);
+                var formattedDate = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
+                $('#start_date').val(formattedDate);
+                console.log(formattedDate);
+            }
+            else if ($(this).val() === "7") {
+                var today = new Date();
+                today.setMonth(today.getMonth() - 9);
+                var formattedDate = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
+                $('#end_date').val(formattedDate);
+                console.log(formattedDate);
+            }
+            else {
+                $('#start_date').val("2019-01-05");
+            }
+        });
+
+    }, 500);
 
 
 });
+
+async function settodayed(div) {
+    var today = new Date();
+    var formattedDate = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
+    $('#end_date').val(formattedDate);
+}
+
 
 
 async function extractdata(btn) {

@@ -7,9 +7,14 @@ require_once '../vendor/autoload.php';
 class DatabaseConnection
 {
 
-    private $server = '159.138.22.107';
+    /* private $server = '159.138.22.107';
     private $uname = 'nlrc';
     private $pass = '@NLRC2019';
+    private $db = 'ects';
+ */
+    private $server = '139.162.36.162';
+    private $uname = 'dbremoteuser';
+    private $pass = '.U/CGEf}/cl290thfoCm';
     private $db = 'ects';
 
     private $con;
