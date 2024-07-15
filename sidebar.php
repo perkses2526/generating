@@ -72,9 +72,12 @@
       </a>
     </li>
 
-
+    <li class="nav-item">
+      <a class="nav-link collapsed" href="../search_data/">
+        <i class="bi bi-search"></i>
+        <span>Search data</span>
+      </a>
+    </li>
 
   </ul>
 </aside>
-
-

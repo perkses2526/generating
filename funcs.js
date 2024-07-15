@@ -119,6 +119,10 @@ async function setdatatb(parsedRes, tb = '#maintb') {
     }
 }
 
+function isElem(data) {
+    return (data instanceof jQuery || data instanceof HTMLElement);
+}
+
 function formatHeaderTitle(str) {
     // Convert camelCase to space-separated words
     str = str.replace(/([a-z])([A-Z])/g, '$1 $2');

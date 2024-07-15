@@ -250,6 +250,7 @@ function crud($sql)
 
 
 $did = $_POST['did'] ?? '';
+$val = $_POST['val'] ?? '';
 $search = $_POST['search'] ?? '';
 $entries = $_POST['entries'] ?? '50';
 $page = $_POST['page'] ?? '0';
