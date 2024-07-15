@@ -44,6 +44,95 @@ $(document).ready(function () {
     });
 });
 
+async function setdatatb(parsedRes, tb = '#maintb') {
+    $(tb).html(loadingsm("Fetching data, please wait..."));
+    try {
+        $(tb).DataTable().clear().destroy();
+        $(tb).html("");
+
+        var columns = parsedRes.columns.map(column => ({ title: formatHeaderTitle(column), data: column }));
+        var data = parsedRes.data;
+
+        // Calculate lengthMenu options based on the number of records
+        var numRecords = data.length;
+        var lengthMenu = [];
+        var step = 10; // Starting step size for the menu
+        for (var i = step; i < numRecords; i += step) {
+            lengthMenu.push(i);
+        }
+        lengthMenu.push(numRecords, -1); // Add the total number of records and "All" option
+        var lengthMenuLabels = lengthMenu.slice(0, -1).concat(["All"]);
+
+        // Create a new header with search inputs
+        var header = '<tr>';
+        columns.forEach(col => {
+            header += `<th></th>`;
+        });
+        header += '</tr>';
+
+        // $(tb).append(header);
+
+
+        // Initialize DataTable with the received data and columns
+        var dataTable = $(tb).DataTable({
+            data: data,
+            columns: columns,
+            pageLength: 100, // Default number of rows to display
+            lengthMenu: [lengthMenu, lengthMenuLabels], // Automated lengthMenu options
+            orderCellsTop: true,
+            fixedHeader: true,
+            initComplete: function () {
+                $('thead').append(header);
+                var api = this.api();
+                api.columns().eq(0).each(function (colIdx) {
+                    var raw = $('thead').eq(colIdx);
+                    var cell = $('thead tr:eq(0) th').eq(colIdx);
+                    var cell1 = $('thead tr:eq(1) th').eq(colIdx);
+                    var title = $(cell).text();
+                    var trnew = `<input type="text" class="form-control form-control-sm column-search" placeholder="Search ${formatHeaderTitle(title)}" />`;
+                    $(cell1).html(`${trnew}`);
+
+                    // On every keypress in this input
+                    $('input', cell1).off('keyup change').on('keyup change', function (e) {
+                        e.stopPropagation();
+
+                        // Get the search value
+                        $(this).attr('title', $(this).val());
+                        var regexr = '({search})'; // alternative: {search} OR {search}
+
+                        var cursorPosition = this.selectionStart;
+                        // Search the column for that value
+                        api.column(colIdx).search(
+                            this.value != ''
+                                ? regexr.replace('{search}', '(((' + this.value + ')))')
+                                : '',
+                            this.value != '',
+                            this.value == ''
+                        ).draw();
+
+                        $(this).focus()[0].setSelectionRange(cursorPosition, cursorPosition);
+                    });
+                });
+            }
+        });
+
+    } catch (error) {
+        console.error('Error fetching data:', error);
+        twarning('An error occurred while fetching the data.');
+    }
+}
+
+function formatHeaderTitle(str) {
+    // Convert camelCase to space-separated words
+    str = str.replace(/([a-z])([A-Z])/g, '$1 $2');
+    // Convert snake_case to space-separated words
+    str = str.replace(/_/g, ' ');
+    // Capitalize the first letter of each word
+    return str.replace(/\b\w/g, function (match) {
+        return match.toUpperCase();
+    });
+}
+
 $("button.next,button.prev,button.nextbtn, button.prevbtn").click(function (e) {
     e.preventDefault();
     p = $("#page");

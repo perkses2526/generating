@@ -94,12 +94,14 @@ async function viewdata(btn) {
 
 
 async function settb() {
-    tb = $('#maintb');
-    $(tb).html(loadingsm("Fetching data, please wait..."));
+    var tb = $('#maintb');
     var formdata = new FormData($('#tb_form')[0]);
     formdata.append('settb', '');
-    var res = await myajax(file, formdata);
-    $(tb).html(res);
+    var res = await myajax(file, formdata); // Ensure 'file' is the correct endpoint
+
+    var parsedRes = JSON.parse(res);
+
+    setdatatb(parsedRes, tb);
 }
 
 async function setpages() {

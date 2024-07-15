@@ -36,9 +36,11 @@ if (isset($_POST['settb'])) {
     $tb = '';
     $sql = "SELECT *,
     CONCAT('<button class=\"btn btn-primary btn-sm\" did=\"', id, '\" onclick=\"viewdata(this)\">View details</button>') AS `Action`
-    from nlrccms.divisions where concat(name, dateCreated, id) like '%$search%' limit $page, $entries";
+    from nlrccms.divisions";
 
-    echo autotb($sql);
+    echo datatb($sql);
+
+    // echo autotb($sql);
 }
 
 if (isset($_POST['setpages'])) {

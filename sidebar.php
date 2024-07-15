@@ -65,7 +65,16 @@
       </a>
     </li>
 
+    <li class="nav-item">
+      <a class="nav-link collapsed" href="../roles/">
+        <i class="bi bi-diagram-3"></i>
+        <span>Roles</span>
+      </a>
+    </li>
+
 
 
   </ul>
 </aside>
+
+

@@ -231,7 +231,7 @@ order by 1, count(d.username) desc;
 select a.docket_number, a.case_title, a.filed_date, concat(d.fname, ' ', d.mname, ' ' , d.lname) as LA
 from cases as a
 left join dockets as c on a.docket_id = c.docket_id
-left join ects_core.users as d on a.process_by = d.user_id
+left join ects_core.users as d on a.rocess_by = d.user_id
 where a.process_by is not null
 and a.case_type_code = 'CASE'
 and c.org_code = 'CAR'

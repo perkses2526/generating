@@ -311,7 +311,7 @@ function datatb($sql)
     $fields = $res->fetch_fields();
     foreach ($fields as $field) {
         $columns[] = $field->name;
-        /*     $colFormatted = ucwords(str_replace('_', ' ', strtolower($field->name)));
+        /* $colFormatted = ucwords(str_replace('_', ' ', strtolower($field->name)));
         $columns[] = $colFormatted; */
     }
 

@@ -96,10 +96,6 @@ if (isset($_POST['viewdata'])) {
 }
 
 if (isset($_POST['settb'])) {
-    $tb = '';
-    /*     $sql = "SELECT *, '<button class=\"btn btn-primary btn-sm\">View</button>' as action FROM dockets
-    where concat(docket_id, docket_number, docket_type_code) like '%$search%'
-    limit $page, $entries"; */
     $sql = "
     SELECT 
         ck.id, 
@@ -116,11 +112,8 @@ if (isset($_POST['settb'])) {
         nlrccms.divisions d ON d.id = ck.division
     LEFT JOIN 
         nlrccms.status s ON s.id = ck.status
-    WHERE 
-        CONCAT(ck.officialNo, ck.name, ck.position, d.name, ck.contactNo, s.name) LIKE '%$search%'
-    LIMIT 
-        $page, $entries";
-    echo autotb($sql);
+    ";
+    echo datatb($sql);
 }
 
 if (isset($_POST['setpages'])) {
