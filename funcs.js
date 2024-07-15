@@ -70,9 +70,6 @@ async function setdatatb(parsedRes, tb = '#maintb') {
         });
         header += '</tr>';
 
-        // $(tb).append(header);
-
-
         // Initialize DataTable with the received data and columns
         var dataTable = $(tb).DataTable({
             data: data,
@@ -85,37 +82,37 @@ async function setdatatb(parsedRes, tb = '#maintb') {
                 $('thead').append(header);
                 var api = this.api();
                 api.columns().eq(0).each(function (colIdx) {
-                    var raw = $('thead').eq(colIdx);
                     var cell = $('thead tr:eq(0) th').eq(colIdx);
                     var cell1 = $('thead tr:eq(1) th').eq(colIdx);
                     var title = $(cell).text();
-                    var trnew = `<input type="text" class="form-control form-control-sm column-search" placeholder="Search ${formatHeaderTitle(title)}" />`;
-                    $(cell1).html(`${trnew}`);
+                    if (title !== 'Action') { // Exclude 'Action' column from adding search inputs
+                        var trnew = `<input type="text" class="form-control form-control-sm column-search" placeholder="Search ${formatHeaderTitle(title)}" />`;
+                        $(cell1).html(`${trnew}`);
 
-                    // On every keypress in this input
-                    $('input', cell1).off('keyup change').on('keyup change', function (e) {
-                        e.stopPropagation();
+                        // On every keypress in this input
+                        $('input', cell1).off('keyup change').on('keyup change', function (e) {
+                            e.stopPropagation();
 
-                        // Get the search value
-                        $(this).attr('title', $(this).val());
-                        var regexr = '({search})'; // alternative: {search} OR {search}
+                            // Get the search value
+                            $(this).attr('title', $(this).val());
+                            var regexr = '({search})'; // alternative: {search} OR {search}
 
-                        var cursorPosition = this.selectionStart;
-                        // Search the column for that value
-                        api.column(colIdx).search(
-                            this.value != ''
-                                ? regexr.replace('{search}', '(((' + this.value + ')))')
-                                : '',
-                            this.value != '',
-                            this.value == ''
-                        ).draw();
+                            var cursorPosition = this.selectionStart;
+                            // Search the column for that value
+                            api.column(colIdx).search(
+                                this.value != ''
+                                    ? regexr.replace('{search}', '(((' + this.value + ')))')
+                                    : '',
+                                this.value != '',
+                                this.value == ''
+                            ).draw();
 
-                        $(this).focus()[0].setSelectionRange(cursorPosition, cursorPosition);
-                    });
+                            $(this).focus()[0].setSelectionRange(cursorPosition, cursorPosition);
+                        });
+                    }
                 });
             }
         });
-
     } catch (error) {
         console.error('Error fetching data:', error);
         twarning('An error occurred while fetching the data.');
