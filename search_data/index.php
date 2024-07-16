@@ -16,7 +16,7 @@ if (!($_SESSION['usertype'] === "superadmin")) {
       </ol>
     </nav>
   </div>
-
+  <!-- add getting of dockets automatically -->
   <section class="section">
     <div class="card">
       <div class="card-body">
@@ -25,11 +25,14 @@ if (!($_SESSION['usertype'] === "superadmin")) {
             <div class="col-3">
               <input type="text" class="form-control form-control-sm" id="search_input" name="search_input" placeholder="Search case number">
             </div>
-            <div class="col-3">
-              <button class="btn btn-primary btn-sm w-100" id="search_docket_data" t="1">Search docket data</button>
+            <div class="col-auto">
+              <button class="btn btn-outline-primary btn-sm w-100" id="search_docket_data" t="1">Search docket data</button>
             </div>
-            <div class="col-3">
-              <button class="btn btn-warning btn-sm w-100" id="search_case_data" t="2">Search case data</button>
+            <div class="col-auto">
+              <button class="btn btn-outline-warning btn-sm w-100" id="search_case_data" t="2">Search case data</button>
+            </div>
+            <div class="col-auto">
+              <button class="btn btn-outline-warning btn-sm w-100" id="copyids">Copy dockets/case id <i class="bi bi-clipboard"></i></button>
             </div>
           </div>
           <div class="row">

@@ -94,39 +94,3 @@ if (isset($_POST['settb'])) {
     // a.case_type_code = 'CASE'
     // and a.filed_date between '2019-05-01' AND '2024-04-31'
 }
-
-if (isset($_POST['setpages'])) {
-    $sql = "SELECT 
-        COUNT(DISTINCT d.user_id) as total_count
-    FROM cases as a
-    LEFT JOIN dockets as c on a.docket_id = c.docket_id
-    LEFT JOIN ects_core.users as d on a.process_by = d.user_id
-    LEFT JOIN ects_core.user_roles ur on ur.user_id = d.user_id
-    LEFT JOIN (
-        SELECT 
-            bb.* 
-        FROM 
-            docket_disposition as bb 
-        INNER JOIN (
-            SELECT 
-                docket_id, MIN(disposition_id) as MaxDate 
-            FROM 
-                docket_disposition 
-            GROUP BY 
-                docket_id
-        ) xm on bb.docket_id = xm.docket_id and bb.disposition_id = xm.MaxDate
-    ) as b on b.docket_id = a.docket_id
-    WHERE 
-        CONCAT(d.username, d.lname, d.fname) LIKE '%$search%'
-        " . ($case_type_code ? ' and a.case_type_code IN (' . implode(',', array_map(function ($case) {
-        return "'$case'";
-    }, $case_type_code)) . ')' : '') . "
-
-    " . ($org_code ? ' and d.org_code IN (' . implode(',', array_map(function ($org) {
-        return "'$org'";
-    }, $org_code)) . ')' : '') . "
-    " . ($start_date && $end_date ? " and a.filed_date between '$start_date' and '$end_date'" : '') . "
-        ";
-
-    echo pages($sql, $entries);
-}

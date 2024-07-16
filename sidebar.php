@@ -24,7 +24,7 @@
 
     <li class="nav-item">
       <a class="nav-link collapsed" href="../eme/">
-        <i class="bi bi-briefcase"></i>
+        <i class="bi bi-person-rolodex"></i>
         <span>Eme</span>
       </a>
     </li>
@@ -76,6 +76,13 @@
       <a class="nav-link collapsed" href="../search_data/">
         <i class="bi bi-search"></i>
         <span>Search data</span>
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link collapsed" href="../database_data/">
+        <i class="bi bi-database"></i>
+        <span>Database data</span>
       </a>
     </li>
 

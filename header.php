@@ -40,7 +40,7 @@ $usertype = $_SESSION['full_name'] ?? '';
   <header id="header" class="header fixed-top d-flex align-items-center">
 
     <div class="d-flex align-items-center justify-content-between">
-      <a href="../dashboard" class="logo d-flex align-items-center">
+      <a href="../reports" class="logo d-flex align-items-center">
         <span class="d-none d-lg-block">GENERATE</span>
       </a>
       <i class="bi bi-list toggle-sidebar-btn"></i>
