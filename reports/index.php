@@ -38,6 +38,7 @@ if (!($_SESSION['usertype'] === "superadmin")) {
                 <option value="8">ARBITER REPORTS ALL CASES COUNT ONLY</option>
                 <option value="9">ARBITER ALL CASES COUNTS WITH PENDING</option>
                 <option value="10">LIST OF CASES FROM 9 MONTHS TILL NOW, CONMED RATING</option>
+                <option value="11">ECTS usage of RABS Monthly with disposed count</option>
               </select>
             </div>
             <!-- <div class="col-auto">

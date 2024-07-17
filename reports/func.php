@@ -380,8 +380,7 @@ ORDER BY `Filed date` ASC;
     " . ($start_date && $end_date ? " and a.filed_date between '$start_date' and '$end_date'" : '') . "
     group by d.fname, d.mname, d.lname
     ;";
-    } 
-    else if ($report_list === "10"){
+    } else if ($report_list === "10") {
         $sql = "SELECT (@cnt := @cnt + 1) AS `No`, c.case_id as `Case id`, c.case_title `Case title`, c.filed_date `Filed date`, dd.date_disposed `Date disposed`,
             TIMESTAMPDIFF(day, c.filed_date, dd.date_disposed) AS `Age`, pas.available_date , pdt.disposition_type AS `Disposition type`, dd.amount_peso, dd.award_type , u.user_id `user_id of process by`, concat(u.lname, ', ', u.fname, ' ', u.mname) as `LA`
         from cases c
@@ -398,12 +397,30 @@ ORDER BY `Filed date` ASC;
         and c.process_by = 1215 
         order by c.raffled_date asc
 ;";
-    }
-    else {
+    } else if ($report_list === "11") {
+        $sql = "SELECT 
+            d.docket_type_code, 
+            d.org_code, 
+            SUM(CASE WHEN dd.date_disposed IS NOT NULL THEN 1 ELSE 0 END) AS disposed_data,
+            COUNT(d.org_code) AS total 
+        FROM 
+            dockets d
+        LEFT JOIN 
+            docket_disposition dd 
+        ON 
+            dd.docket_id = d.docket_id
+        WHERE 
+            d.docket_number IS NOT NULL 
+            AND d.docket_type_code IN ('RFA', 'CASE') 
+            AND d.org_code is not null
+        GROUP BY 
+            d.org_code, d.docket_type_code 
+        ORDER BY 
+           d.docket_type_code, d.org_code ASC;";
+    } else {
         echo json_encode(['error' => 'Select a report to generate']);
         exit;
     }
-
     echo datatb($sql);
 }
 
