@@ -31,6 +31,9 @@ if (isset($_POST['search_data'])) {
         $val = ' IN (' . implode(',', array_map(function ($newval) {
             return "'" . trim($newval) . "'";
         }, $valnew)) . ')';
+
+        
+
     } else {
         $val = " = '" . trim($val) . "'";
     }

@@ -29,7 +29,41 @@ $(document).ready(function () {
             console.error('Could not copy text: ', err);
         });
     });
+
+
 });
+
+async function addcomma() {
+    var input = $('#search_input').val();
+
+    // Split the input by spaces or commas
+    var parts = input.split(/[\s,]+/);
+
+    // Trim each part and join with commas
+    var trimmedParts = parts.map(function (part) {
+        return $.trim(part);
+    });
+
+    // Filter out any empty strings that may result from the split
+    trimmedParts = trimmedParts.filter(function (part) {
+        return part.length > 0;
+    });
+
+    // Join the trimmed parts with commas
+    var result = trimmedParts.join(', ');
+
+    $('#search_input').val(result);
+
+    console.log(result);
+}
+
+
+
+
+
+
+
+
 
 async function search_data(btn) {
     org = $(btn).html();

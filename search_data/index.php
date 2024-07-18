@@ -22,8 +22,9 @@ if (!($_SESSION['usertype'] === "superadmin")) {
       <div class="card-body">
         <form onsubmit="return false;" id="tb_form">
           <div class="row d-flex justify-content-center align-items-center">
-            <div class="col-3">
-              <input type="text" class="form-control form-control-sm" id="search_input" name="search_input" placeholder="Search case number">
+            <div class="col-3 d-flex">
+              <textarea type="text" class="form-control form-control-sm" id="search_input" name="search_input" placeholder="Search case number"></textarea>
+              <div class="badge bg-info text-wrap m-auto" onclick="addcomma(this);">Add comma</div>
             </div>
             <div class="col-auto">
               <button class="btn btn-outline-primary btn-sm w-100" id="search_docket_data" t="1">Search docket data</button>
