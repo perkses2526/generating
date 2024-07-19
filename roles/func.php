@@ -4,7 +4,7 @@ require_once '../dbcon.php';
 if (isset($_POST['viewdata'])) {
     // u.user_id, u.username, u.org_code, concat(u.lname, ', ', u.fname, ' ', u.mname) as `Full name`
     $sql = "SELECT 
-    u.user_id as `User id`, u.lname as `Last name`, u.fname as `First name`, u.mname as `Middle name`, u.email, u.contact_no as `Contact no`, u.status
+    u.user_id as `User id`, u.username, u.fname as `First name`, u.mname as `Middle name`, u.lname as `Last name`, u.email, u.contact_no as `Contact no`, u.status
     FROM ects_core.users u 
     join ects_core.user_roles ur on ur.user_id = u.user_id
     where ur.role_code = '$did'";

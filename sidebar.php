@@ -52,9 +52,31 @@
     </li>
 
     <li class="nav-item">
+      <a class="nav-link collapsed" href="../events/">
+        <i class="bi bi-person-lines-fill"></i>
+        <span>Events</span>
+      </a>
+    </li>
+
+
+    <li class="nav-item">
       <a class="nav-link collapsed" href="../arbiters/">
         <i class="bi bi-file-person-fill"></i>
-        <span>Arbiters</span>
+        <span>Labor Arbiter</span>
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link collapsed" href="../conmed/">
+        <i class="bi bi-file-person-fill"></i>
+        <span>Conciliator-Mediator</span>
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link collapsed" href="../all_users/">
+        <i class="bi bi-file-person-fill"></i>
+        <span>All users</span>
       </a>
     </li>
 

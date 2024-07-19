@@ -23,6 +23,13 @@ $(document).ready(function () {
 
 async function savedetails(btn) {
     form = $(btn).closest('form')[0];
+
+  /*   if ($(department).val() === "") {
+        reqfunc($(department));
+        twarning('Please enter department');
+        return;
+    } */
+
     var fd = new FormData(form);
     fd.append('savedetails', '');
     var res = await myajax(file, fd);

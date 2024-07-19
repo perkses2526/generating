@@ -7112,3 +7112,26 @@ NCR-10-00658-22
 NCR-04-00904-22
 NCR-03-01364-22
 RABVII-10-1540-2
+
+-- Insert new users
+-- insert into ects_core.users values(NULL,'RC.MONTESA',NULL,'RABIV',
+'',
+'',NULL,'RICARDO','MONTESA JR.','C','','GENDER_MALE','hklxcbsdasdasvcxdasj@asasdwcesadaAxcbDsd.fdasdsbdf','','avatar.jpg','','',0,1,'STATUS_ACTIVE',NULL,0,'N',607,CURRENT_TIMESTAMP,NULL,CURRENT_TIMESTAMP);
+-- insert into ects_core.user_roles values(1405,'LABOR_ARBITER');
+-- insert into ects_core.user_roles values(1405,'LA_ASSOCIATE');
+-- insert into ects_core.user_roles values(1405,'LA_ASSOCIATE_APPEAL');
+
+
+for new admin accounts
+
+password = 005802b2c20d9afb5e8ebcdcb220d0a1de0992cd8a22d74050b9205cfaf4447d2d093d8d2c34378bc81cf9779e2d0072292533fe53ac409dbc930f3d9f96f442
+1-8
+salt = 9455732f392753696f9e18960611094b383380de8cf6c6cf82c417d03b25bc5340c82e2db047362535137d26ed7c2a93f1e25a3a803c4f9057ddf19814fd41c5
+
+roles of new users
+COMPLAINT_OFFICER
+CON_MED
+ELA_EXTENSION
+MGR
+SEAD_OFFICER
+SEAD_STAFF

@@ -7,7 +7,7 @@ $number = $_POST['number'] ?? '';
 
 if (isset($_POST['viewdata'])) {
     $t = ($t === "2" ? 'case_id' : 'docket_id');
-    $sql = "SELECT * FROM $attrs where $t = $number";
+    $sql = "SELECT * FROM $attrs where $t = $number order by 1 asc";
     $tb = '
     <div class="btn-group text-end">
       <button class="btn btn-warning btn-sm" onclick="datatable_to_excel(\'modaltb\', $(\'#modalTitle\').html())" title="Export all data"><i class="bi bi-file-spreadsheet-fill"></i></button>
