@@ -13,7 +13,7 @@ async function viewdata(btn) {
     fd.append('viewdata', '');
     fd.append('did', ckid);
     var res = await myajax(file, fd);
-    modallg(`${$(btn).closest('tr').find('td:eq(1)').text()} - Division Details`, res);
+    modallg(`Username: ${$(btn).closest('tr').find('td:eq(1)').text()} - Account Details`, res);
     $('#modaltb').DataTable();
     // $('#btn_submit').html(`<button type="button" class="btn btn-warning btn-sm" ckid="1" onclick="editdetails(this)">Edit Details</button>`);
 }
