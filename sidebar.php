@@ -102,6 +102,13 @@
     </li>
 
     <li class="nav-item">
+      <a class="nav-link collapsed" href="../search_by_company/">
+        <i class="bi bi-search"></i>
+        <span>Search by company</span>
+      </a>
+    </li>
+
+    <li class="nav-item">
       <a class="nav-link collapsed" href="../database_data/">
         <i class="bi bi-database"></i>
         <span>Database data</span>

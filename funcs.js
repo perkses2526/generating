@@ -42,6 +42,21 @@ $(document).ready(function () {
     $('.closemodal').click(function () {
         closeModal();
     });
+
+    setTimeout(() => {
+        var currentUrl = window.location.href;
+
+        // Extract the last segment from the URL
+        var segments = currentUrl.split('/').filter(Boolean);
+        var folderName = segments[segments.length - 1];
+
+        // Set the folder name as the page title
+        if (folderName) {
+            document.title = formatHeaderTitle(folderName);
+        }
+    }, 500);
+
+
 });
 
 async function setdatatb(parsedRes, tb = '#maintb') {

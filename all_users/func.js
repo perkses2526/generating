@@ -7,6 +7,14 @@ $(document).ready(function () {
     });
 });
 
+async function setnewuser(btn) {
+    var fd = new FormData();
+    fd.append('setnewuser', '');
+    var res = await myajax(file, fd);
+    modallg(`Add new user`, res);
+    $('#btn_submit').html(`<button type="button" class="btn btn-success btn-sm" ckid="1" onclick="saveuser(this)">Add user</button>`);
+}
+
 async function viewdata(btn) {
     ckid = $(btn).attr('did');
     var fd = new FormData();

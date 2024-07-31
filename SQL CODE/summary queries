@@ -1,3 +1,15 @@
+
+select p.company_name as `Company name`, c.docket_number as `Docket number`, c.case_title as `Case title`, pdt.disposition_type as `Disposition type`  from cases c 
+join dockets d on d.docket_id = c.docket_id
+join case_parties cp on cp.case_id = c.case_id
+join parties p on p.party_id = cp.party_id
+join docket_disposition dd on dd.docket_id = d.docket_id
+left join param_disposition_types pdt on pdt.disposition_type_id = dd.disposition_type_id
+where 
+
+order by p.company_name asc
+;
+
 use ects;
 
 -- MAAM LENY CONMED 1st DAY OF THE MONTH
