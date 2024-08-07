@@ -1,61 +1,23 @@
 <?php
 require_once '../header.php';
-/* 
-if (!($_SESSION['usertype'] === "superadmin")) {
-  echo '<script>window.location="../404.php"</script>';
-} */
 ?>
 
 
 <main id="main" class="main">
-
   <div class="pagetitle">
     <h1></h1>
     <nav>
       <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="../home/">Home</a></li>
-        <li class="breadcrumb-item active">Reports</li>
+        <li class="breadcrumb-item active"></li>
       </ol>
     </nav>
   </div>
 
   <section class="section">
-    <form onsubmit="return false;" id="tb_form">
-      <div class="card col">
-        <div class="card-body mt-3">
-          <div class="row">
-            <div class="col">
-              <label for="report_list">Report list</label>
-              <select name="report_list" id="report_list" class="selectize">
-                <option value="">Select a report</option>
-                <option value="1">MAAM LENY CONMED 1ST DAY OF THE MONTH</option>
-                <option value="2">CONMED PERFORMANCE</option>
-                <option value="3">ARBITER REPORTS ALL CASES</option>
-                <option value="4">ARBITER PENDINGS COUNT ONLY</option>
-                <option value="5">SEnA NCR RAFFLING MONITOR</option>
-                <option value="6">MONTHLY CONMED REPORT WITH COMMENT</option>
-                <option value="7">ECTS STATUS</option>
-                <option value="8">ARBITER REPORTS ALL CASES COUNT ONLY</option>
-                <option value="9">ARBITER ALL CASES COUNTS WITH PENDING</option>
-                <option value="10">LIST OF CASES FROM 9 MONTHS TILL NOW, CONMED RATING</option>
-                <option value="11">ECTS usage of RABS Monthly with disposed count</option>
-                <option value="12">RFA Report that has pending</option>
-              </select>
-            </div>
-            <!-- <div class="col-auto">
-              <div class="form-check mt-3">
-                <input class="form-check-input" type="checkbox" value="1" name="counts" id="counts">
-                <label class="form-check-label" for="flexCheckDefault">
-                  Count onlys
-                </label>
-              </div>
-            </div> -->
-          </div>
-        </div>
-      </div>
-
-      <div class="card col">
-        <div class="card-body mt-3">
+    <div class="card">
+      <div class="card-body">
+        <form onsubmit="return false;" id="tb_form">
           <div class="row align-items-center mb-3">
             <span class="col-auto">Filters:</span>
             <div class="col-3">
@@ -125,6 +87,12 @@ if (!($_SESSION['usertype'] === "superadmin")) {
                 <input type="date" class="form-control form-control-sm" name="end_date" id="end_date" value="<?php echo date('Y-m-d'); ?>">
               </div>
             </div>
+            <div class="col-auto">
+              <div class="form-group">
+                <label for="end_date" class="form-label">Counts</label>
+                <input type="checkbox" name="countsonly" id="countsonly" value="1" class="form-check" checked>
+              </div>
+            </div>
             <div class="col-auto text-end">
               <div class="btn-group mt-4">
                 <button class="btn btn-warning btn-sm" onclick="datatable_to_excel('maintb', $('#report_list option:selected').text() + ' ' + $('#org_code option:selected').text());" title="Export all data"><i class="bi bi-file-spreadsheet-fill"></i></button>
@@ -132,63 +100,11 @@ if (!($_SESSION['usertype'] === "superadmin")) {
                 <button class="btn btn-primary btn-sm refresh-tb" title="Refresh table"><i class="bi bi-arrow-clockwise"></i></button>
               </div>
             </div>
+
           </div>
-
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-body">
           <div class="row">
-            <div class="row mb-2 mt-3">
-              <!-- <div class="col">
-                <select name="entries" id="entries" class="form-control form-control-sm w-auto">
-                  <option value="50">50</option>
-                  <option value="100">100</option>
-                  <option value="200">200</option>
-                  <option value="500">500</option>
-                </select>
-              </div>
-              <div class="col-auto text-end">
-                <div class="row">
-                  <div class="col-auto">
-                    <label for="start_date"></label>
-                    <input type="date" class="form-control form-control-sm" name="start_date" id="start_date" class="selectize">
-                  </div>
-                  <div class="col-auto">
-                    <label for="end_date">Filed date range</label>
-                    <input type="date" class="form-control form-control-sm" name="end_date" id="end_date" class="selectize">
-                  </div>
-                  <div class="col-auto mt-auto">
-                    <button class="btn btn-success btn-sm" onclick="extractdata(this);"><i class="bi bi-file-spreadsheet-fill"></i></button>
-                  </div>
-                </div>
-              </div>
-              <div class="col-3 text-end">
-                <input type="text" name="search" id="search" class="form-control form-control-sm" placeholder="Search...">
-              </div>
-              <div class="col-auto text-center">
-                <div class="input-group btn-group-sm text-end">
-                  <button name="nextbtn" class="btn btn-sm btn-secondary prev">
-                    <i class="bi bi-arrow-left"></i></button>
-                  <select name="page" id="page" class="form-control">
-                    <option value="0"></option>
-                  </select>
-                  <button name="prevbtn" class="btn btn-sm btn-secondary next">
-                    <i class="bi bi-arrow-right"></i></button>
-                </div>
-              </div> 
-              <div class="col-auto mt-auto">
-                <button class="btn btn-success btn-sm" onclick="datatable_to_excel('maintb');"><i class="bi bi-file-spreadsheet-fill"></i></button>
-              </div>
-              <div class="text-right col-auto">
-                <button class="btn btn-success btn-sm refresh-tb" title="Refresh table"><i class="bi bi-arrow-clockwise"></i></button>
-              </div>
-            -->
-
-            </div>
             <div class="table-responsive mt-3">
-              <table class="table table-bordered table-hover text-center w-100" id="maintb">
+              <table class="table table-bordered table-hover text-center" id="maintb">
                 <thead>
                   <tr>
                     <th>#</th>
@@ -197,7 +113,9 @@ if (!($_SESSION['usertype'] === "superadmin")) {
                 </thead>
                 <tbody>
                   <tr>
-                    <td colspan="6"><span class=" fs-6">Select a report</span>
+                    <td colspan="6"><span class=" fs-6">Click
+                        <button class="btn btn-primary btn-sm refresh-tb" title="Refresh table"><i class="bi bi-arrow-clockwise"></i></button>
+                        to generate data</span>
                       <!-- <div class="spinner-border spinner-border-sm text-success" id="l" role="status"></div> -->
                     </td>
                   </tr>
@@ -205,9 +123,9 @@ if (!($_SESSION['usertype'] === "superadmin")) {
               </table>
             </div>
           </div>
-        </div>
+        </form>
       </div>
-    </form>
+    </div>
   </section>
 
 </main>

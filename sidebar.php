@@ -115,5 +115,12 @@
       </a>
     </li>
 
+    <li class="nav-item">
+      <a class="nav-link collapsed" href="../rabs_data/">
+        <i class="bi bi-database"></i>
+        <span>Rabs Report</span>
+      </a>
+    </li>
+
   </ul>
 </aside>

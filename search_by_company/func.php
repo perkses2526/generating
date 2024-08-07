@@ -38,11 +38,12 @@ if (isset($_POST['search_data'])) {
     // Join all LIKE clauses with OR
     $whereClause = implode(' OR ', $likeClauses);
 
-    $sql = "SELECT p.company_name,
+    $sql = "SELECT trim(p.company_name) as company_name,
                    c.docket_number,
                    c.case_type_code,
                    c.case_title,
-                   pdt.disposition_type 
+                   c.filed_date,
+                   pdt.disposition_type
             FROM cases c 
             JOIN dockets d ON d.docket_id = c.docket_id
             JOIN case_parties cp ON cp.case_id = c.case_id
@@ -50,7 +51,7 @@ if (isset($_POST['search_data'])) {
             JOIN docket_disposition dd ON dd.docket_id = d.docket_id
             LEFT JOIN param_disposition_types pdt ON pdt.disposition_type_id = dd.disposition_type_id
             WHERE " . $whereClause . "
-            ORDER BY p.company_name ASC";
+            ORDER BY trim(p.company_name) ASC";
 
     // Execute the query and fetch the results
     // echo $sql;

@@ -128,6 +128,7 @@ async function setdatatb(parsedRes, tb = '#maintb') {
                 });
             }
         });
+        hgfunc($(tb).find('tbody').find('tr').find('td'));
     } catch (error) {
         console.error('Error fetching data:', error);
         twarning('An error occurred while fetching the data.');
@@ -563,6 +564,22 @@ function validateEmail(email) {
         }, 3000);
     }
 } */
+
+function hgfunc(elem) {
+    let $input = $(elem).closest('div').find('div.selectize-input');
+    if (elem.hasClass("selectized")) {
+        $input.addClass('border border-success');
+        setTimeout(() => {
+            $input.removeClass('border border-success');
+        }, 3000);
+    } else {
+        $(elem).addClass('bg-success bg-opacity-50');
+        setTimeout(() => {
+            $(elem).removeClass('bg-success bg-opacity-50');
+        }, 3000);
+    }
+}
+
 
 function reqfunc(elem) {
     let $input = $(elem).closest('div').find('div.selectize-input');

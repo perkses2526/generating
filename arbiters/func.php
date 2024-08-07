@@ -47,7 +47,7 @@ if (isset($_POST['settb'])) {
         d.username,
         concat(d.fname, ' ', d.mname, ' ', d.lname) as `Full Name`,
         d.org_code as `RAB`,
-        count(distinct a.docket_id) as `Total cases`,
+        count(distinct a.docket_number) as `Total cases`,
         concat('<button class=\"btn btn-warning btn-sm\" onclick=\"viewpendings(this);\">', count(distinct case when b.date_disposed is null then a.docket_id end), '</button>') as `Pending cases`, 
         d.status
     from cases as a

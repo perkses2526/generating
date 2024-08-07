@@ -417,6 +417,24 @@ ORDER BY `Filed date` ASC;
             d.org_code, d.docket_type_code 
         ORDER BY 
            d.docket_type_code, d.org_code ASC;";
+    } else if ($report_list === "12") {
+        $sql = "SELECT (@cnt := @cnt + 1) AS `No`, 
+        d.docket_number as `Case number`, c.case_title `Case title`, c.filed_date `Filed date`,
+        date_format(c.filed_date, '%Y') as `Filed year`,
+        date_format(c.filed_date, '%m') as `Filed month`,
+        date_format(c.filed_date, '%d') as `Filed day`, 
+        concat(u.fname, ' ', u.mname, ' ', u.lname) as `Conmed`,
+        d.org_code
+    from cases c
+    JOIN (SELECT @cnt := 0) AS dummy
+    join dockets d on d.docket_id = c.docket_id
+    left join docket_disposition dd on dd.docket_id = d.docket_id
+    join ects_core.users u on u.user_id = c.process_by
+    join ects_core.user_roles ur on ur.user_id = u.user_id and ur.role_code = 'CON_MED'
+    where c.case_type_code = 'RFA'
+    " . ($start_date && $end_date ? " and c.filed_date between '$start_date' and '$end_date'" : '') . "
+    and dd.disposition_id is null
+    order by c.filed_date asc";
     } else {
         echo json_encode(['error' => 'Select a report to generate']);
         exit;
