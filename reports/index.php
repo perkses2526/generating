@@ -40,6 +40,7 @@ if (!($_SESSION['usertype'] === "superadmin")) {
                 <option value="10">LIST OF CASES FROM 9 MONTHS TILL NOW, CONMED RATING</option>
                 <option value="11">ECTS usage of RABS Monthly with disposed count</option>
                 <option value="12">RFA Report that has pending</option>
+                <option value="13">Multiple company cases created</option>
               </select>
             </div>
             <!-- <div class="col-auto">

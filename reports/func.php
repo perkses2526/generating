@@ -435,6 +435,28 @@ ORDER BY `Filed date` ASC;
     " . ($start_date && $end_date ? " and c.filed_date between '$start_date' and '$end_date'" : '') . "
     and dd.disposition_id is null
     order by c.filed_date asc";
+    } else if ($report_list === "13") {
+        $sql = "SELECT 
+            distinct d.docket_number AS `Docket_No`,
+            c.case_title AS `Case_title`,
+            CONCAT(la.lname, ', ', la.fname, ' ', LEFT(la.mname, 1), '.') AS `Labor_Arbiter`,
+            d.org_code AS `Organization_code`,
+            date_format(c.filed_date, '%Y-%m-%d') as `Filed_Date`
+        FROM cases c 
+        JOIN dockets d ON d.docket_id = c.docket_id
+        JOIN case_parties cp ON cp.case_id = c.case_id
+        JOIN parties p ON p.party_id = cp.party_id and cp.case_party_type LIKE 'C%'
+        LEFT JOIN ects_core.users la ON la.user_id = c.process_by
+        WHERE (SELECT COUNT(*) FROM case_parties WHERE case_id = c.case_id AND case_party_type LIKE 'P%') > 1 
+        AND d.docket_number is not null 
+        " . ($start_date && $end_date ? " and c.filed_date between '$start_date' and '$end_date'" : '') . "
+         " . ($case_type_code ? ' and c.case_type_code IN (' . implode(',', array_map(function ($case) {
+            return "'$case'";
+        }, $case_type_code)) . ')' : '') . "
+        " . ($org_code ? ' and d.org_code IN (' . implode(',', array_map(function ($org) {
+            return "'$org'";
+        }, $org_code)) . ')' : " AND d.org_code != 'NCR'") . "
+        order by trim(d.org_code), trim(p.company_name), 3 ASC;";
     } else {
         echo json_encode(['error' => 'Select a report to generate']);
         exit;
