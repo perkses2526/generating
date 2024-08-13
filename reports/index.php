@@ -41,6 +41,7 @@ if (!($_SESSION['usertype'] === "superadmin")) {
                 <option value="11">ECTS usage of RABS Monthly with disposed count</option>
                 <option value="12">RFA Report that has pending</option>
                 <option value="13">Multiple company cases created</option>
+                <option value="14">Count of arbiters cases monthly</option>
               </select>
             </div>
             <!-- <div class="col-auto">

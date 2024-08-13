@@ -135,6 +135,59 @@ async function setdatatb(parsedRes, tb = '#maintb') {
     }
 }
 
+// paul new funcs
+
+$(document).ready(function () {
+    var currentUrl = window.location.href;
+    var navLinks = document.getElementsByClassName("nav-link");
+    for (var i = 0; i < navLinks.length; i++) {
+        var linkUrl = navLinks[i].getAttribute("href").replace('../', '');
+        if (currentUrl.includes(linkUrl)) {
+            navLinks[i].classList.add("active");
+            navLinks[i].classList.remove("collapsed");
+            var parentUl = navLinks[i].closest("ul");
+            if (parentUl && parentUl.classList.contains("collapse")) {
+                parentUl.classList.add("show");
+                parentUl.previousElementSibling.classList.remove("collapsed");
+            }
+            break;
+        }
+    }
+});
+
+function show_progress() {
+    $('#progressBar').css('width', '0%').attr('aria-valuenow', 0);
+    $('#progressToast').show();
+    $('#progressToast').find('span').html('0%');
+}
+function up_progress(percentage) {
+    $('#progressBar').css('width', percentage + '%').attr('aria-valuenow', percentage);
+    $('#progressToast').find('span').html(percentage + '%');
+}
+
+function hide_progress() {
+    setTimeout(function () {
+        $('#progressToast').hide();
+    }, 3000);
+}
+
+function showpass(btn) {
+    ipt = $(btn).parent().find('input')
+    t = $(ipt).attr('type');
+    if (t === 'password') {
+        ipt.attr('type', 'text');
+        $(btn).find('i').removeClass('bi-eye').addClass('bi-eye-slash');
+    } else {
+        ipt.attr('type', 'password');
+        $(btn).find('i').removeClass('bi-eye-slash').addClass('bi-eye');
+    }
+}
+
+
+// paul new funcs
+
+
+
 function isElem(data) {
     return (data instanceof jQuery || data instanceof HTMLElement);
 }

@@ -322,10 +322,9 @@ if (isset($_POST['settb'])) {
 )
 SELECT 
     `Organizational code`,
-    `Docket number`,
-    `Case title`,
     `Filed date`,
     LA,
+    `Case title`,
     `User id`
 FROM RankedCases
 WHERE rn = 1
@@ -457,6 +456,22 @@ ORDER BY `Filed date` ASC;
             return "'$org'";
         }, $org_code)) . ')' : " AND d.org_code != 'NCR'") . "
         order by trim(d.org_code), trim(p.company_name), 3 ASC;";
+    } else if ($report_list === "14") {
+        $sql = "SELECT
+            d.org_code as `Organizational code`,
+            DATE_FORMAT(c.filed_date, '%m-%Y') as `Filed date`,
+            concat(u.fname, ' ', u.mname, ' ', u.lname) as `Full Name`,
+            COUNT(distinct d.docket_id) as `Cases count`
+        FROM cases c
+        JOIN dockets d on d.docket_id = c.docket_id
+        JOIN ects_core.users u on u.user_id = c.process_by
+        where c.process_by is not null
+        " . ($org_code ? ' and d.org_code IN (' . implode(',', array_map(function ($org) {
+            return "'$org'";
+        }, $org_code)) . ')' : " AND d.org_code != 'NCR'") . "
+        " . ($start_date && $end_date ? " and c.filed_date between '$start_date' and '$end_date'" : '') . "
+        group by u.user_id, `Filed date`
+        ;";
     } else {
         echo json_encode(['error' => 'Select a report to generate']);
         exit;

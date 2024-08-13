@@ -101,6 +101,13 @@
       </a>
     </li>
 
+    <!-- <li class="nav-item">
+      <a class="nav-link collapsed" href="../search_by_party/">
+        <i class="bi bi-search"></i>
+        <span>Search by party</span>
+      </a>
+    </li> -->
+
     <li class="nav-item">
       <a class="nav-link collapsed" href="../search_by_company/">
         <i class="bi bi-search"></i>
