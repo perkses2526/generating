@@ -19,7 +19,7 @@ if (isset($_POST['settb'])) {
         NUMERIC_PRECISION, 
         NUMERIC_SCALE 
     FROM INFORMATION_SCHEMA.COLUMNS
-    WHERE TABLE_SCHEMA = 'ects' OR TABLE_SCHEMA = 'ects_core';
+    WHERE TABLE_SCHEMA = 'ects' OR TABLE_SCHEMA = 'ects_core' OR TABLE_SCHEMA = 'main_nlrc_db';
 ;";
     echo datatb($sql);
 }

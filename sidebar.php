@@ -129,5 +129,12 @@
       </a>
     </li>
 
+    <li class="nav-item">
+      <a class="nav-link collapsed" href="../m_employees/">
+        <i class="bi bi-person"></i>
+        <span>M_Employees</span>
+      </a>
+    </li>
+
   </ul>
 </aside>

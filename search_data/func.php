@@ -31,9 +31,6 @@ if (isset($_POST['search_data'])) {
         $val = ' IN (' . implode(',', array_map(function ($newval) {
             return "'" . trim($newval) . "'";
         }, $valnew)) . ')';
-
-        
-
     } else {
         $val = " = '" . trim($val) . "'";
     }
@@ -46,13 +43,14 @@ if (isset($_POST['search_data'])) {
         CONCAT('<button class=\"btn btn-primary btn-sm\" onclick=\"viewdata(this)\" docket_number=\"', d.docket_id ,'\" attrs=\"docket_archives\">',(SELECT COUNT(*) FROM docket_archives WHERE docket_id = d.docket_id), '</button>') as docket_archives,
         CONCAT('<button class=\"btn btn-primary btn-sm\" onclick=\"viewdata(this)\" docket_number=\"', d.docket_id ,'\" attrs=\"docket_comments\">',(SELECT COUNT(*) FROM docket_comments WHERE docket_id = d.docket_id), '</button>') as docket_comments,
         CONCAT('<button class=\"btn btn-primary btn-sm\" onclick=\"viewdata(this)\" docket_number=\"', d.docket_id ,'\" attrs=\"docket_decision\">',(SELECT COUNT(*) FROM docket_decision WHERE docket_id = d.docket_id), '</button>') as docket_decision,
-        CONCAT('<button class=\"btn btn-primary btn-sm\" onclick=\"viewdata(this)\" docket_number=\"', d.docket_id ,'\" attrs=\"docket_disposition\">',(SELECT CONCAT(disposition_type) FROM docket_disposition JOIN param_disposition_types on param_disposition_types.disposition_type_id = docket_disposition.disposition_type_id WHERE docket_id = d.docket_id), '</button>') as docket_disposition,
+        CONCAT('<button class=\"btn btn-primary btn-sm\" onclick=\"viewdata(this)\" docket_number=\"', d.docket_id, '\" attrs=\"docket_disposition\">', IFNULL((SELECT GROUP_CONCAT(param_disposition_types.disposition_type SEPARATOR ', ') FROM docket_disposition JOIN param_disposition_types ON param_disposition_types.disposition_type_id = docket_disposition.disposition_type_id WHERE docket_disposition.docket_id = d.docket_id LIMIT 1), 'No disposition yet'), '</button>') AS docket_disposition,
         CONCAT('<button class=\"btn btn-primary btn-sm\" onclick=\"viewdata(this)\" docket_number=\"', d.docket_id ,'\" attrs=\"docket_entry_finality\">',(SELECT COUNT(*) FROM docket_entry_finality WHERE docket_id = d.docket_id), '</button>') as docket_entry_finality,
         CONCAT('<button class=\"btn btn-primary btn-sm\" onclick=\"viewdata(this)\" docket_number=\"', d.docket_id ,'\" attrs=\"docket_orgs\">',(SELECT COUNT(*) FROM docket_orgs WHERE docket_id = d.docket_id), '</button>') as docket_orgs,
         CONCAT('<button class=\"btn btn-primary btn-sm\" onclick=\"viewdata(this)\" docket_number=\"', d.docket_id ,'\" attrs=\"docket_reassignment\">',(SELECT COUNT(*) FROM docket_reassignment WHERE docket_id = d.docket_id), '</button>') as docket_reassignment,
         CONCAT('<button class=\"btn btn-primary btn-sm\" onclick=\"viewdata(this)\" docket_number=\"', d.docket_id ,'\" attrs=\"docket_subledgers\">',(SELECT COUNT(*) FROM docket_subledgers WHERE docket_id = d.docket_id), '</button>') as docket_subledgers,
         CONCAT('<button class=\"btn btn-primary btn-sm\" onclick=\"viewdata(this)\" docket_number=\"', d.docket_id ,'\" attrs=\"docket_tasks\">',(SELECT COUNT(*) FROM docket_tasks WHERE docket_id = d.docket_id), '</button>') as docket_tasks,
         CONCAT('<button class=\"btn btn-primary btn-sm\" onclick=\"viewdata(this)\" docket_number=\"', d.docket_id ,'\" attrs=\"docket_transfer\">',(SELECT COUNT(*) FROM docket_transfer WHERE docket_id = d.docket_id), '</button>') as docket_transfer,
+        CONCAT('<button class=\"btn btn-primary btn-sm\" onclick=\"viewdata(this)\" docket_number=\"', d.docket_id ,'\" attrs=\"main_nlrc_db.T_EditorTransfers\">',(SELECT COUNT(*) FROM main_nlrc_db.T_EditorTransfers WHERE docket_id = d.docket_id), '</button>') as editor_transfer,
         CONCAT('<button class=\"btn btn-primary btn-sm\" onclick=\"viewdata(this)\" docket_number=\"', d.docket_id ,'\" attrs=\"docket_tro_of_exec\">',(SELECT COUNT(*) FROM docket_tro_of_exec WHERE docket_id = d.docket_id), '</button>') as docket_tro_of_exec,
         CONCAT('<button class=\"btn btn-primary btn-sm\" onclick=\"viewdata(this)\" docket_number=\"', d.docket_id ,'\" attrs=\"docket_writ_of_exec\">',(SELECT COUNT(*) FROM docket_writ_of_exec WHERE docket_id = d.docket_id), '</button>') as docket_writ_of_exec
         FROM dockets d where d.docket_number ";
@@ -60,7 +58,7 @@ if (isset($_POST['search_data'])) {
         $sql = "SELECT
         CONCAT('<button class=\"btn btn-primary btn-sm\" onclick=\"viewdata(this)\" case_id=\"', c.case_id ,'\" attrs=\"cases\">',c.docket_number, '</button>') as case_number,
         c.case_id as `Case id`,
-        CONCAT('<button class=\"btn btn-primary btn-sm\" onclick=\"viewdata(this)\" case_id=\"', c.case_id ,'\" attrs=\"case_action_causes\">',(SELECT DISTINCT COUNT(*) FROM case_action_causes WHERE case_id = c.case_id GROUP BY action_cause_id), '</button>') as case_action_causes,
+        CONCAT('<button class=\"btn btn-primary btn-sm\" onclick=\"viewdata(this)\" case_id=\"', c.case_id ,'\" attrs=\"case_action_causes\">',(SELECT DISTINCT COUNT(*) FROM case_action_causes WHERE case_id = c.case_id), '</button>') as case_action_causes,
         CONCAT('<button class=\"btn btn-primary btn-sm\" onclick=\"viewdata(this)\" case_id=\"', c.case_id ,'\" attrs=\"case_appeals\">',(SELECT COUNT(*) FROM case_appeals WHERE case_id = c.case_id), '</button>') as case_appeals,
         CONCAT('<button class=\"btn btn-primary btn-sm\" onclick=\"viewdata(this)\" case_id=\"', c.case_id ,'\" attrs=\"case_counsels\">',(SELECT COUNT(*) FROM case_counsels WHERE case_id = c.case_id), '</button>') as case_counsels,
         CONCAT('<button class=\"btn btn-primary btn-sm\" onclick=\"viewdata(this)\" case_id=\"', c.case_id ,'\" attrs=\"case_grievances\">',(SELECT COUNT(*) FROM case_grievances WHERE case_id = c.case_id), '</button>') as case_grievances,
@@ -77,6 +75,7 @@ if (isset($_POST['search_data'])) {
         from cases c where c.docket_number ";
     }
     $sql .= $val;
+    // echo $sql;
 
     echo datatb($sql);
 }

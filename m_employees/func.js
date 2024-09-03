@@ -1,5 +1,6 @@
 file = 'func.php';
 $(document).ready(function () {
+    settb();
     $('.refresh-tb').click(function (e) {
         settb();
     });

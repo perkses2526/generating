@@ -7206,3 +7206,31 @@ VBoxManage modifyvm "macOS BigSur" --cpu-profile "Intel Core i7-6700K"
 
 
 
+-- search by causes
+SELECT c.docket_number as `Docket no`, c.case_title as `Case Title`, IFNULL(h.actioni, 'Pending') as `Causes`, concat(u.lname, ', ', u.fname) as `Labor Arbiter`, 
+    pdt.disposition_type as `Disposition type`
+	FROM
+    cases c
+    LEFT JOIN dockets d ON d.docket_id = c.docket_id
+    LEFT JOIN docket_disposition dd ON dd.docket_id = d.docket_id
+    LEFT JOIN param_disposition_types pdt on pdt.disposition_type_id = dd.disposition_type_id
+    LEFT JOIN ects_core.users u on u.user_id = c.process_by
+	LEFT JOIN (
+		SELECT
+			ccc.case_id,
+			GROUP_CONCAT(DISTINCT ccc.poopi SEPARATOR '|') AS actioni
+		FROM
+			(SELECT
+				aaa.case_id,
+				IF(bbb.others_flag = 'Y', CONCAT(ifnull(bbb.action_cause_short_name, ''), ' - ', ifnull(aaa.action_cause_others, '')), bbb.action_cause_short_name) AS poopi
+			FROM
+				case_action_causes AS aaa
+			LEFT JOIN
+				param_action_causes AS bbb ON aaa.action_cause_id = bbb.action_cause_id) AS ccc
+		GROUP BY
+			ccc.case_id
+	) AS h ON h.case_id = c.case_id
+    WHERE 
+	c.filed_date > '2019-05-01'
+    AND h.actioni like '%mental health%'
+    ;
