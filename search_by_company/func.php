@@ -157,6 +157,8 @@ if (isset($_POST['search_data'])) {
         z.amount_peso
 ";
 
+
+
     // Execute the query and fetch the results
     // echo $sql;
     echo datatb($sql);
