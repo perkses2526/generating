@@ -1,0 +1,88 @@
+use ects;
+
+SELECT 
+    c.case_type_code AS `Type`, 
+    loc.name `Location`,
+    COUNT(DISTINCT c.case_id) AS `Count`,
+    DATE_FORMAT(c.filed_date, '%m-%d-%Y') AS `Filed date`, 
+    DATE_FORMAT(c.filed_date, '%Y') AS `Filed year`, 
+    DATE_FORMAT(c.filed_date, '%m') AS `Filed month`, 
+    DATE_FORMAT(c.filed_date, '%d') AS `Filed day`
+FROM 
+    cases c 
+JOIN 
+    case_parties cp ON cp.case_id = c.case_id
+JOIN 
+    party_addresses pa ON pa.party_id = cp.party_id 
+JOIN 
+    ects_core.locations l ON l.location_code = pa.municity_code
+AND 
+    (pa.municity_code IN ('150700000', '153600000', '153800000', '156600000', '157000000', '129804000') 
+    OR l.name IN ('Basilan', 'Lanao Del Sur', 'Maguindanao', 'Sulu', 'Tawi-tawi', 'Cotabato City'))
+JOIN 
+    ects_core.locations loc ON loc.location_code = pa.municity_code
+GROUP BY 
+    c.case_type_code, 
+    DATE_FORMAT(c.filed_date, '%m-%d-%Y'), 
+    loc.name 
+ORDER BY 
+    c.case_type_code, c.filed_date ASC;
+
+    
+SELECT loc.name, DATE_FORMAT(c.filed_date, '%Y-%M') AS `Month`, COUNT(distinct c.case_id) as `Case count` from cases c 
+join case_parties cp on cp.case_id = c.case_id
+join party_addresses pa on pa.party_id = cp.party_id 
+and pa.municity_code in('137501000','031412000', '031420000', '045802000', '137402000', '175320000', '045813000', '137403000','084820000','137401000', '137504000','137502000', '137503000', '031414000') 
+join ects_core.locations loc on loc.location_code = pa.municity_code
+-- 045802000 (antipolo),137504000 (Valenzuela), 137501000 (Caloocan)
+--  antipolo (marikina, taytay, pasig, san roque,mandaluyong) '045802000', '137402000', '175320000', '045813000', '137403000','084820000','137401000'
+-- valenzuela (malabon,navotas,obando) '137504000','137502000', '137503000', '031414000'
+-- caloocan (novaliches,meycauayan,) '137501000','031412000', '031420000'
+where c.case_type_code = 'CASE' AND c.filed_date between '2023-01-01' and '2023-12-31' and c.process_by is not null
+GROUP BY 
+    1, 2
+ORDER BY 
+	c.filed_date asc
+;
+
+
+SELECT * FROM ects_core.locations;
+
+SELECT * FROM cases c where c.case_type_code = 'CASE' and c.filed_date like '%2023%' limit 10;
+
+select * from parties order by party_id desc limit 10;
+
+select count(*) from party_addresses where municity_code = '045802000' order by party_id desc limit 10;
+
+
+-- UPDATE nlrccms.contactkeyofficials set name = '', position = '', division = '', contactNo = '' where id = ''; 
+
+select * from nlrccms.contactkeyofficials;
+
+-- SET SQL_SAFE_UPDATES = 0;
+
+-- UPDATE docket_tasks dt
+-- JOIN dockets d ON d.docket_id = dt.docket_id
+-- SET dt.task_status_id = 4
+-- WHERE d.docket_number IN (
+--     'NCR-04-00613-23','NCR-04-00531-23','NCR-04-00500-23','NCR-04-00455-23','NCR-04-00366-23','NCR-04-00286-23','NCR-04-00186-23','NCR-04-00137-23','NCR-04-00126-23','NCR-04-00049-23','NCR-03-01301-23','NCR-03-01259-23','NCR-03-01222-23','NCR-03-01155-23','NCR-03-01096-23','NCR-03-00999-23','NCR-03-00944-23','NCR-03-00863-23','NCR-03-00842-23','NCR-03-00799-23','NCR-03-00726-23','NCR-03-00708-23','NCR-03-00583-23','NCR-03-00553-23','NCR-03-00457-23','NCR-03-00368-23','NCR-03-00348-23','NCR-03-00199-23','NCR-03-00097-23','NCR-03-00016-23','NCR-02-01129-23','NCR-02-01056-23','NCR-02-00986-23','NCR-02-00890-23','NCR-02-00826-23','NCR-02-00766-23','NCR-02-00723-23','NCR-02-00617-23','NCR-02-00559-23','NCR-02-00554-23','NCR-02-00487-23','NCR-02-00348-23','NCR-02-00208-23','NCR-02-00174-23','NCR-02-00138-23','NCR-02-00039-23','NCR-01-01114-23','NCR-01-01024-23','NCR-01-00996-23','NCR-01-00948-23','NCR-01-00930-23','NCR-01-00761-23','NCR-01-00698-23','NCR-01-00680-23','NCR-01-00525-23','NCR-01-00443-23','NCR-01-00290-23','NCR-01-00179-23','NCR-01-00131-23','NCR-01-00027-23','NCR-12-00736-22','NCR-12-00683-22','NCR-12-00539-22','NCR-12-00465-22','NCR-12-00218-22','NCR-12-00203-22','NCR-11-00993-22','NCR-11-00789-22','NCR-11-00719-22','NCR-11-00507-22','NCR-11-00431-22','NCR-11-00308-22','NCR-10-00974-22','NCR-10-00898-22','NCR-10-00737-22','NCR-10-00733-22','NCR-10-00713-22','NCR-10-00580-22','NCR-10-00446-22','NCR-10-00248-22','NCR-09-01047-22','NCR-09-00717-22','NCR-09-00427-22','NCR-09-00081-22','NCR-08-00942-22','NCR-08-00347-22','NCR-08-00229-22','NCR-07-00955-22','NCR-07-00088-22','NCR-07-00031-22'
+-- ) AND dt.task_name = 'Release decision';
+
+-- SET SQL_SAFE_UPDATES = 1;
+
+-- select dt.*, dt.docket_task_id, dt.docket_id, dt.actual_start_date, dt.actual_end_date from docket_tasks dt
+-- join dockets d on d.docket_id = dt.docket_id
+-- where d.docket_number in(
+-- 'NCR-04-00613-23','NCR-04-00531-23','NCR-04-00500-23','NCR-04-00455-23','NCR-04-00366-23','NCR-04-00286-23','NCR-04-00186-23','NCR-04-00137-23','NCR-04-00126-23','NCR-04-00049-23','NCR-03-01301-23','NCR-03-01259-23','NCR-03-01222-23','NCR-03-01155-23','NCR-03-01096-23','NCR-03-00999-23','NCR-03-00944-23','NCR-03-00863-23','NCR-03-00842-23','NCR-03-00799-23','NCR-03-00726-23','NCR-03-00708-23','NCR-03-00583-23','NCR-03-00553-23','NCR-03-00457-23','NCR-03-00368-23','NCR-03-00348-23','NCR-03-00199-23','NCR-03-00097-23','NCR-03-00016-23','NCR-02-01129-23','NCR-02-01056-23','NCR-02-00986-23','NCR-02-00890-23','NCR-02-00826-23','NCR-02-00766-23','NCR-02-00723-23','NCR-02-00617-23','NCR-02-00559-23','NCR-02-00554-23','NCR-02-00487-23','NCR-02-00348-23','NCR-02-00208-23','NCR-02-00174-23','NCR-02-00138-23','NCR-02-00039-23','NCR-01-01114-23','NCR-01-01024-23','NCR-01-00996-23','NCR-01-00948-23','NCR-01-00930-23','NCR-01-00761-23','NCR-01-00698-23','NCR-01-00680-23','NCR-01-00525-23','NCR-01-00443-23','NCR-01-00290-23','NCR-01-00179-23','NCR-01-00131-23','NCR-01-00027-23','NCR-12-00736-22','NCR-12-00683-22','NCR-12-00539-22','NCR-12-00465-22','NCR-12-00218-22','NCR-12-00203-22','NCR-11-00993-22','NCR-11-00789-22','NCR-11-00719-22','NCR-11-00507-22','NCR-11-00431-22','NCR-11-00308-22','NCR-10-00974-22','NCR-10-00898-22','NCR-10-00737-22','NCR-10-00733-22','NCR-10-00713-22','NCR-10-00580-22','NCR-10-00446-22','NCR-10-00248-22','NCR-09-01047-22','NCR-09-00717-22','NCR-09-00427-22','NCR-09-00081-22','NCR-08-00942-22','NCR-08-00347-22','NCR-08-00229-22','NCR-07-00955-22','NCR-07-00088-22','NCR-07-00031-22'
+-- )
+-- ;
+
+-- select * from docket_disposition dd 
+-- where dd.docket_id in(
+-- 210360,210928,211191,211566,212063,212464,212973,213045,213285,213827,213896,214611,214770,216571,217623,217997,218087,218274,218851,219226,219502,219522,219785,220161,220327,220670,221007,221414,221673,221916,222177,222428,222762,223392,223663,224043
+-- );
+
+
+select group_concat(d.docket_id) from dockets d where d.docket_number in(
+'NCR-04-00613-23','NCR-04-00531-23','NCR-04-00500-23','NCR-04-00455-23','NCR-04-00366-23','NCR-04-00286-23','NCR-04-00186-23','NCR-04-00137-23','NCR-04-00126-23','NCR-04-00049-23','NCR-03-01301-23','NCR-03-01259-23','NCR-03-01222-23','NCR-03-01155-23','NCR-03-01096-23','NCR-03-00999-23','NCR-03-00944-23','NCR-03-00863-23','NCR-03-00842-23','NCR-03-00799-23','NCR-03-00726-23','NCR-03-00708-23','NCR-03-00583-23','NCR-03-00553-23','NCR-03-00457-23','NCR-03-00368-23','NCR-03-00348-23','NCR-03-00199-23','NCR-03-00097-23','NCR-03-00016-23','NCR-02-01129-23','NCR-02-01056-23','NCR-02-00986-23','NCR-02-00890-23','NCR-02-00826-23','NCR-02-00766-23','NCR-02-00723-23','NCR-02-00617-23','NCR-02-00559-23','NCR-02-00554-23','NCR-02-00487-23','NCR-02-00348-23','NCR-02-00208-23','NCR-02-00174-23','NCR-02-00138-23','NCR-02-00039-23','NCR-01-01114-23','NCR-01-01024-23','NCR-01-00996-23','NCR-01-00948-23','NCR-01-00930-23','NCR-01-00761-23','NCR-01-00698-23','NCR-01-00680-23','NCR-01-00525-23','NCR-01-00443-23','NCR-01-00290-23','NCR-01-00179-23','NCR-01-00131-23','NCR-01-00027-23','NCR-12-00736-22','NCR-12-00683-22','NCR-12-00539-22','NCR-12-00465-22','NCR-12-00218-22','NCR-12-00203-22','NCR-11-00993-22','NCR-11-00789-22','NCR-11-00719-22','NCR-11-00507-22','NCR-11-00431-22','NCR-11-00308-22','NCR-10-00974-22','NCR-10-00898-22','NCR-10-00737-22','NCR-10-00733-22','NCR-10-00713-22','NCR-10-00580-22','NCR-10-00446-22','NCR-10-00248-22','NCR-09-01047-22','NCR-09-00717-22','NCR-09-00427-22','NCR-09-00081-22','NCR-08-00942-22','NCR-08-00347-22','NCR-08-00229-22','NCR-07-00955-22','NCR-07-00088-22','NCR-07-00031-22'
+);
