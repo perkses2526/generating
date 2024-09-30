@@ -6,6 +6,35 @@ $(document).ready(function () {
     });
 });
 
+
+
+async function saveEmp(btn) {
+    form = $('#modal').find('form')[0];
+    elems = $(form).find('input:required');
+    if (!validator(elems)) {
+        return;
+    }
+    var fd = new FormData(form);
+    fd.append('saveEmp', '');
+    var res = await myajax(file, fd);
+    if (res === "success") {
+        settb();
+        tsuccess(`EME data added.`);
+        closeModal();
+    } else {
+        $(btn).prop('disabled', false);
+        terror();
+    }
+}
+
+async function setnewEmp(btn) {
+    var fd = new FormData();
+    fd.append('setnewEmp', '');
+    var res = await myajax(file, fd);
+    modallg(`Add new employee`, res);
+    $('#btn_submit').html(`<button type="button" class="btn btn-success btn-sm" ckid="1" onclick="saveEmp(this)">Save employee</button>`);
+}
+
 async function viewdata(btn) {
     ckid = $(btn).attr('did');
     var fd = new FormData();

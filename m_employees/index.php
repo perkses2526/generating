@@ -10,6 +10,7 @@ if (!($_SESSION['usertype'] === "superadmin")) {
 <main id="main" class="main">
   <div class="text-end col-auto">
     <div class="btn-group">
+      <button class="btn btn-success btn-sm me-3" title="Add new eme" onclick="setnewEmp(this);"><i class="bi bi-plus"></i></button>
       <button class="btn btn-warning btn-sm" onclick="datatable_to_excel('maintb', $('#report_list option:selected').text() + ' ' + $('#org_code option:selected').text());" title="Export all data"><i class="bi bi-file-spreadsheet-fill"></i></button>
       <button class="btn btn-success btn-sm" onclick="htmltb_to_excel('maintb');" title="Export only the visible"><i class="bi bi-file-spreadsheet-fill"></i></button>
       <button class="btn btn-primary btn-sm refresh-tb" title="Refresh table"><i class="bi bi-arrow-clockwise"></i></button>
