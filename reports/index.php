@@ -42,6 +42,7 @@ if (!($_SESSION['usertype'] === "superadmin")) {
                 <option value="12">RFA Report that has pending</option>
                 <option value="13">Multiple company cases created</option>
                 <option value="14">Count of arbiters cases monthly</option>
+                <option value="15">RAB'S LAST 10 PENDING CASES</option>
               </select>
             </div>
             <!-- <div class="col-auto">
@@ -129,7 +130,7 @@ if (!($_SESSION['usertype'] === "superadmin")) {
             </div>
             <div class="col-auto text-end">
               <div class="btn-group mt-4">
-                <button class="btn btn-warning btn-sm" onclick="datatable_to_excel('maintb', $('#report_list option:selected').text() + ' ' + $('#org_code option:selected').text());" title="Export all data"><i class="bi bi-file-spreadsheet-fill"></i></button>
+                <button class="btn btn-warning btn-sm" onclick="datatable_to_excel('maintb', $('#org_code option:selected').text() + ' - ' + $('#case_type_code option:selected').text() + ' - ' +$('#report_list option:selected').text());" title="Export all data"><i class="bi bi-file-spreadsheet-fill"></i></button>
                 <button class="btn btn-success btn-sm" onclick="htmltb_to_excel('maintb');" title="Export only the visible"><i class="bi bi-file-spreadsheet-fill"></i></button>
                 <button class="btn btn-primary btn-sm refresh-tb" title="Refresh table"><i class="bi bi-arrow-clockwise"></i></button>
               </div>

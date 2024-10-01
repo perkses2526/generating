@@ -1,8 +1,33 @@
 <?php
 require_once '../dbcon.php';
 
+$uid = $_POST['uid'] ?? '';
+
 if (isset($_POST['viewdata'])) {
     echo "";
+}
+
+if (isset($_POST['viewpendings'])) {
+    $sql = "SELECT d.docket_number, c.case_title, c.filed_date, concat(u.lname, ', ', u.fname) as `Labor Arbiter` FROM cases c
+    join dockets d on d.docket_id = c.docket_id
+    join ects_core.users u on u.user_id = c.process_by
+    left join docket_disposition dd on dd.docket_id = d.docket_id
+    where c.process_by = '$uid' and dd.disposition_id is null
+    ;";
+
+    $tb = '
+    <div class="row">
+        <div class="text-end">
+            <button class="btn btn-success btn-sm"><i class="bi bi-file-spreadsheet-fill" onclick="datatable_to_excel(\'modaltb\');"></i></button>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover w-100" id="modaltb">';
+    $tb .= autotb($sql, 1);
+    $tb .= '</table>
+        </div>
+    </div>
+    ';
+    echo $tb;
 }
 
 if (isset($_POST['settb'])) {

@@ -7,6 +7,16 @@ $(document).ready(function () {
     });
 });
 
+async function viewpendings(btn) {
+    uid = $(btn).closest('tr').find('td:eq(0)').text();
+    var formdata = new FormData($('#tb_form')[0]);
+    formdata.append('uid', uid);
+    formdata.append('viewpendings', '');
+    var res = await myajax(file, formdata);
+    modalxl(`View pendings of ${$(btn).closest('tr').find('td:eq(2)').text()}`, res);
+    $('#modaltb').DataTable();
+}
+
 async function viewdata(btn) {
     ckid = $(btn).attr('did');
     var fd = new FormData();

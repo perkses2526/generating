@@ -472,6 +472,25 @@ ORDER BY `Filed date` ASC;
         " . ($start_date && $end_date ? " and c.filed_date between '$start_date' and '$end_date'" : '') . "
         group by u.user_id, `Filed date`
         ;";
+    } else if ($report_list === "15") {
+        $sql = "SELECT a.case_type_code as `Case type code`, c.org_code as `Rab`, a.docket_number AS `Docket number`, a.case_title AS `Case title`, a.filed_date AS `Filed date`, concat(d.fname, ' ', d.mname, ' ' , d.lname) as LA
+        from cases as a
+        left join dockets as c on a.docket_id = c.docket_id
+        left join ects_core.users as d on a.process_by = d.user_id
+        left join (select bb.* from docket_disposition as bb inner join (select docket_id, min(disposition_id) as MaxDate from docket_disposition group by docket_id ) xm on bb.docket_id = xm.docket_id and bb.disposition_id = xm.MaxDate) as b on b.docket_id = a.docket_id
+        where a.process_by is not null
+        and a.filed_date between '2019-05-01' AND '2024-12-31'
+        and b.date_disposed is null
+        and not d.user_id = 769
+        " . ($case_type_code ? ' and a.case_type_code IN (' . implode(',', array_map(function ($case) {
+            return "'$case'";
+        }, $case_type_code)) . ')' : '') . "
+
+    " . ($org_code ? ' and d.org_code IN (' . implode(',', array_map(function ($org) {
+            return "'$org'";
+        }, $org_code)) . ')' : '') . "
+  
+        order by a.filed_date asc limit 10;";
     } else {
         echo json_encode(['error' => 'Select a report to generate']);
         exit;
