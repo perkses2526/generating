@@ -61,6 +61,6 @@ if (isset($_POST['viewdata'])) {
 }
 
 if (isset($_POST['settb'])) {
-    $sql = "SELECT * FROM main_nlrc_db.M_Employees;";
+    $sql = "SELECT *, concat(EMLastName, ' ', EMFirstName) as Full_name FROM main_nlrc_db.M_Employees;";
     echo datatb($sql);
 }

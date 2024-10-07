@@ -397,25 +397,22 @@ ORDER BY `Filed date` ASC;
         order by c.raffled_date asc
 ;";
     } else if ($report_list === "11") {
-        $sql = "SELECT 
-            d.docket_type_code, 
-            d.org_code, 
-            SUM(CASE WHEN dd.date_disposed IS NOT NULL THEN 1 ELSE 0 END) AS disposed_data,
-            COUNT(d.org_code) AS total 
-        FROM 
-            dockets d
-        LEFT JOIN 
-            docket_disposition dd 
-        ON 
-            dd.docket_id = d.docket_id
-        WHERE 
-            d.docket_number IS NOT NULL 
-            AND d.docket_type_code IN ('RFA', 'CASE') 
-            AND d.org_code is not null
-        GROUP BY 
-            d.org_code, d.docket_type_code 
-        ORDER BY 
-           d.docket_type_code, d.org_code ASC;";
+        $sql = "SELECT
+		d.docket_type_code, 
+		d.org_code, 
+		SUM(CASE WHEN dd.date_disposed IS NOT NULL THEN 1 ELSE 0 END) AS disposed_data,
+		COUNT(d.org_code) AS total 
+	FROM 
+		dockets d
+	left join (select bb.* from docket_disposition as bb inner join (select docket_id, min(disposition_id) as MaxDate from docket_disposition group by docket_id ) xm on bb.docket_id = xm.docket_id and bb.disposition_id = xm.MaxDate) as dd on dd.docket_id = d.docket_id
+	WHERE 
+		d.docket_number IS NOT NULL 
+		AND d.docket_type_code IN ('RFA', 'CASE') 
+		AND d.org_code is not null
+	GROUP BY 
+		d.org_code, d.docket_type_code 
+	ORDER BY 
+	   d.org_code, d.docket_type_code ASC;";
     } else if ($report_list === "12") {
         $sql = "SELECT (@cnt := @cnt + 1) AS `No`, 
         d.docket_number as `Case number`, c.case_title `Case title`, c.filed_date `Filed date`,
