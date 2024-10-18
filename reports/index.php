@@ -125,12 +125,23 @@ if (!($_SESSION['usertype'] === "superadmin")) {
             <div class="col-2">
               <div class="form-group">
                 <label for="end_date" class="form-label">End Date <div class="badge bg-info text-wrap" onclick="settodayed(this);">Set today</div></label>
+                <label for="two_seventy" class="form-label">
+                  <div class="badge bg-info text-wrap" onclick="setToTwoSeventy(this);">270 days</div>
+                </label>
                 <input type="date" class="form-control form-control-sm" name="end_date" id="end_date" value="<?php echo date('Y-m-d'); ?>">
               </div>
             </div>
             <div class="col-auto text-end">
               <div class="btn-group mt-4">
-                <button class="btn btn-warning btn-sm" onclick="datatable_to_excel('maintb', $('#org_code option:selected').text() + ' - ' + $('#case_type_code option:selected').text() + ' - ' +$('#report_list option:selected').text());" title="Export all data"><i class="bi bi-file-spreadsheet-fill"></i></button>
+                <button class="btn btn-warning btn-sm"
+                  onclick="datatable_to_excel('maintb', 
+        ($('#org_code').val() ? $('#org_code option:selected').text() + ' - ' : '') + 
+        ($('#case_type_code').val() ? $('#case_type_code option:selected').text() + ' - ' : '') + 
+        $('#report_list option:selected').text()
+    );"
+                  title="Export all data">
+                  <i class="bi bi-file-spreadsheet-fill"></i>
+                </button>
                 <button class="btn btn-success btn-sm" onclick="htmltb_to_excel('maintb');" title="Export only the visible"><i class="bi bi-file-spreadsheet-fill"></i></button>
                 <button class="btn btn-primary btn-sm refresh-tb" title="Refresh table"><i class="bi bi-arrow-clockwise"></i></button>
               </div>

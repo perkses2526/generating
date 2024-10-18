@@ -367,7 +367,7 @@ ORDER BY `Filed date` ASC;
         ) xm on bb.docket_id = xm.docket_id and bb.disposition_id = xm.MaxDate
     ) as b on b.docket_id = a.docket_id
     where 
-        CONCAT(d.username, d.lname, d.fname) LIKE '%$search%' and d.status = 'STATUS_ACTIVE'
+    d.status = 'STATUS_ACTIVE'
     and ur.role_code = 'LABOR_ARBITER'
     " . ($case_type_code ? ' and a.case_type_code IN (' . implode(',', array_map(function ($case) {
             return "'$case'";

@@ -64,3 +64,96 @@ if (isset($_POST['settb'])) {
     $sql = "SELECT *, concat(EMLastName, ' ', EMFirstName) as Full_name FROM main_nlrc_db.M_Employees;";
     echo datatb($sql);
 }
+
+    /* Case "552" 'NCR samar
+        ELA = True
+    Case "517" 'NCR dysangco
+        ELA = True
+    Case "509" 'CAR celino
+        ELA = True
+    Case "1181" 'RABI carasig
+        ELA = True
+    Case "9999" 'SRABI none
+        ELA = True
+    Case "1084" 'RABII lerios
+        ELA = True
+    Case "712" 'RABIII almeyda
+        ELA = True
+    Case "1170" 'RABIII-SO almeyda
+        ELA = True
+    Case "722" 'RABIV guan
+        ELA = True
+    Case "1304" 'SRABIV guan
+        ELA = True
+    Case "1397" 'RABV sarmiento
+        ELA = True
+    Case "1180" 'SRABV sarmiento
+        ELA = True
+    Case "1094" 'RABVI dadula
+        ELA = True
+    Case "1098" 'SRABVI nafarrete
+        ELA = True
+    Case "9999" 'SRABVIA none
+        ELA = True
+    Case "1114" 'RABVII cabatingan
+        ELA = True
+    Case "9999" 'SRABVII none
+        ELA = True
+    Case "9999" 'RABVIII none
+        ELA = True
+    Case "1292" 'RABIX amarga
+        ELA = True
+    Case "1295" 'SRABIX amarga
+        ELA = True
+    Case "1407" 'RABX SM.DATU10
+        ELA = True
+    Case "1411" 'RABX-BUK datu
+        ELA = True
+    Case "1126" 'SRABX datu
+        ELA = True
+    Case "1128" 'RABXI sedillo
+        ELA = True
+    Case "1184" 'RABXI-TC sedillo
+        ELA = True
+    Case "1258" 'RABXI-DC sedillo
+        ELA = True
+    Case "1235" 'RABXII vasallo
+        ELA = True
+    Case "1254" 'RABXII-KD vasallo
+        ELA = True
+    Case "1135" 'SRABXII vasallo
+        ELA = True
+    Case "9999" 'RABXIII
+        ELA = True
+
+ 552
+517
+509
+1181
+9999
+1084
+712
+1170
+722
+1304
+1397
+1180
+1094
+1098
+9999
+1114
+9999
+9999
+1292
+1295
+1407
+1411
+1126
+1128
+1184
+1258
+1235
+1254
+1135
+9999       
+ */
