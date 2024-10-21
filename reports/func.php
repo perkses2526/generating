@@ -351,8 +351,8 @@ ORDER BY `Filed date` ASC;
         d.username as `Username`,
         concat(d.fname, ' ', d.mname, ' ', d.lname) as `Full Name`,
         d.org_code as `RAB`,
-        count(distinct a.docket_id) as `Total Cases`,
-        count(distinct case when b.date_disposed is null then a.docket_id end) as `Pending cases`
+        count(distinct case when b.date_disposed is null then a.docket_id end) as `Pending cases`,
+        count(distinct a.docket_id) as `Total Cases`
     from cases as a
     left join dockets as c on a.docket_id = c.docket_id
     left join ects_core.users as d on a.process_by = d.user_id
@@ -378,6 +378,7 @@ ORDER BY `Filed date` ASC;
         }, $org_code)) . ')' : '') . "
     " . ($start_date && $end_date ? " and a.filed_date between '$start_date' and '$end_date'" : '') . "
     group by d.fname, d.mname, d.lname
+    ORDER BY c.org_code, d.lname
     ;";
     } else if ($report_list === "10") {
         $sql = "SELECT (@cnt := @cnt + 1) AS `No`, c.case_id as `Case id`, c.case_title `Case title`, c.filed_date `Filed date`, dd.date_disposed `Date disposed`,
