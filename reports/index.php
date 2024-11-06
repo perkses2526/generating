@@ -126,6 +126,9 @@ if (!($_SESSION['usertype'] === "superadmin")) {
               <div class="form-group">
                 <label for="end_date" class="form-label">End Date <div class="badge bg-info text-wrap" onclick="settodayed(this);">Set today</div></label>
                 <label for="two_seventy" class="form-label">
+                  <div class="badge bg-info text-wrap" onclick="setToFortyFive(this);">45 days</div>
+                </label>
+                <label for="two_seventy" class="form-label">
                   <div class="badge bg-info text-wrap" onclick="setToTwoSeventy(this);">270 days</div>
                 </label>
                 <input type="date" class="form-control form-control-sm" name="end_date" id="end_date" value="<?php echo date('Y-m-d'); ?>">

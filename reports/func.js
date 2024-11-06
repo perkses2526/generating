@@ -50,6 +50,15 @@ $(document).ready(function () {
 
 });
 
+async function setToFortyFive(params) {
+    var today = new Date();
+    // Subtract 270 days from the current date
+    today.setDate(today.getDate() - 45);
+
+    var formattedDate = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
+    $('#end_date').val(formattedDate);
+}
+
 async function setToTwoSeventy(params) {
     var today = new Date();
     // Subtract 270 days from the current date

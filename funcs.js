@@ -407,7 +407,14 @@ function datatable_to_excel(tableId, fileName = $('#' + tableId).attr('id')) {
     data.forEach(function (rowData) {
         var rowArray = [];
         Object.values(rowData).forEach(function (cellData) {
-            rowArray.push(cellData);
+            // Check if the cell contains a number or text and format accordingly
+            if (!isNaN(cellData) && cellData !== null && cellData !== "") {
+                // If it's a number, store it as a number
+                rowArray.push(Number(cellData));
+            } else {
+                // Otherwise, store it as a string
+                rowArray.push(String(cellData));
+            }
         });
         sheetData.push(rowArray);
     });
@@ -416,6 +423,35 @@ function datatable_to_excel(tableId, fileName = $('#' + tableId).attr('id')) {
     XLSX.utils.book_append_sheet(workbook, sheet, "Sheet1");
     XLSX.writeFile(workbook, fileName + '.xlsx');
 }
+
+
+/* function datatable_to_excel(tableId, fileName = $('#' + tableId).attr('id')) {
+    var table = $('#' + tableId).DataTable();
+    var data = table.rows({ search: 'applied' }).data().toArray();
+
+    var workbook = XLSX.utils.book_new();
+    var sheetData = [];
+
+    // Extract headers
+    var headers = [];
+    table.columns().header().each(function (header) {
+        headers.push($(header).text().trim());
+    });
+    sheetData.push(headers); // Add headers to sheetData
+
+    // Convert each row to an array and add to sheetData
+    data.forEach(function (rowData) {
+        var rowArray = [];
+        Object.values(rowData).forEach(function (cellData) {
+            rowArray.push(cellData);
+        });
+        sheetData.push(rowArray);
+    });
+
+    var sheet = XLSX.utils.aoa_to_sheet(sheetData);
+    XLSX.utils.book_append_sheet(workbook, sheet, "Sheet1");
+    XLSX.writeFile(workbook, fileName + '.xlsx');
+} */
 
 function htmltb_to_excel(tbid, name = tbid) {
     var name = $("#tbtitle").html();

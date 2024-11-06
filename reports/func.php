@@ -406,14 +406,20 @@ ORDER BY `Filed date` ASC;
 	FROM 
 		dockets d
 	left join (select bb.* from docket_disposition as bb inner join (select docket_id, min(disposition_id) as MaxDate from docket_disposition group by docket_id ) xm on bb.docket_id = xm.docket_id and bb.disposition_id = xm.MaxDate) as dd on dd.docket_id = d.docket_id
+    left join cases c on c.docket_id = d.docket_id
 	WHERE 
 		d.docket_number IS NOT NULL 
-		AND d.docket_type_code IN ('RFA', 'CASE') 
+		 " . ($case_type_code ? ' and d.docket_type_code IN (' . implode(',', array_map(function ($case) {
+            return "'$case'";
+        }, $case_type_code)) . ')' : '') . "
+
 		AND d.org_code is not null
+        and c.process_by is not null
+        " . ($start_date && $end_date ? " and c.filed_date between '$start_date' and '$end_date'" : '') . "
 	GROUP BY 
 		d.org_code, d.docket_type_code 
 	ORDER BY 
-	   d.org_code, d.docket_type_code ASC;";
+	   d.org_code ASC;";
     } else if ($report_list === "12") {
         $sql = "SELECT (@cnt := @cnt + 1) AS `No`, 
         d.docket_number as `Case number`, c.case_title `Case title`, c.filed_date `Filed date`,
