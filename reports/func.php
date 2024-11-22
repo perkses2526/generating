@@ -402,7 +402,8 @@ ORDER BY `Filed date` ASC;
 		d.docket_type_code, 
 		d.org_code, 
 		SUM(CASE WHEN dd.date_disposed IS NOT NULL THEN 1 ELSE 0 END) AS disposed_data,
-		COUNT(d.org_code) AS total 
+		COUNT(d.org_code) AS total,
+        (SUM(CASE WHEN dd.date_disposed IS NOT NULL THEN 1 ELSE 0 END) / COUNT(d.org_code)) * 100 as Percentage
 	FROM 
 		dockets d
 	left join (select bb.* from docket_disposition as bb inner join (select docket_id, min(disposition_id) as MaxDate from docket_disposition group by docket_id ) xm on bb.docket_id = xm.docket_id and bb.disposition_id = xm.MaxDate) as dd on dd.docket_id = d.docket_id
@@ -412,7 +413,9 @@ ORDER BY `Filed date` ASC;
 		 " . ($case_type_code ? ' and d.docket_type_code IN (' . implode(',', array_map(function ($case) {
             return "'$case'";
         }, $case_type_code)) . ')' : '') . "
-
+        " . ($org_code ? ' and d.org_code IN (' . implode(',', array_map(function ($org) {
+            return "'$org'";
+        }, $org_code)) . ')' : '') . "
 		AND d.org_code is not null
         and c.process_by is not null
         " . ($start_date && $end_date ? " and c.filed_date between '$start_date' and '$end_date'" : '') . "

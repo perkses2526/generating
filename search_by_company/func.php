@@ -31,8 +31,12 @@ if (isset($_POST['search_data'])) {
     $valuesArray = explode(',', $val);
 
     // Trim whitespace and build the WHERE clause
-    $likeClauses = array_map(function ($value) {
+    /* $likeClauses = array_map(function ($value) {
         return "(c.docket_number = '" . addslashes(trim($value)) . "')";
+    }, $valuesArray); */
+
+    $likeClauses = array_map(function ($value) {
+        return "(p.company_name = '" . addslashes(trim($value)) . "')";
     }, $valuesArray);
 
     // Join all LIKE clauses with OR

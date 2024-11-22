@@ -77,10 +77,12 @@ if (isset($_POST['settb'])) {
     group by d.fname, d.mname, d.lname
     order by `Full Name`, `Total cases` desc
     ;";
-    /*     $sql = "SELECT 
+    /*    $sql = "SELECT 
         d.user_id, 
         d.username,
-        UPPER(concat(d.lname, ', ', d.fname, ' ', if(d.mname is null or d.mname = '', '' , concat(left(d.mname, 1), '.'))))as `Full Name`, d.org_code, d.status
+        UPPER(concat(d.lname, ', ', d.fname, ' ', if(d.mname is null or d.mname = '', '' , concat(left(d.mname, 1), '.'))))as `Full Name`, 
+        UPPER(concat(d.fname, ' ', if(d.mname is null or d.mname = '', '' , concat(left(d.mname, 1), '.')), ' ', d.lname))as `fnmnln`, 
+        d.org_code, d.status
     from ects_core.users as d
     left join ects_core.user_roles ur on ur.user_id = d.user_id
     where 
