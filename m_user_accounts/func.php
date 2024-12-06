@@ -1,6 +1,6 @@
 <?php
 require_once '../dbcon.php';
-
+/* 
 if (isset($_POST['setnewuser'])) {
     echo '
     <div class="container">
@@ -76,8 +76,8 @@ if (isset($_POST['setnewuser'])) {
 ';
 }
 
-
-
+ */
+/* 
 if (isset($_POST['viewdata'])) {
     $sql = "SELECT 
     u.user_id, 
@@ -193,16 +193,19 @@ GROUP BY
     </div>
 
     ';
-}
+} */
 // (SELECT count(*) FROM ects_core.user_roles where user_id = u.user_id)
 if (isset($_POST['settb'])) {
-    $sql = "SELECT u.user_id, username,
+    $sql = "SELECT pointer, UAUsername, EMID, UACreatedDate FROM main_nlrc_db.M_UserAccounts;";
+  /*   $sql = "SELECT u.user_id, username,
     concat(u.fname, ' ', u.mname, ' ', u.lname) as `Full name`,
     count(distinct ur.role_code) as `NoOfRoles`, org_code, fname, lname, mname, email, contact_no, mobile_no, status, created_date,
     concat('<button class=\"btn btn-primary btn-sm\" did=\"',u.user_id,'\" onclick=\"viewdata(this);\">View data</button>') as `Action`
     FROM ects_core.users u
     join ects_core.user_roles ur on u.user_id = ur.user_id
     group by u.user_id
-    ;";
+    ;"; */
+
+
     echo datatb($sql);
 }

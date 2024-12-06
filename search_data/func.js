@@ -18,7 +18,7 @@ $(document).ready(function () {
         let dataToCopy = [];
         $('#maintb tbody tr').each(function () {
             let secondColumnData = $(this).find('td:eq(1)').text(); // 'td:eq(1)' selects the 2nd column (0-based index)
-            dataToCopy.push(secondColumnData);
+            dataToCopy.push(secondColumnData + ",");
         });
 
         // Copy the data to the clipboard

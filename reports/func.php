@@ -346,13 +346,14 @@ ORDER BY `Filed date` ASC;
         order by c.org_code, d.username asc;
         ";
     } else if ($report_list === "9") {
-        $sql = "SELECT 
+        /* $sql = "SELECT 
         d.user_id as `User id`, 
         d.username as `Username`,
         concat(d.fname, ' ', d.mname, ' ', d.lname) as `Full Name`,
         d.org_code as `RAB`,
         count(distinct case when b.date_disposed is null then a.docket_id end) as `Pending cases`,
-        count(distinct a.docket_id) as `Total Cases`
+        count(distinct a.docket_id) as `Total Cases`,
+        ((count(distinct a.docket_id) - count(distinct case when b.date_disposed is null then a.docket_id end)) / count(distinct a.docket_id) * 100) as `Percentage`
     from cases as a
     left join dockets as c on a.docket_id = c.docket_id
     left join ects_core.users as d on a.process_by = d.user_id
@@ -378,8 +379,47 @@ ORDER BY `Filed date` ASC;
         }, $org_code)) . ')' : '') . "
     " . ($start_date && $end_date ? " and a.filed_date between '$start_date' and '$end_date'" : '') . "
     group by d.fname, d.mname, d.lname
-    ORDER BY c.org_code, d.lname
-    ;";
+    ORDER BY c.org_code, d.lname */
+
+    $sql = "SELECT 
+    d.user_id AS `User id`,
+    d.username AS `Username`,
+    CONCAT(d.fname, ' ', d.mname, ' ', d.lname) AS `Full Name`,
+    d.org_code AS `RAB`,
+	COUNT(DISTINCT CASE
+            WHEN (b.date_disposed > '2023-01-31') THEN a.docket_id
+        END) AS `Pending cases`,   
+    COUNT(DISTINCT a.docket_id) AS `Total Cases`,
+    (((count(distinct a.docket_id) - COUNT(DISTINCT CASE
+            WHEN (b.date_disposed >= '2023-01-31') THEN a.docket_id
+        END))) / COUNT(DISTINCT a.docket_id) * 100) AS `Percentage`
+FROM
+    cases AS a
+        LEFT JOIN
+    dockets AS c ON a.docket_id = c.docket_id
+        LEFT JOIN
+    ects_core.users AS d ON a.process_by = d.user_id
+        LEFT JOIN
+    ects_core.user_roles ur ON ur.user_id = d.user_id
+        LEFT JOIN
+    (SELECT 
+        bb.*
+    FROM
+        docket_disposition AS bb
+    INNER JOIN (SELECT 
+        docket_id, MIN(disposition_id) AS MaxDate
+    FROM
+        docket_disposition
+    GROUP BY docket_id) xm ON bb.docket_id = xm.docket_id
+        AND bb.disposition_id = xm.MaxDate) AS b ON b.docket_id = a.docket_id
+WHERE
+    d.status = 'STATUS_ACTIVE'
+        AND ur.role_code = 'LABOR_ARBITER'
+        AND a.case_type_code IN ('CASE')
+        AND a.filed_date BETWEEN '2019-01-05' AND '2023-01-31'
+        and d.org_code != 'NCR'
+GROUP BY d.fname , d.mname , d.lname
+ORDER BY c.org_code , d.lname;";
     } else if ($report_list === "10") {
         $sql = "SELECT (@cnt := @cnt + 1) AS `No`, c.case_id as `Case id`, c.case_title `Case title`, c.filed_date `Filed date`, dd.date_disposed `Date disposed`,
             TIMESTAMPDIFF(day, c.filed_date, dd.date_disposed) AS `Age`, pas.available_date , pdt.disposition_type AS `Disposition type`, dd.amount_peso, dd.award_type , u.user_id `user_id of process by`, concat(u.lname, ', ', u.fname, ' ', u.mname) as `LA`
@@ -419,6 +459,7 @@ ORDER BY `Filed date` ASC;
 		AND d.org_code is not null
         and c.process_by is not null
         " . ($start_date && $end_date ? " and c.filed_date between '$start_date' and '$end_date'" : '') . "
+        and d.docket_id < 350000
 	GROUP BY 
 		d.org_code, d.docket_type_code 
 	ORDER BY 

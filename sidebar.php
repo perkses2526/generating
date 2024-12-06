@@ -15,12 +15,12 @@
       </a>
     </li>
 
-    <!--   <li class="nav-item">
-      <a class="nav-link collapsed" href="../docket_tasks/">
+    <li class="nav-item">
+      <a class="nav-link collapsed" href="../m_user_accounts/">
         <i class="bi bi-briefcase"></i>
-        <span>Dockets task</span>
+        <span>M_User Accounts</span>
       </a>
-    </li> -->
+    </li>
 
     <li class="nav-item">
       <a class="nav-link collapsed" href="../eme/">
