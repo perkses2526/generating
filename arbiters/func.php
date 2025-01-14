@@ -48,12 +48,11 @@ if (isset($_POST['settb'])) {
         concat(d.fname, ' ', d.mname, ' ', d.lname) as `Full Name`,
         d.org_code as `RAB`,
         concat('<button class=\"btn btn-warning btn-sm\" onclick=\"viewpendings(this);\">', count(distinct case when b.date_disposed is null then a.docket_id end), '</button>') as `Pending cases`, 
-        count(distinct a.docket_number) as `Total cases`,
+        count(c.docket_number) as `Total cases`,
         d.status
     from cases as a
     left join dockets as c on a.docket_id = c.docket_id
     left join ects_core.users as d on a.process_by = d.user_id
-    left join ects_core.user_roles ur on ur.user_id = d.user_id
     left join (
         select bb.* 
         from docket_disposition as bb 
@@ -64,17 +63,22 @@ if (isset($_POST['settb'])) {
         ) xm on bb.docket_id = xm.docket_id and bb.disposition_id = xm.MaxDate
     ) as b on b.docket_id = a.docket_id
     where 
-        CONCAT(d.username, d.lname, d.fname) LIKE '%$search%'
-    and ur.role_code = 'LABOR_ARBITER'
+    a.process_by is not null 
+    and c.docket_number IS NOT NULL 
+    AND c.org_code is not null
+    AND a.case_type_code = 'CASE'
     " . ($case_type_code ? ' and a.case_type_code IN (' . implode(',', array_map(function ($case) {
         return "'$case'";
     }, $case_type_code)) . ')' : '') . "
 
     " . ($org_code ? ' and d.org_code IN (' . implode(',', array_map(function ($org) {
         return "'$org'";
+
     }, $org_code)) . ')' : '') . "
-    " . ($start_date && $end_date ? " and a.filed_date between '$start_date' and '$end_date'" : '') . "
-    group by d.fname, d.mname, d.lname
+    " . ($start_date && $end_date ? " and c.created_date between '$start_date' and '$end_date'" : '') . "
+
+    group by d.fname, d.mname, d.lname, 
+		c.org_code, c.docket_type_code 
     order by `Full Name`, `Total cases` desc
     ;";
     /*    $sql = "SELECT 
